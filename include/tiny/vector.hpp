@@ -27,30 +27,15 @@ public:
         }
     }
 
-    matrix(const std::initialize_list<matrix<S,1,C>> &content)
-    {
-        S *ptr = reinterpret_cast<S*>(&data[0][0]);
-        if (content.size() != lines())
-            throw std::invalid_argument("expecting " + std::to_string(lines()) + " lines");
-        for (const auto &line: content)
-        {
-            for (const auto & cell: line.data[0])
-                (*ptr++) = cell;
-        }
-
-    }
-
-
     const S &operator()(size_t i, size_t j) const { return data[i][j]; }
     S &operator()(size_t i, size_t j)             { return data[i][j]; }
 
     constexpr size_t lines()   const      { return L; }
     constexpr size_t columns() const      { return C; }
+
 private:
     S data[L][C];
 };
-
-
 
 template<typename S>
 class vec2
@@ -73,6 +58,8 @@ using float3x3 = matrix<float,3,3>;
 using float4x4 = matrix<float,4,4>;
 
 }
+
+
 
 template<typename S>
 std::ostream &operator<<(std::ostream &out, const tiny::vec2<S> &v)
