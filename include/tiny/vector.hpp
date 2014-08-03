@@ -2,13 +2,37 @@
 #define __TINY_VECTOR_HPP__
 
 #include <iostream>
+#include <initializer_list>
+#include <stdexcept>
 
 namespace tiny {
 
-template<typename S, int L, int C>
+template<typename S, size_t L, size_t C>
 class matrix
 {
 public:
+    matrix() {}
+    matrix(const std::initializer_list<std::initializer_list<S>> &content)
+    {
+        S *ptr = reinterpret_cast<S*>(&data[0][0]);
+        if (content.size() != lines())
+            throw std::invalid_argument("expecting " + std::to_string(lines()) + " lines");
+        for (const auto &line: content)
+        {
+            if (line.size() != columns())
+                throw std::invalid_argument("expecting " + std::to_string(columns()) + " entries per column");
+            for (const auto & cell: line)
+                (*ptr++) = cell;
+        }
+
+    }
+
+    const S &operator()(size_t i, size_t j) const { return data[i][j]; }
+    S &operator()(size_t i, size_t j)             { return data[i][j]; }
+
+    constexpr size_t lines()   const      { return L; }
+    constexpr size_t columns() const      { return C; }
+private:
     S data[L][C];
 };
 

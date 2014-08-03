@@ -1,6 +1,6 @@
 env = Environment()
 
-env["CXX"] = "clang++ -std=c++11"
+env["CXX"] = "clang++ -std=c++11 -fcolor-diagnostics"
 env.MergeFlags("-Iinclude/")
 
 
