@@ -12,6 +12,7 @@ class matrix
 {
 public:
     matrix() {}
+
     matrix(const std::initializer_list<std::initializer_list<S>> &content)
     {
         S *ptr = reinterpret_cast<S*>(&data[0][0]);
@@ -24,8 +25,21 @@ public:
             for (const auto & cell: line)
                 (*ptr++) = cell;
         }
+    }
+
+    matrix(const std::initialize_list<matrix<S,1,C>> &content)
+    {
+        S *ptr = reinterpret_cast<S*>(&data[0][0]);
+        if (content.size() != lines())
+            throw std::invalid_argument("expecting " + std::to_string(lines()) + " lines");
+        for (const auto &line: content)
+        {
+            for (const auto & cell: line.data[0])
+                (*ptr++) = cell;
+        }
 
     }
+
 
     const S &operator()(size_t i, size_t j) const { return data[i][j]; }
     S &operator()(size_t i, size_t j)             { return data[i][j]; }
