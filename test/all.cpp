@@ -4,9 +4,10 @@
 
 using namespace tiny;
 
+
 TEST(float2, can_be_declared)
 {
-    float2 v{1.0f,2.0f};
+    float2 v = {1.0f,2.0f};
 
     EXPECT_EQ(sizeof(float)*2, sizeof(float2));
     EXPECT_EQ(1.0f, v.x);
@@ -15,7 +16,7 @@ TEST(float2, can_be_declared)
 
 TEST(float2, can_be_printed)
 {
-    float2 v{1.0f,2.0f};
+    float2 v = {1.0f,2.0f};
     std::stringstream str;
     str << v;
 
