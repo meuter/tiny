@@ -1,4 +1,4 @@
-#include <tiny/vector.hpp>
+#include <tiny/matrix.h>
 #include <sstream>
 #include <gtest/gtest.h>
 
@@ -31,6 +31,76 @@ TEST(int3x3, can_be_declared)
     EXPECT_EQ(3, m.lines());
     EXPECT_EQ(3, m.columns());
 }
+
+TEST(matrix, has_a_number_of_lines_and_columns_and_dimensions)
+{
+    matrix<int,5,2> m;
+    auto d = m.dimensions();
+
+    EXPECT_EQ(5, m.lines());
+    EXPECT_EQ(2, m.columns());
+    EXPECT_EQ(5, d.x);
+    EXPECT_EQ(2, d.y);
+}
+
+TEST(int2x2, can_be_printed)
+{
+    int2x2 m = {
+        { 1, 2 },
+        { 3, 4 },
+    };
+    std::stringstream str;
+    str << m;
+
+    EXPECT_EQ("(1,2)\n(3,4)", str.str());
+}
+
+
+TEST(int2x2, can_be_summed)
+{
+    int2x2 m = {
+        { 1, 2 },
+        { 3, 4 }
+    };
+
+    int2x2 n = {
+        { 4, 3 },
+        { 2, 1 }
+    };
+
+    int2x2 r = m+n;
+
+    EXPECT_EQ(5, r(0,0));
+    EXPECT_EQ(5, r(1,0));
+    EXPECT_EQ(5, r(0,1));
+    EXPECT_EQ(5, r(1,1));
+}
+
+TEST(int2, can_be_modified)
+{
+    int2 v;
+
+    v.x = 10;
+    v.y = 20;
+    EXPECT_EQ(10, v.x);
+    EXPECT_EQ(20, v.y);
+}
+
+TEST(int2, can_be_summed)
+{
+    int2 u{1,2}, v{9,3}, w = u+v;
+
+    EXPECT_EQ(10, w.x);
+    EXPECT_EQ(5, w.y);
+}
+
+TEST(int2, has_a_dimension_of_2)
+{
+    int2 u;
+
+    EXPECT_EQ(2, u.dimension());
+}
+
 
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
