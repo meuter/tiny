@@ -7,4 +7,6 @@ env.MergeFlags("-Iinclude/")
 test = env.Clone()
 test.MergeFlags("-ggdb -O0 -Itest -Wall -Wno-unused -pedantic")
 
-test.Program("test/all", Split("test/all.cpp test/gmock_main.cc test/gmock-gtest-all.cc"))
+all_tests = Split("test/matrix_tests.cpp")
+
+test.Program("test/all", Split("test/gmock_main.cc test/gmock-gtest-all.cc") + all_tests)
