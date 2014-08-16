@@ -196,6 +196,16 @@ TEST(matrices, can_be_multiplied)
 }
 
 
+TEST(int3, has_cross_product)
+{
+    int3 i{1,0,0}, j{0,1,0};
+    auto k = i.cross(j);
+
+    EXPECT_EQ(k.x, 0);
+    EXPECT_EQ(k.y, 0);
+    EXPECT_EQ(k.z, 1);
+}
+
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
     matrix<int,2,3> m = {

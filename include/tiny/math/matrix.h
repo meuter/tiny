@@ -59,10 +59,9 @@ namespace tiny
                                boost::multiplicative2<matrix<S,L,C>, S> >
         {
             typedef matrix<S,L,C> mat;
+
         public:
-            matrix()
-            {
-            }
+            matrix() {}
 
             matrix(const std::initializer_list<std::initializer_list<S>> &content)
             {
@@ -104,19 +103,19 @@ namespace tiny
                 return matrix<S,1,2>{ { L, C } };
             }
 
-            mat &operator+=(const mat &other)
+            mat &operator+=(const mat &r)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
-                        (*this)(l,c) += other(l,c);
+                        (*this)(l,c) += r(l,c);
                 return (*this);
             }
 
-            mat &operator-=(const mat &other)
+            mat &operator-=(const mat &r)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
-                        (*this)(l,c) -= other(l,c);
+                        (*this)(l,c) -= r(l,c);
                 return (*this);
             }
 
@@ -137,7 +136,7 @@ namespace tiny
             }
 
             template<size_t M>
-            matrix<S,L,M> operator*(const matrix<S,C,M> &other) const
+            matrix<S,L,M> operator*(const matrix<S,C,M> &r) const
             {
                 matrix<S,L,M> result;
                 for (size_t i = 0; i < result.lines(); ++i)
@@ -146,7 +145,7 @@ namespace tiny
                     {
                         result(i,j) = 0;
                         for (size_t k = 0; k < columns(); ++k)
-                            result(i,j) += (*this)(i,k) * other(k, j);
+                            result(i,j) += (*this)(i,k) * r(k, j);
                     }
                 }
                 return result;
@@ -157,23 +156,13 @@ namespace tiny
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
         {
+            typedef matrix<S,1,N> mat;
             typedef vector<S,N> vec;
         public:
-            vector()
-            {
-            }
-
-            vector(const vec &other) : matrix<S,1,N>{ other }
-            {
-            }
-
-            vector(const matrix<S,1,N> &other) : matrix<S,1,N>{ other }
-            {
-            }
-
-            vector(const std::initializer_list<S> &content) : matrix<S,1,N>{ content }
-            {
-            }
+            vector() {}
+            vector(const vec &r) : mat{r} {}
+            vector(const mat &r) : mat{r} {}
+            vector(const std::initializer_list<S> &content) : mat{content} {}
 
             const S &operator()(size_t i) const
             {
@@ -191,17 +180,17 @@ namespace tiny
             }
 
 
-            S dot(const vec &other) const
+            S dot(const vec &r) const
             {
                 S accumulator = 0;
                 for (size_t i = 0; i < N; ++i)
-                    accumulator += (*this)(i) * other(i);
+                    accumulator += (*this)(i) * r(i);
                 return accumulator;
             }
 
-            S operator%(const vec &other) const
+            S operator%(const vec &r) const
             {
-                return (this->dot(other));
+                return (this->dot(r));
             }
 
             auto length() const -> decltype(std::sqrt(dot(*this)))
@@ -224,13 +213,32 @@ namespace tiny
         };
 
 
+        template<typename S>
+        class vector3 : public vector<S,3>
+        {
+            typedef matrix<S,1,3> mat;
+            typedef vector<S,3> vec;
+        public:
+            vector3() {}
+            vector3(const vec &r) : vec{r} {}
+            vector3(const mat &r) : vec{r} {}
+            vector3(const std::initializer_list<S> &content) : vec{content} {}
+
+            vec cross(const vec &r) const
+            {
+                return vec{ (this->y * r.z) - (r.y * this->z),
+                            (this->z * r.x) - (r.z * this->x),
+                            (this->x * r.y) - (r.x * this->y) };
+            }
+        };
+
         using int2 = vector<int,2>;
         using float2 = vector<float,2>;
         using double2 = vector<double,2>;
 
-        using int3 = vector<int,3>;
-        using float3 = vector<float,3>;
-        using double3 = vector<double,3>;
+        using int3 = vector3<int>;
+        using float3 = vector3<float>;
+        using double3 = vector3<double>;
 
         using int4 = vector<int,4>;
         using float4 = vector<float,4>;
