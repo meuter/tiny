@@ -2,7 +2,7 @@
 #include <boost/operators.hpp>
 
 #define DEFINE_UNIT(unit, T)                                                        \
-    class unit : private boost::ordered_euclidean_ring_operators<unit >,            \
+    class unit : private boost::ordered_euclidean_ring_operators<unit>,             \
                          boost::ordered_euclidean_ring_operators<unit, T >          \
     {                                                                               \
     public:                                                                         \

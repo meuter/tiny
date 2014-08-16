@@ -52,7 +52,7 @@ namespace tiny
 
 
         template<typename S, size_t L, size_t C>
-        class matrix : public internal::matrix_data<S,L,C>
+        class matrix : public internal::matrix_data<S,L,C>, private boost::ordered_euclidean_ring_operators<matrix<S,L,C> >
         {
         public:
             matrix()
