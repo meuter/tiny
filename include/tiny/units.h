@@ -9,8 +9,8 @@
         explicit unit(const T value) : mValue(value) {};                            \
         unit() {};                                                                  \
         unit(const unit &u) : mValue(u.mValue) {}                                   \
-        T &value() { return mValue; }                                               \
-        const T &value() const { return mValue; }                                   \
+        operator T&() { return mValue; }                                            \
+        operator const T&() const { return mValue; }                                \
         bool operator==(const unit& rhs) const { return mValue == rhs.mValue; }     \
         bool operator<(const unit& rhs)  const { return mValue < rhs.mValue; };     \
         unit& operator+=(const unit& rhs) { mValue += rhs.mValue; return *this; }   \
