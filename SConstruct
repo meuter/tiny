@@ -2,7 +2,7 @@ env = Environment()
 
 CacheDir("/tmp/sconscache/")
 
-env["CXX"] = "clang++ -std=c++11 -fcolor-diagnostics"
+env["CXX"] = "clang++ -std=c++11 -fcolor-diagnostics -ferror-limit=2"
 env["CXXCOMSTR"]  = "CXX $TARGET"
 env["LINKCOMSTR"] = "LN  $TARGET"
 

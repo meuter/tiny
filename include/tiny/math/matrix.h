@@ -73,9 +73,12 @@ namespace tiny
 
         public:
             matrix() {}
-            matrix(const S & x, const S& y) : mat_data(x,y) {}
-            matrix(const S & x, const S& y, const S &z) : mat_data(x,y,z) {}
-            matrix(const S & x, const S& y, const S &z, const S &w) : mat_data(x,y,z,w) {}
+
+            template<typename... Ss>
+            matrix(const Ss... x) : mat_data(x...)
+            {
+                static_assert(sizeof...(Ss) == L*C, "wrong dimension");
+            }
 
             matrix(const std::initializer_list<std::initializer_list<S>> &content)
             {
@@ -225,11 +228,7 @@ namespace tiny
             vector() {}
 
             template<typename... Ss>
-            vector(const Ss... x) : mat(x...)
-            {
-                static_assert(sizeof...(Ss) == N, "wrong dimension");
-            }
-
+            vector(const Ss... x) : mat(x...) {}
             vector(const mat &m) : mat(m) {}
             vector(const std::initializer_list<S> &content) : mat({content}) {}
 
