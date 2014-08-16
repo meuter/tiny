@@ -206,6 +206,13 @@ TEST(matrices, can_be_multiplied)
 
 }
 
+TEST(int2, supports_swizzling)
+{
+    int2 v{1,2};
+
+    EXPECT_EQ((int2{1,2}), v.xy());
+    EXPECT_EQ((int2{2,1}), v.yx());
+}
 
 TEST(int3, supports_swizzling)
 {
@@ -217,6 +224,33 @@ TEST(int3, supports_swizzling)
     EXPECT_EQ((int2{2,3}), v.yz());
     EXPECT_EQ((int2{3,1}), v.zx());
     EXPECT_EQ((int2{3,2}), v.zy());
+
+    EXPECT_EQ((int3{1,2,3}), v.xyz());
+    EXPECT_EQ((int3{1,3,2}), v.xzy());
+    EXPECT_EQ((int3{2,1,3}), v.yxz());
+    EXPECT_EQ((int3{2,3,1}), v.yzx());
+    EXPECT_EQ((int3{3,1,2}), v.zxy());
+    EXPECT_EQ((int3{3,2,1}), v.zyx());
+}
+
+TEST(int4, supports_swizzling)
+{
+    int4 v{1,2,3,4};
+
+    EXPECT_EQ((int2{1,2}), v.xy());
+    EXPECT_EQ((int2{1,3}), v.xz());
+    EXPECT_EQ((int2{2,1}), v.yx());
+    EXPECT_EQ((int2{2,3}), v.yz());
+    EXPECT_EQ((int2{3,1}), v.zx());
+    EXPECT_EQ((int2{3,2}), v.zy());
+
+    EXPECT_EQ((int3{1,2,3}), v.xyz());
+    EXPECT_EQ((int3{1,3,2}), v.xzy());
+    EXPECT_EQ((int3{2,1,3}), v.yxz());
+    EXPECT_EQ((int3{2,3,1}), v.yzx());
+
+    EXPECT_EQ((int3{3,1,2}), v.zxy());
+    EXPECT_EQ((int3{3,2,1}), v.zyx());
 }
 
 TEST(int3, has_cross_product)

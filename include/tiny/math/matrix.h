@@ -165,6 +165,8 @@ namespace tiny
         {
             typedef matrix<S,1,N> mat;
             typedef vector<S,N> vec;
+            typedef vector<S,2> vec2;
+            typedef vector<S,3> vec3;
         public:
             vector() {}
             vector(const vec &r) : mat{r} {}
@@ -217,6 +219,18 @@ namespace tiny
                 return result.normalize();
             }
 
+            vec2 xy()  const { return vec2{this->x,this->y}; }
+            vec2 xz()  const { return vec2{this->x,this->z}; }
+            vec2 yz()  const { return vec2{this->y,this->z}; }
+            vec2 yx()  const { return vec2{this->y,this->x}; }
+            vec2 zx()  const { return vec2{this->z,this->x}; }
+            vec2 zy()  const { return vec2{this->z,this->y}; }
+            vec3 xyz() const { return vec3{this->x, this->y, this->z}; }
+            vec3 xzy() const { return vec3{this->x, this->z, this->y}; }
+            vec3 yxz() const { return vec3{this->y, this->x, this->z}; }
+            vec3 yzx() const { return vec3{this->y, this->z, this->x}; }
+            vec3 zxy() const { return vec3{this->z, this->x, this->y}; }
+            vec3 zyx() const { return vec3{this->z, this->y, this->x}; }
         };
 
 
@@ -243,37 +257,6 @@ namespace tiny
             {
                 return this->cross(r);
             }
-
-            vec2 xy()
-            {
-                return vec2{this->x,this->y};
-            }
-
-            vec2 xz()
-            {
-                return vec2{this->x,this->z};
-            }
-
-            vec2 yz()
-            {
-                return vec2{this->y,this->z};
-            }
-
-            vec2 yx()
-            {
-                return vec2{this->y,this->x};
-            }
-
-            vec2 zx()
-            {
-                return vec2{this->z,this->x};
-            }
-
-            vec2 zy()
-            {
-                return vec2{this->z,this->y};
-            }
-
         };
 
         using int2 = vector<int,2>;
