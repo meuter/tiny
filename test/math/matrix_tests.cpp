@@ -13,9 +13,9 @@ TEST(float2, can_be_declared)
     EXPECT_EQ(2.0f, v.y);
 }
 
-TEST(float2, can_be_printed)
+TEST(int2, can_be_printed)
 {
-    float2 v = {1.0f,2.0f};
+    int2 v = {1,2};
     std::stringstream str;
     str << v;
 

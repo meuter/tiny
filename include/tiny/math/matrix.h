@@ -289,21 +289,16 @@ namespace tiny
         template<typename S, size_t L, size_t C>
         std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
         {
-            int l;
-            for (l = 0; l < L-1; ++l)
+            size_t l, c;
+            for (l = 0; l < L; ++l)
             {
-                int c;
                 out << "(";
                 for (c = 0; c < C-1; ++c)
                     out << m(l,c) << ",";
-                out << m(l,c) << ")" << std::endl;
-            }
-            int c;
-            out << "(";
-            for (c = 0; c < C-1; ++c)
-                out << m(l,c) << ",";
-            out << m(l,c) << ")";
+                out << m(l,c) << ")";
 
+                if (l+1!=L) out << std::endl;
+            }
             return out;
         }
     }
