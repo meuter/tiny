@@ -56,7 +56,8 @@ namespace tiny
         template<typename S, size_t L, size_t C>
         class matrix : public internal::matrix_data<S,L,C>,
                        private boost::additive<matrix<S,L,C>,
-                               boost::multiplicative2<matrix<S,L,C>, S> >
+                               boost::multiplicative2<matrix<S,L,C>, S,
+                               boost::equality_comparable<matrix<S,L,C> > > >
         {
             typedef matrix<S,L,C> mat;
 
@@ -101,6 +102,15 @@ namespace tiny
             constexpr matrix<S,1,2> dimensions() const
             {
                 return matrix<S,1,2>{ { L, C } };
+            }
+
+            bool operator==(const mat &r) const 
+            {
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        if ((*this)(l,c) != r(l,c))
+                            return false;
+                return true;
             }
 
             mat &operator+=(const mat &r)
@@ -230,6 +240,13 @@ namespace tiny
                             (this->z * r.x) - (r.z * this->x),
                             (this->x * r.y) - (r.x * this->y) };
             }
+
+            vec operator^(const vec &r) const
+            {
+                return this->cross(r);
+            }
+
+
         };
 
         using int2 = vector<int,2>;

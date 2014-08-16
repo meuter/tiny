@@ -31,6 +31,15 @@ TEST(int3x3, can_be_declared)
     EXPECT_EQ(3, m.columns());
 }
 
+TEST(int3, can_be_compared_for_equality)
+{
+    int3 u{1,2,3}, v{1,2,3}, t{1,2,5};
+
+    EXPECT_EQ(u, v);
+    EXPECT_EQ(u, u);
+    EXPECT_NE(t, u);
+}
+
 TEST(matrix, has_a_number_of_lines_and_columns_and_dimensions)
 {
     matrix<int,5,2> m;
@@ -184,26 +193,30 @@ TEST(matrices, can_be_multiplied)
         { 11, 12 },
     };
 
-    auto m = a*b;
+    matrix<int, 2,2> expected = {
+        { 58, 64 },
+        { 139, 154 },
+    };
 
-    EXPECT_EQ(2, m.lines());
-    EXPECT_EQ(2, m.columns());
+    auto actual = a*b;
 
-    EXPECT_EQ(58, m(0,0));
-    EXPECT_EQ(64, m(0,1));
-    EXPECT_EQ(139, m(1,0));
-    EXPECT_EQ(154, m(1,1));
+    EXPECT_EQ(2, actual.lines());
+    EXPECT_EQ(2, actual.columns());
+    EXPECT_EQ(expected, actual);
+
 }
 
 
 TEST(int3, has_cross_product)
 {
-    int3 i{1,0,0}, j{0,1,0};
-    auto k = i.cross(j);
+    int3 i{1,0,0}, j{0,1,0}, k{0,0,1};
 
-    EXPECT_EQ(k.x, 0);
-    EXPECT_EQ(k.y, 0);
-    EXPECT_EQ(k.z, 1);
+    EXPECT_EQ(i, j.cross(k));
+    EXPECT_EQ(j, k.cross(i));
+    EXPECT_EQ(k, i.cross(j));
+    EXPECT_EQ(i, j ^ k);
+    EXPECT_EQ(j, k ^ i);
+    EXPECT_EQ(k, i ^ j);
 }
 
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
