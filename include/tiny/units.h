@@ -13,12 +13,14 @@
         operator const T&() const { return mValue; }                                \
         bool operator==(const unit& rhs) const { return mValue == rhs.mValue; }     \
         bool operator<(const unit& rhs)  const { return mValue < rhs.mValue; };     \
+        unit& operator=(const unit& rhs) { mValue = rhs.mValue; return *this; }     \
         unit& operator+=(const unit& rhs) { mValue += rhs.mValue; return *this; }   \
         unit& operator-=(const unit& rhs) { mValue -= rhs.mValue; return *this; }   \
         unit& operator*=(const unit& rhs) { mValue *= rhs.mValue; return *this; }   \
         unit& operator/=(const unit& rhs) { mValue /= rhs.mValue; return *this; }   \
         bool operator==(const T &rhs) const { return mValue == rhs; }               \
         bool operator<(const T &rhs)  const { return mValue < rhs; }                \
+        unit& operator=(const T &rhs) { mValue = rhs; return *this; }               \
         unit& operator+=(const T &rhs) { mValue += rhs; return *this; }             \
         unit& operator-=(const T &rhs) { mValue -= rhs; return *this; }             \
         unit& operator*=(const T &rhs) { mValue *= rhs; return *this; }             \

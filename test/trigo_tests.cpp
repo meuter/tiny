@@ -8,16 +8,24 @@ TEST(radian, can_be_defined)
     radian r{1.0};
 }
 
+TEST(radian, are_assignable)
+{
+    radian r{1.0};
+
+    r = 1.5;
+}
+
+
 TEST(degree, can_be_defined)
 {
     degree d{180};
 }
 
-TEST(radian, can_be_summed)
+TEST(radian, can_be_summed_and_compared)
 {
     radian r{1.0}, s{2.5};
 
-    r<=s;
+    EXPECT_LE(r, s+r);
 }
 
 TEST(radian, can_be_converted_to_radian)
