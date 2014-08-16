@@ -207,6 +207,15 @@ namespace tiny
                 auto result = (*this);
                 return result.normalize();
             }
+
+            S dot(const vector<S,N> &other) const
+            {
+                S accumulator = 0;
+                for (size_t i = 0; i < N; ++i)
+                    accumulator += (*this)(i) * other(i);
+                return accumulator;
+            }
+
         };
 
 
