@@ -40,15 +40,12 @@ TEST(int3, can_be_compared_for_equality)
     EXPECT_NE(t, u);
 }
 
-TEST(matrix, has_a_number_of_lines_and_columns_and_dimensions)
+TEST(matrix, has_a_number_of_lines)
 {
     matrix<int,5,2> m;
-    auto d = m.dimensions();
 
     EXPECT_EQ(5, m.lines());
     EXPECT_EQ(2, m.columns());
-    EXPECT_EQ(5, d.x);
-    EXPECT_EQ(2, d.y);
 }
 
 TEST(int2x2, can_be_printed)
@@ -168,17 +165,50 @@ TEST(float3, can_be_normalized)
     EXPECT_FLOAT_EQ(v.z, 2/l);
 }
 
+TEST(int4, has_dot_product)
+{
+    int4 u{1,2,3,4}, v{5,6,7,8};
+    int expected = 1*5+2*6+3*7+4*8;
+
+    EXPECT_EQ(expected, dot(u, v));
+    EXPECT_EQ(expected, dot(v, u));
+    EXPECT_EQ(expected, u % v);
+    EXPECT_EQ(expected, v % u);
+}
+
+TEST(general_sized_vector, has_dot_product)
+{
+    vector<int,5> u{1,2,3,4,10}, v{5,6,7,8,20};
+    int expected = 1*5+2*6+3*7+4*8+10*20;
+
+    EXPECT_EQ(expected, dot(u, v));
+    EXPECT_EQ(expected, dot(v, u));
+    EXPECT_EQ(expected, u % v);
+    EXPECT_EQ(expected, v % u);
+}
 
 TEST(int3, has_dot_product)
 {
     int3 u{1,2,3}, v{4,5,6};
     int expected = 1*4+2*5+3*6;
 
-    EXPECT_EQ(expected, u.dot(v));
-    EXPECT_EQ(expected, v.dot(u));
+    EXPECT_EQ(expected, dot(u, v));
+    EXPECT_EQ(expected, dot(v, u));
     EXPECT_EQ(expected, u % v);
     EXPECT_EQ(expected, v % u);
 }
+
+TEST(int2, has_dot_product)
+{
+    int2 u{1,2}, v{4,5};
+    int expected = 1*4+2*5;
+
+    EXPECT_EQ(expected, dot(u, v));
+    EXPECT_EQ(expected, dot(v, u));
+    EXPECT_EQ(expected, u % v);
+    EXPECT_EQ(expected, v % u);
+}
+
 
 TEST(matrices, can_be_multiplied)
 {
@@ -259,9 +289,9 @@ TEST(int3, has_cross_product)
     int3 i{1,0,0}, j{0,1,0}, k{0,0,1};
     int4 l{1,0,0,0};
 
-    EXPECT_EQ(i, j.cross(k));
-    EXPECT_EQ(j, k.cross(i));
-    EXPECT_EQ(k, i.cross(j));
+    EXPECT_EQ(i, cross(j,k));
+    EXPECT_EQ(j, cross(k,i));
+    EXPECT_EQ(k, cross(i,j));
     EXPECT_EQ(i, j ^ k);
     EXPECT_EQ(j, k ^ i);
     EXPECT_EQ(k, i ^ j);

@@ -15,37 +15,38 @@ namespace tiny
         namespace internal
         {
             template<typename S, size_t L, size_t C>
-            class matrix_data
+            struct matrix_data
             {
-            private:
                 S data[L][C];
             };
 
             template<typename S>
-            class matrix_data<S,1,2>
+            struct matrix_data<S,1,2>
             {
-            public:
-                union {
+                union
+                {
+                    S data[1][2];
                     struct { S r, i; };
                     struct { S x, y; };
                 };
             };
 
             template<typename S>
-            class matrix_data<S,1,3>
+            struct matrix_data<S,1,3>
             {
-            public:
-                union {
+                union
+                {
+                    S data[1][3];
                     struct { S x, y, z; };
                     struct { S r, g, b; };
                 };
             };
 
             template<typename S>
-            class matrix_data<S,1,4>
+            struct matrix_data<S,1,4>
             {
-            public:
                 union {
+                    S data[1][4];
                     struct { S x, y, z, w; };
                     struct { S r, g, b, a; };
                 };
@@ -81,25 +82,17 @@ namespace tiny
 
             const S &operator()(size_t l, size_t c) const
             {
-                return *( reinterpret_cast<const S*>(this)  + (l*C) + c );
+                return this->data[l][c];
             }
 
             S &operator()(size_t l, size_t c)
             {
-                return *( reinterpret_cast<S*>(this)  + (l*C) + c );
+                return this->data[l][c];
             }
 
-            constexpr size_t lines() const
-            {
-                return L;
-            }
+            constexpr size_t lines() const   { return L; }
+            constexpr size_t columns() const { return C; }
 
-            constexpr size_t columns() const { return C;}
-
-            constexpr matrix<S,1,2> dimensions() const
-            {
-                return matrix<S,1,2>{ { L, C } };
-            }
 
             bool operator==(const mat &r) const
             {
@@ -178,6 +171,33 @@ namespace tiny
             return vector<S,3>{ (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) };
         }
 
+        template<typename S, size_t D>
+        S dot(const vector<S,D> &l, const vector<S,D> &r)
+        {
+            S accumulator = 0;
+            for (size_t i = 0; i < r.dimension(); ++i)
+                accumulator += l(i) * r(i);
+            return accumulator;
+        }
+
+        template<typename S>
+        S dot(const vector<S,2> &l, const vector<S,2> &r)
+        {
+            return l.x*r.x + l.y*r.y;
+        }
+
+        template<typename S>
+        S dot(const vector<S,3> &l, const vector<S,3> &r)
+        {
+            return l.x*r.x + l.y*r.y + l.z*r.z;
+        }
+
+        template<typename S>
+        S dot(const vector<S,4> &l, const vector<S,4> &r)
+        {
+            return l.x*r.x + l.y*r.y + l.z*r.z + l.w*r.w;
+        }
+
 
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
@@ -192,38 +212,17 @@ namespace tiny
             vector(const mat &r) : mat{r} {}
             vector(const std::initializer_list<S> &content) : mat{content} {}
 
-            const S &operator()(size_t i) const
-            {
-                return *( reinterpret_cast<const S*>(this) + i );
-            }
+            const S &operator()(size_t i) const { return this->data[0][i]; }
+            S &operator()(size_t i)  { return this->data[0][i]; }
 
-            S &operator()(size_t i)
-            {
-                return *( reinterpret_cast<S*>(this) + i );
-            }
+            constexpr size_t dimension() const { return N; }
 
-            constexpr size_t dimension() const
-            {
-                return N;
-            }
+            S operator%(const vec &r) const  {  return dot(*this, r); }
+            vec operator^(const vec &r) const {  return cross(*this, r); }
 
-
-            S dot(const vec &r) const
+            auto length() const -> decltype(std::sqrt(dot(*this, *this)))
             {
-                S accumulator = 0;
-                for (size_t i = 0; i < N; ++i)
-                    accumulator += (*this)(i) * r(i);
-                return accumulator;
-            }
-
-            S operator%(const vec &r) const
-            {
-                return (this->dot(r));
-            }
-
-            auto length() const -> decltype(std::sqrt(dot(*this)))
-            {
-                return std::sqrt(this->dot(*this));
+                return std::sqrt(dot(*this, *this));
             }
 
             vec &normalize()
@@ -238,15 +237,6 @@ namespace tiny
                 return result.normalize();
             }
 
-            vec cross(const vec &r) const
-            {
-                return tiny::math::cross(*this, r);
-            }
-
-            vec operator^(const vec &r) const
-            {
-                return this->cross(r);
-            }
 
             vec2 xy()  const { return vec2{this->x,this->y}; }
             vec2 xz()  const { return vec2{this->x,this->z}; }
