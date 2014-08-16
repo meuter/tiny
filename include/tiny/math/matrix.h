@@ -89,22 +89,19 @@ namespace tiny
                 return *( reinterpret_cast<S*>(this)  + (l*C) + c );
             }
 
-            constexpr size_t lines()   const
+            constexpr size_t lines() const
             {
                 return L;
             }
 
-            constexpr size_t columns() const
-            {
-                return C;
-            }
+            constexpr size_t columns() const { return C;}
 
             constexpr matrix<S,1,2> dimensions() const
             {
                 return matrix<S,1,2>{ { L, C } };
             }
 
-            bool operator==(const mat &r) const 
+            bool operator==(const mat &r) const
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -228,6 +225,7 @@ namespace tiny
         {
             typedef matrix<S,1,3> mat;
             typedef vector<S,3> vec;
+            typedef vector<S,2> vec2;
         public:
             vector3() {}
             vector3(const vec &r) : vec{r} {}
@@ -246,6 +244,35 @@ namespace tiny
                 return this->cross(r);
             }
 
+            vec2 xy()
+            {
+                return vec2{this->x,this->y};
+            }
+
+            vec2 xz()
+            {
+                return vec2{this->x,this->z};
+            }
+
+            vec2 yz()
+            {
+                return vec2{this->y,this->z};
+            }
+
+            vec2 yx()
+            {
+                return vec2{this->y,this->x};
+            }
+
+            vec2 zx()
+            {
+                return vec2{this->z,this->x};
+            }
+
+            vec2 zy()
+            {
+                return vec2{this->z,this->y};
+            }
 
         };
 

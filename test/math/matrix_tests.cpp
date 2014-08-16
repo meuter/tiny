@@ -207,6 +207,18 @@ TEST(matrices, can_be_multiplied)
 }
 
 
+TEST(int3, supports_swizzling)
+{
+    int3 v{1,2,3};
+
+    EXPECT_EQ((int2{1,2}), v.xy());
+    EXPECT_EQ((int2{1,3}), v.xz());
+    EXPECT_EQ((int2{2,1}), v.yx());
+    EXPECT_EQ((int2{2,3}), v.yz());
+    EXPECT_EQ((int2{3,1}), v.zx());
+    EXPECT_EQ((int2{3,2}), v.zy());
+}
+
 TEST(int3, has_cross_product)
 {
     int3 i{1,0,0}, j{0,1,0}, k{0,0,1};
