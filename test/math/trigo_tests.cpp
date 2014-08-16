@@ -6,6 +6,8 @@ using namespace tiny::math;
 TEST(radian, can_be_defined)
 {
     radian r{1.0};
+
+    EXPECT_EQ(sizeof(radian), sizeof(double));
 }
 
 TEST(radian, are_assignable)
@@ -15,10 +17,11 @@ TEST(radian, are_assignable)
     r = 1.5;
 }
 
-
 TEST(degree, can_be_defined)
 {
     degree d{180};
+
+    EXPECT_EQ(sizeof(d), sizeof(double));
 }
 
 TEST(radian, can_be_summed_and_compared)

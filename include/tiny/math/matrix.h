@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <cstdint>
 #include <cmath>
+#include <boost/operators.hpp>
 
 namespace tiny
 {
@@ -25,6 +26,7 @@ namespace tiny
             {
             public:
                 union {
+                    struct { S r, i; };
                     struct { S x, y; };
                 };
             };
@@ -52,7 +54,9 @@ namespace tiny
 
 
         template<typename S, size_t L, size_t C>
-        class matrix : public internal::matrix_data<S,L,C>, private boost::ordered_euclidean_ring_operators<matrix<S,L,C> >
+        class matrix : public internal::matrix_data<S,L,C>,
+                       private boost::additive<matrix<S,L,C>,
+                               boost::multiplicative2<matrix<S,L,C>, S> >
         {
         public:
             matrix()
@@ -99,14 +103,54 @@ namespace tiny
                 return matrix<S,1,2>{ { L, C } };
             }
 
-            matrix<S,L,C> operator+(const matrix<S,L,C> &other)
+            matrix<S,L,C> &operator+=(const matrix<S,L,C> &other)
             {
-                matrix<S,L,C> result;
-                for (size_t l = 0; l < L; ++l)
-                    for (size_t c = 0; c < C; ++c)
-                        result(l,c) = (*this)(l,c) + other(l,c);
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        (*this)(l,c) += other(l,c);
+                return (*this);
+            }
+
+            matrix<S,L,C> &operator-=(const matrix<S,L,C> &other)
+            {
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        (*this)(l,c) -= other(l,c);
+                return (*this);
+            }
+
+            matrix<S,L,C> &operator*=(const S &s)
+            {
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        (*this)(l,c) *= s;
+                return (*this);
+            }
+
+            matrix<S,L,C> &operator/=(const S &s)
+            {
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        (*this)(l,c) /= s;
+                return (*this);
+            }
+
+            template<size_t M>
+            matrix<S,L,M> operator*(const matrix<S,C,M> &other) const
+            {
+                matrix<S,L,M> result;
+                for (size_t i = 0; i < result.lines(); ++i)
+                {
+                    for (size_t j = 0; j < result.columns(); ++j)
+                    {
+                        result(i,j) = 0;
+                        for (size_t k = 0; k < columns(); ++k)
+                            result(i,j) += (*this)(i,k) * other(k, j);
+                    }
+                }
                 return result;
             }
+
         };
 
         template<typename S, size_t N>

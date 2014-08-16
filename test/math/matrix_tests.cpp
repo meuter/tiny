@@ -107,6 +107,72 @@ TEST(int2, has_a_length)
     EXPECT_EQ(1, u.length());
 }
 
+
+TEST(int2, can_be_added)
+{
+    int2 u{1,2}, v{4,9};
+    int2 s = u+v;
+
+    EXPECT_EQ(s.x, 1+4);
+    EXPECT_EQ(s.y, 2+9);
+}
+
+TEST(int2, can_be_substracted)
+{
+    int2 u{1,2}, v{4,9};
+    int2 d = v-u;
+
+    EXPECT_EQ(d.x, 4-1);
+    EXPECT_EQ(d.y, 9-2);
+}
+
+
+TEST(int2, can_be_multiplied_by_scalar)
+{
+    int2 u{1,2}, v{2*u}, t{u*3};
+
+    EXPECT_EQ(v.x, 2);
+    EXPECT_EQ(v.y, 4);
+
+    EXPECT_EQ(t.x, 3);
+    EXPECT_EQ(t.y, 6);
+}
+
+
+TEST(int2, can_be_devided_by_scalar)
+{
+    int2 u{2,4}, v{u/2};
+
+    EXPECT_EQ(v.x, 1);
+    EXPECT_EQ(v.y, 2);
+}
+
+
+TEST(matrices, can_be_multiplied)
+{
+    matrix<int, 2, 3> a = {
+        { 1, 2, 3 },
+        { 4, 5, 6 },
+    };
+
+    matrix<int, 3, 2> b = {
+        { 7,  8  },
+        { 9,  10 },
+        { 11, 12 },
+    };
+
+    auto m = a*b;
+
+    EXPECT_EQ(2, m.lines());
+    EXPECT_EQ(2, m.columns());
+
+    EXPECT_EQ(58, m(0,0));
+    EXPECT_EQ(64, m(0,1));
+    EXPECT_EQ(139, m(1,0));
+    EXPECT_EQ(154, m(1,1));
+}
+
+
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
     matrix<int,2,3> m = {
