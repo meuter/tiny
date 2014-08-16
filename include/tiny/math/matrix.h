@@ -31,7 +31,10 @@ namespace tiny
             class matrix_data<S,1,3>
             {
             public:
-                S x, y, z;
+                union {
+                    struct { S x, y, z; };
+                    struct { S r, g, b; };
+                };
             };
 
             template<typename S>
