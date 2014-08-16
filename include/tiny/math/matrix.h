@@ -17,6 +17,7 @@ namespace tiny
             template<typename S, size_t L, size_t C>
             struct matrix_data
             {
+                matrix_data() {}
                 S data[L][C];
             };
 
@@ -166,7 +167,20 @@ namespace tiny
                 return *this;
             }
 
+            matrix<S,C,L> transposed() const
+            {
+                matrix<S,C,L> result;
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        result(c,l) = (*this)(l,c);
+                return result;
+            }
 
+            mat &transpose()
+            {
+                (*this) = this->transposed();
+                return (*this);
+            }
 
         };
 

@@ -312,6 +312,39 @@ TEST(matrix, can_be_declared_and_initialized_with_scalars)
     EXPECT_EQ(6, m(1,2));
 }
 
+TEST(matrix, can_be_transposed)
+{
+    matrix<int,2,3> m = {
+        { 1,2,3 },
+        { 4,5,6 }
+    };
+
+    matrix<int,3,2> expected = {
+        { 1,4 },
+        { 2,5 },
+        { 3,6 },
+    };
+
+    EXPECT_EQ(expected, m.transposed());
+}
+
+TEST(square_matrix, can_be_transposed_in_place)
+{
+    int2x2 m = {
+        { 1,2 },
+        { 3,4 }
+    };
+
+    int2x2 expected = {
+        { 1,3 },
+        { 2,4 }
+    };
+
+    m.transpose();
+
+    EXPECT_EQ(expected, m);
+}
+
 TEST(square_matrixes, can_be_multiplied_together)
 {
     int2x2 m = {
