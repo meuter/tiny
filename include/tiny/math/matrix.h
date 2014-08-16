@@ -214,25 +214,6 @@ namespace tiny
             return accumulator;
         }
 
-        template<typename S>
-        S dot(const vector<S,2> &l, const vector<S,2> &r)
-        {
-            return l.x*r.x + l.y*r.y;
-        }
-
-        template<typename S>
-        S dot(const vector<S,3> &l, const vector<S,3> &r)
-        {
-            return l.x*r.x + l.y*r.y + l.z*r.z;
-        }
-
-        template<typename S>
-        S dot(const vector<S,4> &l, const vector<S,4> &r)
-        {
-            return l.x*r.x + l.y*r.y + l.z*r.z + l.w*r.w;
-        }
-
-
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
         {
