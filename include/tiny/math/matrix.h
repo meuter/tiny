@@ -188,12 +188,23 @@ namespace tiny
                 return N;
             }
 
-            auto length() const -> decltype(std::sqrt(S()))
+
+            S dot(const vector<S,N> &other) const
             {
                 S accumulator = 0;
                 for (size_t i = 0; i < N; ++i)
-                    accumulator += (*this)(i);
-                return std::sqrt(accumulator);
+                    accumulator += (*this)(i) * other(i);
+                return accumulator;
+            }
+
+            S operator%(const vector<S,N> &other) const
+            {
+                return (this->dot(other));
+            }
+
+            auto length() const -> decltype(std::sqrt(dot(*this)))
+            {
+                return std::sqrt(this->dot(*this));
             }
 
             vector<S,N> &normalize()
@@ -206,14 +217,6 @@ namespace tiny
             {
                 auto result = (*this);
                 return result.normalize();
-            }
-
-            S dot(const vector<S,N> &other) const
-            {
-                S accumulator = 0;
-                for (size_t i = 0; i < N; ++i)
-                    accumulator += (*this)(i) * other(i);
-                return accumulator;
             }
 
         };

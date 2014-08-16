@@ -154,10 +154,21 @@ TEST(float3, can_be_normalized)
     auto l = v.length();
 
     EXPECT_EQ(&v, &v.normalize());
-    EXPECT_EQ(l, 3);
     EXPECT_FLOAT_EQ(v.x, 6/l);
     EXPECT_FLOAT_EQ(v.y, 4/l);
     EXPECT_FLOAT_EQ(v.z, 2/l);
+}
+
+
+TEST(int3, has_dot_product)
+{
+    int3 u{1,2,3}, v{4,5,6};
+    int expected = 1*4+2*5+3*6;
+
+    EXPECT_EQ(expected, u.dot(v));
+    EXPECT_EQ(expected, v.dot(u));
+    EXPECT_EQ(expected, u % v);
+    EXPECT_EQ(expected, v % u);
 }
 
 TEST(matrices, can_be_multiplied)
