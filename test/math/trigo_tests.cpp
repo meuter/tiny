@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <tiny/trigo.h>
+#include <tiny/math/trigo.h>
 
-using namespace tiny;
+using namespace tiny::math;
 
 TEST(radian, can_be_defined)
 {
@@ -31,7 +31,7 @@ TEST(radian, can_be_summed_and_compared)
 
 TEST(radian, can_be_summed_and_compared_mixed_with_double)
 {
-    radian r{1.0}
+    radian r{1.0};
 
     EXPECT_LE(r, r+1.5);
     EXPECT_LE(r, 1.5+r);

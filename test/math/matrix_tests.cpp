@@ -1,8 +1,8 @@
-#include <tiny/matrix.h>
+#include <tiny/math/matrix.h>
 #include <sstream>
 #include <gtest/gtest.h>
 
-using namespace tiny;
+using namespace tiny::math;
 
 
 TEST(float2, can_be_declared)
