@@ -158,7 +158,26 @@ namespace tiny
                 return result;
             }
 
+            mat &operator*=(const mat &r)
+            {
+                (*this) = (*this) * r;
+                return *this;
+            }
+
+
+
         };
+
+        template<typename S, size_t N>
+        class vector;
+
+
+        template<typename S>
+        vector<S,3> cross(const vector<S,3> &l, const vector<S,3> &r)
+        {
+            return vector<S,3>{ (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) };
+        }
+
 
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
@@ -219,6 +238,16 @@ namespace tiny
                 return result.normalize();
             }
 
+            vec cross(const vec &r) const
+            {
+                return tiny::math::cross(*this, r);
+            }
+
+            vec operator^(const vec &r) const
+            {
+                return this->cross(r);
+            }
+
             vec2 xy()  const { return vec2{this->x,this->y}; }
             vec2 xz()  const { return vec2{this->x,this->z}; }
             vec2 yz()  const { return vec2{this->y,this->z}; }
@@ -233,39 +262,13 @@ namespace tiny
             vec3 zyx() const { return vec3{this->z, this->y, this->x}; }
         };
 
-
-        template<typename S>
-        class vector3 : public vector<S,3>
-        {
-            typedef matrix<S,1,3> mat;
-            typedef vector<S,3> vec;
-            typedef vector<S,2> vec2;
-        public:
-            vector3() {}
-            vector3(const vec &r) : vec{r} {}
-            vector3(const mat &r) : vec{r} {}
-            vector3(const std::initializer_list<S> &content) : vec{content} {}
-
-            vec cross(const vec &r) const
-            {
-                return vec{ (this->y * r.z) - (r.y * this->z),
-                            (this->z * r.x) - (r.z * this->x),
-                            (this->x * r.y) - (r.x * this->y) };
-            }
-
-            vec operator^(const vec &r) const
-            {
-                return this->cross(r);
-            }
-        };
-
         using int2 = vector<int,2>;
         using float2 = vector<float,2>;
         using double2 = vector<double,2>;
 
-        using int3 = vector3<int>;
-        using float3 = vector3<float>;
-        using double3 = vector3<double>;
+        using int3 = vector<int,3>;
+        using float3 = vector<float,3>;
+        using double3 = vector<double,3>;
 
         using int4 = vector<int,4>;
         using float4 = vector<float,4>;
@@ -305,8 +308,5 @@ namespace tiny
         }
     }
 }
-
-
-
 
 #endif

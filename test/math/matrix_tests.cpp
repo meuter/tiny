@@ -253,9 +253,11 @@ TEST(int4, supports_swizzling)
     EXPECT_EQ((int3{3,2,1}), v.zyx());
 }
 
+
 TEST(int3, has_cross_product)
 {
     int3 i{1,0,0}, j{0,1,0}, k{0,0,1};
+    int4 l{1,0,0,0};
 
     EXPECT_EQ(i, j.cross(k));
     EXPECT_EQ(j, k.cross(i));
@@ -279,4 +281,27 @@ TEST(matrix, can_be_declared_and_initialized_with_scalars)
     EXPECT_EQ(4, m(1,0));
     EXPECT_EQ(5, m(1,1));
     EXPECT_EQ(6, m(1,2));
+}
+
+TEST(square_matrixes, can_be_multiplied_together)
+{
+    int2x2 m = {
+        { 1,2 },
+        { 3,4 }
+    };
+    int2x2 n = m;
+    n*=m;
+
+    int2x2 expected = {
+        { 7,  10 },
+        { 15, 22 },
+    };
+
+    matrix<int,2,3> o = {
+        { 1,2,3 },
+        { 4,5,6 }
+    };
+
+    EXPECT_EQ(expected, m*m);
+    EXPECT_EQ(expected, n);
 }
