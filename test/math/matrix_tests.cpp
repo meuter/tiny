@@ -6,7 +6,7 @@ using namespace tiny::math;
 
 TEST(float2, can_be_declared)
 {
-    float2 v = {1.0f,2.0f};
+    float2 v(1.0f,2.0f);
 
     EXPECT_EQ(sizeof(float)*2, sizeof(float2));
     EXPECT_EQ(1.0f, v.x);
@@ -15,7 +15,7 @@ TEST(float2, can_be_declared)
 
 TEST(int2, can_be_printed)
 {
-    int2 v = {1,2};
+    int2 v(1,2);
     std::stringstream str;
     str << v;
 
@@ -33,7 +33,7 @@ TEST(int3x3, can_be_declared)
 
 TEST(int3, can_be_compared_for_equality)
 {
-    int3 u{1,2,3}, v{1,2,3}, t{1,2,5};
+    int3 u(1,2,3), v(1,2,3), t(1,2,5);
 
     EXPECT_EQ(u, v);
     EXPECT_EQ(u, u);
@@ -93,7 +93,7 @@ TEST(int2, can_be_modified)
 
 TEST(int2, can_be_summed)
 {
-    int2 u{1,2}, v{9,3}, w = u+v;
+    int2 u(1,2), v(9,3), w = u+v;
 
     EXPECT_EQ(10, w.x);
     EXPECT_EQ(5, w.y);
@@ -108,7 +108,7 @@ TEST(int2, has_a_dimension_of_2)
 
 TEST(int2, has_a_length)
 {
-    int2 u{0,1};
+    int2 u(0,1);
 
     EXPECT_EQ(1, u.length());
 }
@@ -116,7 +116,7 @@ TEST(int2, has_a_length)
 
 TEST(int2, can_be_added)
 {
-    int2 u{1,2}, v{4,9};
+    int2 u(1,2), v(4,9);
     int2 s = u+v;
 
     EXPECT_EQ(s.x, 1+4);
@@ -125,7 +125,7 @@ TEST(int2, can_be_added)
 
 TEST(int2, can_be_substracted)
 {
-    int2 u{1,2}, v{4,9};
+    int2 u(1,2), v(4,9);
     int2 d = v-u;
 
     EXPECT_EQ(d.x, 4-1);
@@ -135,7 +135,7 @@ TEST(int2, can_be_substracted)
 
 TEST(int2, can_be_multiplied_by_scalar)
 {
-    int2 u{1,2}, v{2*u}, t{u*3};
+    int2 u(1,2), v(2*u), t(u*3);
 
     EXPECT_EQ(v.x, 2);
     EXPECT_EQ(v.y, 4);
@@ -147,7 +147,7 @@ TEST(int2, can_be_multiplied_by_scalar)
 
 TEST(int2, can_be_devided_by_scalar)
 {
-    int2 u{2,4}, v{u/2};
+    int2 u(2,4), v(u/2);
 
     EXPECT_EQ(v.x, 1);
     EXPECT_EQ(v.y, 2);
@@ -156,7 +156,7 @@ TEST(int2, can_be_devided_by_scalar)
 
 TEST(float3, can_be_normalized)
 {
-    float3 v{6,4,2};
+    float3 v(6,4,2);
     auto l = v.length();
 
     EXPECT_EQ(&v, &v.normalize());
@@ -167,7 +167,7 @@ TEST(float3, can_be_normalized)
 
 TEST(int4, has_dot_product)
 {
-    int4 u{1,2,3,4}, v{5,6,7,8};
+    int4 u(1,2,3,4), v(5,6,7,8);
     int expected = 1*5+2*6+3*7+4*8;
 
     EXPECT_EQ(expected, dot(u, v));
@@ -189,7 +189,7 @@ TEST(general_sized_vector, has_dot_product)
 
 TEST(int3, has_dot_product)
 {
-    int3 u{1,2,3}, v{4,5,6};
+    int3 u(1,2,3), v(4,5,6);
     int expected = 1*4+2*5+3*6;
 
     EXPECT_EQ(expected, dot(u, v));
@@ -200,7 +200,7 @@ TEST(int3, has_dot_product)
 
 TEST(int2, has_dot_product)
 {
-    int2 u{1,2}, v{4,5};
+    int2 u(1,2), v(4,5);
     int expected = 1*4+2*5;
 
     EXPECT_EQ(expected, dot(u, v));
@@ -233,61 +233,60 @@ TEST(matrices, can_be_multiplied)
     EXPECT_EQ(2, actual.lines());
     EXPECT_EQ(2, actual.columns());
     EXPECT_EQ(expected, actual);
-
 }
 
 TEST(int2, supports_swizzling)
 {
-    int2 v{1,2};
+    int2 v(1,2);
 
-    EXPECT_EQ((int2{1,2}), v.xy());
-    EXPECT_EQ((int2{2,1}), v.yx());
+    EXPECT_EQ(int2(1,2), v.xy());
+    EXPECT_EQ(int2(2,1), v.yx());
 }
 
 TEST(int3, supports_swizzling)
 {
-    int3 v{1,2,3};
+    int3 v(1,2,3);
 
-    EXPECT_EQ((int2{1,2}), v.xy());
-    EXPECT_EQ((int2{1,3}), v.xz());
-    EXPECT_EQ((int2{2,1}), v.yx());
-    EXPECT_EQ((int2{2,3}), v.yz());
-    EXPECT_EQ((int2{3,1}), v.zx());
-    EXPECT_EQ((int2{3,2}), v.zy());
+    EXPECT_EQ(int2(1,2), v.xy());
+    EXPECT_EQ(int2(1,3), v.xz());
+    EXPECT_EQ(int2(2,1), v.yx());
+    EXPECT_EQ(int2(2,3), v.yz());
+    EXPECT_EQ(int2(3,1), v.zx());
+    EXPECT_EQ(int2(3,2), v.zy());
 
-    EXPECT_EQ((int3{1,2,3}), v.xyz());
-    EXPECT_EQ((int3{1,3,2}), v.xzy());
-    EXPECT_EQ((int3{2,1,3}), v.yxz());
-    EXPECT_EQ((int3{2,3,1}), v.yzx());
-    EXPECT_EQ((int3{3,1,2}), v.zxy());
-    EXPECT_EQ((int3{3,2,1}), v.zyx());
+    EXPECT_EQ(int3(1,2,3), v.xyz());
+    EXPECT_EQ(int3(1,3,2), v.xzy());
+    EXPECT_EQ(int3(2,1,3), v.yxz());
+    EXPECT_EQ(int3(2,3,1), v.yzx());
+    EXPECT_EQ(int3(3,1,2), v.zxy());
+    EXPECT_EQ(int3(3,2,1), v.zyx());
 }
 
 TEST(int4, supports_swizzling)
 {
-    int4 v{1,2,3,4};
+    int4 v(1,2,3,4);
 
-    EXPECT_EQ((int2{1,2}), v.xy());
-    EXPECT_EQ((int2{1,3}), v.xz());
-    EXPECT_EQ((int2{2,1}), v.yx());
-    EXPECT_EQ((int2{2,3}), v.yz());
-    EXPECT_EQ((int2{3,1}), v.zx());
-    EXPECT_EQ((int2{3,2}), v.zy());
+    EXPECT_EQ(int2(1,2), v.xy());
+    EXPECT_EQ(int2(1,3), v.xz());
+    EXPECT_EQ(int2(2,1), v.yx());
+    EXPECT_EQ(int2(2,3), v.yz());
+    EXPECT_EQ(int2(3,1), v.zx());
+    EXPECT_EQ(int2(3,2), v.zy());
 
-    EXPECT_EQ((int3{1,2,3}), v.xyz());
-    EXPECT_EQ((int3{1,3,2}), v.xzy());
-    EXPECT_EQ((int3{2,1,3}), v.yxz());
-    EXPECT_EQ((int3{2,3,1}), v.yzx());
+    EXPECT_EQ(int3(1,2,3), v.xyz());
+    EXPECT_EQ(int3(1,3,2), v.xzy());
+    EXPECT_EQ(int3(2,1,3), v.yxz());
+    EXPECT_EQ(int3(2,3,1), v.yzx());
 
-    EXPECT_EQ((int3{3,1,2}), v.zxy());
-    EXPECT_EQ((int3{3,2,1}), v.zyx());
+    EXPECT_EQ(int3(3,1,2), v.zxy());
+    EXPECT_EQ(int3(3,2,1), v.zyx());
 }
 
 
 TEST(int3, has_cross_product)
 {
-    int3 i{1,0,0}, j{0,1,0}, k{0,0,1};
-    int4 l{1,0,0,0};
+    int3 i(1,0,0), j(0,1,0), k(0,0,1);
+    int4 l(1,0,0,0);
 
     EXPECT_EQ(i, cross(j,k));
     EXPECT_EQ(j, cross(k,i));

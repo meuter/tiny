@@ -23,6 +23,8 @@ namespace tiny
             template<typename S>
             struct matrix_data<S,1,2>
             {
+                matrix_data() {}
+                matrix_data(const S & x, const S& y) : x(x), y(y) {}
                 union
                 {
                     S data[1][2];
@@ -34,6 +36,8 @@ namespace tiny
             template<typename S>
             struct matrix_data<S,1,3>
             {
+                matrix_data() {}
+                matrix_data(const S & x, const S& y, const S &z) : x(x), y(y), z(z) {}
                 union
                 {
                     S data[1][3];
@@ -45,6 +49,8 @@ namespace tiny
             template<typename S>
             struct matrix_data<S,1,4>
             {
+                matrix_data() {}
+                matrix_data(const S & x, const S& y, const S &z, const S &w) : x(x), y(y), z(z), w(w) {}
                 union {
                     S data[1][4];
                     struct { S x, y, z, w; };
@@ -61,10 +67,13 @@ namespace tiny
                                boost::equality_comparable<matrix<S,L,C> > > >
         {
             typedef matrix<S,L,C> mat;
+            typedef internal::matrix_data<S,L,C> mat_data;
 
         public:
             matrix() {}
-
+            matrix(const S & x, const S& y) : mat_data(x,y) {}
+            matrix(const S & x, const S& y, const S &z) : mat_data(x,y,z) {}
+            matrix(const S & x, const S& y, const S &z, const S &w) : mat_data(x,y,z,w) {}
             matrix(const std::initializer_list<std::initializer_list<S>> &content)
             {
                 S *ptr = reinterpret_cast<S*>(this);
@@ -168,7 +177,7 @@ namespace tiny
         template<typename S>
         vector<S,3> cross(const vector<S,3> &l, const vector<S,3> &r)
         {
-            return vector<S,3>{ (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) };
+            return vector<S,3>( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
         }
 
         template<typename S, size_t D>
@@ -208,9 +217,12 @@ namespace tiny
             typedef vector<S,3> vec3;
         public:
             vector() {}
-            vector(const vec &r) : mat{r} {}
-            vector(const mat &r) : mat{r} {}
-            vector(const std::initializer_list<S> &content) : mat{content} {}
+            vector(const S & x, const S& y) : mat(x,y) {}
+            vector(const S & x, const S& y, const S &z) : mat(x,y,z) {}
+            vector(const S & x, const S& y, const S &z, const S &w) : mat(x,y,z,w) {}
+            vector(const mat &m) : mat(m) {}
+            vector(const std::initializer_list<S> &content) : mat({content}) {}
+
 
             const S &operator()(size_t i) const { return this->data[0][i]; }
             S &operator()(size_t i)  { return this->data[0][i]; }
@@ -238,18 +250,18 @@ namespace tiny
             }
 
 
-            vec2 xy()  const { return vec2{this->x,this->y}; }
-            vec2 xz()  const { return vec2{this->x,this->z}; }
-            vec2 yz()  const { return vec2{this->y,this->z}; }
-            vec2 yx()  const { return vec2{this->y,this->x}; }
-            vec2 zx()  const { return vec2{this->z,this->x}; }
-            vec2 zy()  const { return vec2{this->z,this->y}; }
-            vec3 xyz() const { return vec3{this->x, this->y, this->z}; }
-            vec3 xzy() const { return vec3{this->x, this->z, this->y}; }
-            vec3 yxz() const { return vec3{this->y, this->x, this->z}; }
-            vec3 yzx() const { return vec3{this->y, this->z, this->x}; }
-            vec3 zxy() const { return vec3{this->z, this->x, this->y}; }
-            vec3 zyx() const { return vec3{this->z, this->y, this->x}; }
+            vec2 xy()  const { return vec2(this->x,this->y); }
+            vec2 xz()  const { return vec2(this->x,this->z); }
+            vec2 yz()  const { return vec2(this->y,this->z); }
+            vec2 yx()  const { return vec2(this->y,this->x); }
+            vec2 zx()  const { return vec2(this->z,this->x); }
+            vec2 zy()  const { return vec2(this->z,this->y); }
+            vec3 xyz() const { return vec3(this->x, this->y, this->z); }
+            vec3 xzy() const { return vec3(this->x, this->z, this->y); }
+            vec3 yxz() const { return vec3(this->y, this->x, this->z); }
+            vec3 yzx() const { return vec3(this->y, this->z, this->x); }
+            vec3 zxy() const { return vec3(this->z, this->x, this->y); }
+            vec3 zyx() const { return vec3(this->z, this->y, this->x); }
         };
 
         using int2 = vector<int,2>;
