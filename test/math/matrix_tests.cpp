@@ -282,6 +282,12 @@ TEST(int4, supports_swizzling)
     EXPECT_EQ(int3(3,2,1), v.zyx());
 }
 
+TEST(byte4, has_size_4)
+{
+    EXPECT_EQ(sizeof(byte), 1);
+    EXPECT_EQ(sizeof(byte4), 4);
+}
+
 
 TEST(int3, has_cross_product)
 {

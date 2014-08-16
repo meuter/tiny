@@ -75,6 +75,7 @@ namespace tiny
             matrix(const S & x, const S& y) : mat_data(x,y) {}
             matrix(const S & x, const S& y, const S &z) : mat_data(x,y,z) {}
             matrix(const S & x, const S& y, const S &z, const S &w) : mat_data(x,y,z,w) {}
+            
             matrix(const std::initializer_list<std::initializer_list<S>> &content)
             {
                 S *ptr = reinterpret_cast<S*>(this);
@@ -289,26 +290,41 @@ namespace tiny
             vec3 zyx() const { return vec3(this->z, this->y, this->x); }
         };
 
+
+        using byte = unsigned char;
+
+        using byte2 = vector<byte,2>;
+        using long2 = vector<long,2>;
         using int2 = vector<int,2>;
         using float2 = vector<float,2>;
         using double2 = vector<double,2>;
 
+        using byte3 = vector<byte,3>;
+        using long3 = vector<long,3>;
         using int3 = vector<int,3>;
         using float3 = vector<float,3>;
         using double3 = vector<double,3>;
 
+        using byte4 = vector<byte,4>;
+        using long4 = vector<long,4>;
         using int4 = vector<int,4>;
         using float4 = vector<float,4>;
         using double4 = vector<double,4>;
 
+        using byte2x2 = matrix<byte,2,2>;
+        using long2x2 = matrix<long,2,2>;
         using int2x2 = matrix<int,2,2>;
         using float2x2 = matrix<float,2,2>;
         using double2x2 = matrix<double,2,2>;
 
+        using byte3x3 = matrix<byte,3,3>;
+        using long3x3 = matrix<long,3,3>;
         using int3x3 = matrix<int,3,3>;
         using float3x3 = matrix<float,3,3>;
         using double3x3 = matrix<double,3,3>;
 
+        using byte4x4 = matrix<byte,4,4>;
+        using long4x4 = matrix<long,4,4>;
         using int4x4 = matrix<int,4,4>;
         using float4x4 = matrix<float,4,4>;
         using double4x4 = matrix<double,4,4>;
