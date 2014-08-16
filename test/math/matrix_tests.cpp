@@ -289,6 +289,19 @@ TEST(byte4, has_size_4)
 }
 
 
+TEST(double3, can_be_compared)
+{
+    double3 v(1,2,3), u(2,3,4);
+
+    EXPECT_LE(v,v);
+    EXPECT_GE(v,v);
+    EXPECT_LE(v,u);
+    EXPECT_LT(v,u);
+    EXPECT_GE(u,v);
+    EXPECT_GT(u,v);
+}
+
+
 TEST(int3, has_cross_product)
 {
     int3 i(1,0,0), j(0,1,0), k(0,0,1);

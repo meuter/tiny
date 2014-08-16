@@ -65,7 +65,8 @@ namespace tiny
         class matrix : public internal::matrix_data<S,L,C>,
                        private boost::additive<matrix<S,L,C>,
                                boost::multiplicative2<matrix<S,L,C>, S,
-                               boost::equality_comparable<matrix<S,L,C> > > >
+                               boost::equality_comparable<matrix<S,L,C>,
+                               boost::partially_ordered<matrix<S,L,C> > > > >
         {
             typedef matrix<S,L,C> mat;
             typedef internal::matrix_data<S,L,C> mat_data;
@@ -75,7 +76,7 @@ namespace tiny
             matrix(const S & x, const S& y) : mat_data(x,y) {}
             matrix(const S & x, const S& y, const S &z) : mat_data(x,y,z) {}
             matrix(const S & x, const S& y, const S &z, const S &w) : mat_data(x,y,z,w) {}
-            
+
             matrix(const std::initializer_list<std::initializer_list<S>> &content)
             {
                 S *ptr = reinterpret_cast<S*>(this);
@@ -110,6 +111,15 @@ namespace tiny
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
                         if ((*this)(l,c) != r(l,c))
+                            return false;
+                return true;
+            }
+
+            bool operator<(const mat &r) const
+            {
+                for (size_t l = 0; l < lines(); ++l)
+                    for (size_t c = 0; c < columns(); ++c)
+                        if ((*this)(l,c) >= r(l,c))
                             return false;
                 return true;
             }
