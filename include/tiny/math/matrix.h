@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <stdexcept>
 #include <cstdint>
+#include <cmath>
 
 namespace tiny
 {
@@ -12,11 +13,10 @@ namespace tiny
 
         namespace internal
         {
-
             template<typename S, size_t L, size_t C>
             class matrix_data
             {
-            protected:
+            private:
                 S data[L][C];
             };
 
@@ -24,7 +24,9 @@ namespace tiny
             class matrix_data<S,1,2>
             {
             public:
-                S x, y;
+                union {
+                    struct { S x, y; };
+                };
             };
 
             template<typename S>
@@ -41,7 +43,10 @@ namespace tiny
             class matrix_data<S,1,4>
             {
             public:
-                S x, y, z, t;
+                union {
+                    struct { S x, y, z, w; };
+                    struct { S r, g, b, a; };
+                };
             };
         };
 
@@ -104,7 +109,6 @@ namespace tiny
             }
         };
 
-
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
         {
@@ -125,10 +129,29 @@ namespace tiny
             {
             }
 
+            const S &operator()(size_t i) const
+            {
+                return *( reinterpret_cast<const S*>(this) + i );
+            }
+
+            S &operator()(size_t i)
+            {
+                return *( reinterpret_cast<S*>(this) + i );
+            }
+
             constexpr size_t dimension() const
             {
                 return N;
             }
+
+            auto length() const -> decltype(std::sqrt(S()))
+            {
+                S accumulator = 0;
+                for (size_t i = 0; i < N; ++i)
+                    accumulator += (*this)(i);
+                return std::sqrt(accumulator);
+            }
+
         };
 
 

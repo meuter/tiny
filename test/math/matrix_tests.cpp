@@ -4,7 +4,6 @@
 
 using namespace tiny::math;
 
-
 TEST(float2, can_be_declared)
 {
     float2 v = {1.0f,2.0f};
@@ -101,6 +100,12 @@ TEST(int2, has_a_dimension_of_2)
     EXPECT_EQ(2, u.dimension());
 }
 
+TEST(int2, has_a_length)
+{
+    int2 u{0,1};
+
+    EXPECT_EQ(1, u.length());
+}
 
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
