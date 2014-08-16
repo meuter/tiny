@@ -28,6 +28,15 @@ TEST(radian, can_be_summed_and_compared)
     EXPECT_LE(r, s+r);
 }
 
+
+TEST(radian, can_be_summed_and_compared_mixed_with_double)
+{
+    radian r{1.0}
+
+    EXPECT_LE(r, r+1.5);
+    EXPECT_LE(r, 1.5+r);
+}
+
 TEST(radian, can_be_converted_to_radian)
 {
     EXPECT_DOUBLE_EQ(180.0, toDegree(radian{PI}));
