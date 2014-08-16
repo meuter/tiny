@@ -223,9 +223,13 @@ namespace tiny
             typedef vector<S,3> vec3;
         public:
             vector() {}
-            vector(const S & x, const S& y) : mat(x,y) {}
-            vector(const S & x, const S& y, const S &z) : mat(x,y,z) {}
-            vector(const S & x, const S& y, const S &z, const S &w) : mat(x,y,z,w) {}
+
+            template<typename... Ss>
+            vector(const Ss... x) : mat(x...)
+            {
+                static_assert(sizeof...(Ss) == N, "wrong dimension");
+            }
+
             vector(const mat &m) : mat(m) {}
             vector(const std::initializer_list<S> &content) : mat({content}) {}
 
