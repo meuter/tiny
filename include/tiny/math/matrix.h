@@ -196,6 +196,17 @@ namespace tiny
                 return std::sqrt(accumulator);
             }
 
+            vector<S,N> &normalize()
+            {
+                (*this) /= length();
+                return (*this);
+            }
+
+            vector<S,N> normalized() const
+            {
+                auto result = (*this);
+                return result.normalize();
+            }
         };
 
 

@@ -148,6 +148,18 @@ TEST(int2, can_be_devided_by_scalar)
 }
 
 
+TEST(float3, can_be_normalized)
+{
+    float3 v{6,4,2};
+    auto l = v.length();
+
+    EXPECT_EQ(&v, &v.normalize());
+    EXPECT_EQ(l, 3);
+    EXPECT_FLOAT_EQ(v.x, 6/l);
+    EXPECT_FLOAT_EQ(v.y, 4/l);
+    EXPECT_FLOAT_EQ(v.z, 2/l);
+}
+
 TEST(matrices, can_be_multiplied)
 {
     matrix<int, 2, 3> a = {
