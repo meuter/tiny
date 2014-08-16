@@ -58,6 +58,7 @@ namespace tiny
                        private boost::additive<matrix<S,L,C>,
                                boost::multiplicative2<matrix<S,L,C>, S> >
         {
+            typedef matrix<S,L,C> mat;
         public:
             matrix()
             {
@@ -103,7 +104,7 @@ namespace tiny
                 return matrix<S,1,2>{ { L, C } };
             }
 
-            matrix<S,L,C> &operator+=(const matrix<S,L,C> &other)
+            mat &operator+=(const mat &other)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -111,7 +112,7 @@ namespace tiny
                 return (*this);
             }
 
-            matrix<S,L,C> &operator-=(const matrix<S,L,C> &other)
+            mat &operator-=(const mat &other)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -119,7 +120,7 @@ namespace tiny
                 return (*this);
             }
 
-            matrix<S,L,C> &operator*=(const S &s)
+            mat &operator*=(const S &s)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -127,7 +128,7 @@ namespace tiny
                 return (*this);
             }
 
-            matrix<S,L,C> &operator/=(const S &s)
+            mat &operator/=(const S &s)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -156,12 +157,13 @@ namespace tiny
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
         {
+            typedef vector<S,N> vec;
         public:
             vector()
             {
             }
 
-            vector(const vector<S,N> &other) : matrix<S,1,N>{ other }
+            vector(const vec &other) : matrix<S,1,N>{ other }
             {
             }
 
@@ -189,7 +191,7 @@ namespace tiny
             }
 
 
-            S dot(const vector<S,N> &other) const
+            S dot(const vec &other) const
             {
                 S accumulator = 0;
                 for (size_t i = 0; i < N; ++i)
@@ -197,7 +199,7 @@ namespace tiny
                 return accumulator;
             }
 
-            S operator%(const vector<S,N> &other) const
+            S operator%(const vec &other) const
             {
                 return (this->dot(other));
             }
@@ -207,13 +209,13 @@ namespace tiny
                 return std::sqrt(this->dot(*this));
             }
 
-            vector<S,N> &normalize()
+            vec &normalize()
             {
                 (*this) /= length();
                 return (*this);
             }
 
-            vector<S,N> normalized() const
+            vec normalized() const
             {
                 auto result = (*this);
                 return result.normalize();
