@@ -296,6 +296,18 @@ TEST(int3, has_cross_product)
     EXPECT_EQ(k, i ^ j);
 }
 
+TEST(float4, can_be_homogenized)
+{
+    float4 v(4,6,8,2), u = v;
+    float4 expected(2,3,4,1);
+
+    u.homogenize();
+
+    EXPECT_EQ(expected, v.homogenized());
+    EXPECT_EQ(expected, u);
+
+}
+
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
     matrix<int,2,3> m = {

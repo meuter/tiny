@@ -263,6 +263,17 @@ namespace tiny
                 return result.normalize();
             }
 
+            vec &homogenize()
+            {
+                (*this) /= this->w;
+                return (*this);
+            }
+
+            vec homogenized() const
+            {
+                auto result = (*this);
+                return result.homogenize();
+            }
 
             vec2 xy()  const { return vec2(this->x,this->y); }
             vec2 xz()  const { return vec2(this->x,this->z); }
