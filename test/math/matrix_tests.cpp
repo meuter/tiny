@@ -51,7 +51,7 @@ TEST(matrix, has_a_number_of_lines)
 
 TEST(int2x2, can_be_printed)
 {
-    int2x2 m = {
+    int2x2 m {
         1, 2,
         3, 4,
     };
@@ -64,22 +64,11 @@ TEST(int2x2, can_be_printed)
 
 TEST(int2x2, can_be_summed)
 {
-    int2x2 m = {
-        1, 2,
-        3, 4
-    };
+    int2x2 m { 1, 2, 3, 4 };
+    int2x2 n { 4, 3, 2, 1 };
+    int2x2 r { 5, 5, 5, 5 };
 
-    int2x2 n = {
-        4, 3,
-        2, 1
-    };
-
-    int2x2 r = m+n;
-
-    EXPECT_EQ(5, r(0,0));
-    EXPECT_EQ(5, r(1,0));
-    EXPECT_EQ(5, r(0,1));
-    EXPECT_EQ(5, r(1,1));
+    EXPECT_EQ(r, m+n);
 }
 
 TEST(int2, can_be_modified)
@@ -177,18 +166,18 @@ TEST(general_sized_vector, has_dot_product)
 
 TEST(matrices, can_be_multiplied)
 {
-    matrix<int, 2, 3> a = {
+    matrix<int, 2, 3> a {
         1, 2, 3,
         4, 5, 6,
     };
 
-    matrix<int, 3, 2> b = {
+    matrix<int, 3, 2> b {
         7,  8 ,
         9,  10,
         11, 12,
     };
 
-    matrix<int, 2,2> expected = {
+    matrix<int, 2,2> expected {
         58, 64,
         139, 154,
     };
@@ -276,7 +265,7 @@ TEST(int3, has_cross_product)
     EXPECT_EQ(j, k ^ i);
     EXPECT_EQ(k, i ^ j);
 
-    int2x2 x = {1,2,3,4};
+    int2x2 x {1,2,3,4};
 }
 
 TEST(float4, can_be_homogenized)
@@ -293,7 +282,7 @@ TEST(float4, can_be_homogenized)
 
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
-    matrix<int,2,3> m = {
+    matrix<int,2,3> m {
         1,2,3,
         4,5,6
     };
@@ -309,60 +298,72 @@ TEST(matrix, can_be_declared_and_initialized_with_scalars)
 
 TEST(matrix, can_be_transposed)
 {
-    matrix<int,2,3> m = {
+    matrix<int,2,3> m {
         1,2,3,
         4,5,6
     };
+    auto orig = m;
 
-    matrix<int,3,2> expected = {
+    matrix<int,3,2> expected {
         1,4,
         2,5,
         3,6,
     };
 
     EXPECT_EQ(expected, m.transposed());
+    EXPECT_EQ(orig, m);
 }
 
 TEST(square_matrix, can_be_transposed_in_place)
 {
-    int2x2 m = {
+    int2x2 m{
         1,2,
         3,4
     };
 
-    int2x2 expected = {
+    int2x2 expected {
         1,3,
         2,4
     };
 
-    m.transpose();
-
+    EXPECT_EQ(expected, m.transpose());
     EXPECT_EQ(expected, m);
 }
 
 TEST(float2x2, has_an_identify)
 {
-    float2x2 i = {
+    float2x2 i {
         1.0f, 0.0f,
         0.0f, 1.0f
     };
 }
 
+TEST(vectors, can_be_scaled)
+{
+    int2 v{1,2}, u{3,3};
+    int2 r{3,6}, orig = v;
+
+    EXPECT_EQ(r, v.scaled(u));
+    EXPECT_EQ(orig, v);
+    EXPECT_EQ(r, v.scale(u));
+    EXPECT_EQ(r, v);
+}
+
 TEST(square_matrixes, can_be_multiplied_together)
 {
-    int2x2 m = {
+    int2x2 m {
         1,2,
         3,4
     };
     int2x2 n = m;
     n*=m;
 
-    int2x2 expected = {
+    int2x2 expected {
         7,  10,
         15, 22,
     };
 
-    matrix<int,2,3> o = {
+    matrix<int,2,3> o {
         1,2,3,
         4,5,6
     };

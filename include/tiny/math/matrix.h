@@ -8,11 +8,6 @@
 #include <string>
 #include <boost/operators.hpp>
 
-#define SQUARE_ONLY(L,C)   static_assert(L==C,         "only applies for square matrixes")
-#define VECTOR_ONLY(L,C)   static_assert(L==1,         "only applies for vectors")
-#define VECTOR_3_ONLY(L,C) static_assert(L==1 && C==3, "only applies for 3D vectors")
-#define VECTOR_4_ONLY(L,C) static_assert(L==1 && C==4, "only applies for 4D vectors")
-
 namespace tiny
 {
     namespace math {
@@ -20,23 +15,21 @@ namespace tiny
         namespace internal
         {
             template<typename S, size_t L, size_t C>
-            struct mdata
+            struct mlayout
             {
-                mdata() {}
+                mlayout() {}
 
                 template<typename... Ss>
-                mdata(const Ss... x) : data{x...} { static_assert(sizeof...(Ss) == L*C, "wrong number of initializers");  }
-                union
-                {
-                    S data[L*C];
-                };
+                mlayout(const Ss... x) : data{x...} { static_assert(sizeof...(Ss) == L*C, "wrong number of initializers");  }
+
+                S data[L*C];
             };
 
             template<typename S>
-            struct mdata<S,1,2>
+            struct mlayout<S,1,2>
             {
-                mdata() {}
-                mdata(const S &x, const S &y) : data{x, y} {}
+                mlayout() {}
+                mlayout(const S &x, const S &y) : data{x, y} {}
                 union
                 {
                     S data[2];
@@ -46,10 +39,10 @@ namespace tiny
             };
 
             template<typename S>
-            struct mdata<S,1,3>
+            struct mlayout<S,1,3>
             {
-                mdata() {}
-                mdata(const S &x, const S &y, const S &z) : data{x,y,z} {}
+                mlayout() {}
+                mlayout(const S &x, const S &y, const S &z) : data{x,y,z} {}
                 union
                 {
                     S data[3];
@@ -59,10 +52,10 @@ namespace tiny
             };
 
             template<typename S>
-            struct mdata<S,1,4>
+            struct mlayout<S,1,4>
             {
-                mdata() {}
-                mdata(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
+                mlayout() {}
+                mlayout(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
                 union {
                     S data[4];
                     struct { S x, y, z, w; };
@@ -72,28 +65,47 @@ namespace tiny
         };
 
         template<typename S, size_t L, size_t C>
-        struct matrix : public internal::mdata<S,L,C>,
-                       private boost::additive<matrix<S,L,C>,
-                               boost::multiplicative2<matrix<S,L,C>, S,
-                               boost::equality_comparable<matrix<S,L,C>,
-                               boost::partially_ordered<matrix<S,L,C> > > > >
+        struct matrix : internal::mlayout<S,L,C>,
+                        boost::additive<matrix<S,L,C>,
+                        boost::multiplicative2<matrix<S,L,C>, S,
+                        boost::equality_comparable<matrix<S,L,C>,
+                        boost::partially_ordered<matrix<S,L,C> > > > >
         {
             typedef matrix<S,L,C> mat;
+            typedef matrix<S,C,L> tmat;
+            typedef matrix<S,L,L> sqmat;
             typedef matrix<S,1,C> vec;
-            typedef matrix<S,1,3> vec3;
             typedef matrix<S,1,2> vec2;
-            typedef internal::mdata<S,L,C> mdata;
+            typedef matrix<S,1,3> vec3;
+            typedef matrix<S,1,3> vec4;
+            typedef internal::mlayout<S,L,C> mlayout;
 
             template<typename... Ss>
-            matrix(const Ss... x) : mdata(x...) {}
+            explicit matrix(const Ss... x) : mlayout(x...) {}
 
             const S &operator()(size_t l, size_t c) const { return this->data[l*C+c]; }
-            S &operator()(size_t l, size_t c)             { return this->data[l*C+c]; }
             const S &operator()(size_t i) const           { return this->data[i]; }
-            S &operator()(size_t i)                       { return this->data[i]; }
-            constexpr size_t lines() const                { return L; }
-            constexpr size_t columns() const              { return C; }
-            constexpr size_t dimension() const            { return L*C; }
+
+            S &operator()(size_t l, size_t c)  { return this->data[l*C+c]; }
+            S &operator()(size_t i)            { return this->data[i]; }
+
+            constexpr size_t lines() const     { return L; }
+            constexpr size_t columns() const   { return C; }
+            constexpr size_t dimension() const { return L*C; }
+
+            vec2 xy()  const { return vec2(this->x,this->y); }
+            vec2 xz()  const { return vec2(this->x,this->z); }
+            vec2 yz()  const { return vec2(this->y,this->z); }
+            vec2 yx()  const { return vec2(this->y,this->x); }
+            vec2 zx()  const { return vec2(this->z,this->x); }
+            vec2 zy()  const { return vec2(this->z,this->y); }
+
+            vec3 xyz() const { return vec3(this->x, this->y, this->z); }
+            vec3 xzy() const { return vec3(this->x, this->z, this->y); }
+            vec3 yxz() const { return vec3(this->y, this->x, this->z); }
+            vec3 yzx() const { return vec3(this->y, this->z, this->x); }
+            vec3 zxy() const { return vec3(this->z, this->x, this->y); }
+            vec3 zyx() const { return vec3(this->z, this->y, this->x); }
 
             bool operator==(const mat &r) const
             {
@@ -161,92 +173,82 @@ namespace tiny
                 return result;
             }
 
-            mat &operator*=(const mat &r)
+            sqmat &operator*=(const sqmat &r)
             {
-                SQUARE_ONLY(L,C);
                 (*this) = (*this) * r;
                 return *this;
             }
 
-            matrix<S,C,L> transposed() const
+            tmat transposed() const
             {
-                matrix<S,C,L> result;
+                tmat result;
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
                         result(c,l) = (*this)(l,c);
                 return result;
             }
 
-            mat &transpose()
+            sqmat &transpose()
             {
-                SQUARE_ONLY(L,C);
                 (*this) = this->transposed();
                 return (*this);
             }
 
-            vec operator^(const vec &r) const
+            vec3 operator^(const vec3 &r) const
             {
-                VECTOR_3_ONLY(L,C);
                 const auto &l = (*this);
                 return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
             }
 
             S operator%(const vec &r) const
             {
-                VECTOR_ONLY(L,C);
-                S accumulator = 0;
+                S accumulator = static_cast<S>(0.0);
                 for (size_t i = 0; i < r.dimension(); ++i)
-                    accumulator += (*this)(0,i) * r(i);
+                    accumulator += (*this)(i) * r(i);
                 return accumulator;
             }
 
             S length() const
             {
-                VECTOR_ONLY(L,C);
                 return static_cast<S>(std::sqrt((*this) % (*this)));
             }
 
             vec &normalize()
             {
-                VECTOR_ONLY(L,C);
                 (*this) /= length();
                 return (*this);
             }
 
             vec normalized() const
             {
-                VECTOR_ONLY(L,C);
                 auto result = (*this);
                 return result.normalize();
             }
 
             vec &homogenize()
             {
-                VECTOR_4_ONLY(L,C);
                 (*this) /= this->w;
                 return (*this);
             }
 
             vec homogenized() const
             {
-                VECTOR_4_ONLY(L,C);
-                auto result = (*this);
+                vec result = (*this);
                 return result.homogenize();
             }
 
-            vec2 xy()  const { return vec2(this->x,this->y); }
-            vec2 xz()  const { return vec2(this->x,this->z); }
-            vec2 yz()  const { return vec2(this->y,this->z); }
-            vec2 yx()  const { return vec2(this->y,this->x); }
-            vec2 zx()  const { return vec2(this->z,this->x); }
-            vec2 zy()  const { return vec2(this->z,this->y); }
+            vec &scale(const vec &r)
+            {
+                for (size_t i = 0; i < r.dimension(); ++i)
+                     (*this)(i) *= r(i);
+                return (*this);
+            }
 
-            vec3 xyz() const { return vec3(this->x, this->y, this->z); }
-            vec3 xzy() const { return vec3(this->x, this->z, this->y); }
-            vec3 yxz() const { return vec3(this->y, this->x, this->z); }
-            vec3 yzx() const { return vec3(this->y, this->z, this->x); }
-            vec3 zxy() const { return vec3(this->z, this->x, this->y); }
-            vec3 zyx() const { return vec3(this->z, this->y, this->x); }
+            vec scaled(const vec &r)
+            {
+                vec result = (*this) ;
+                return result.scale(r);
+            }
         };
 
 
