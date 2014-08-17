@@ -8,6 +8,11 @@
 #include <string>
 #include <boost/operators.hpp>
 
+#define SQUARE_ONLY(L,C)   static_assert(L==C,         "only applies for square matrixes")
+#define VECTOR_ONLY(L,C)   static_assert(L==1,         "only applies for vectors")
+#define VECTOR_3_ONLY(L,C) static_assert(L==1 && C==3, "only applies for 3D vectors")
+#define VECTOR_4_ONLY(L,C) static_assert(L==1 && C==4, "only applies for 4D vectors")
+
 namespace tiny
 {
     namespace math {
@@ -20,9 +25,7 @@ namespace tiny
                 mdata() {}
 
                 template<typename... Ss>
-                mdata(const Ss... x) : data{x...} {
-                    static_assert(sizeof...(Ss) == L*C, "expecting LxC entries");
-                }
+                mdata(const Ss... x) : data{x...} { static_assert(sizeof...(Ss) == L*C, "wrong number of initializers");  }
                 union
                 {
                     S data[L*C];
@@ -68,27 +71,29 @@ namespace tiny
             };
         };
 
-
         template<typename S, size_t L, size_t C>
-        class matrix : public internal::mdata<S,L,C>,
+        struct matrix : public internal::mdata<S,L,C>,
                        private boost::additive<matrix<S,L,C>,
                                boost::multiplicative2<matrix<S,L,C>, S,
                                boost::equality_comparable<matrix<S,L,C>,
                                boost::partially_ordered<matrix<S,L,C> > > > >
         {
             typedef matrix<S,L,C> mat;
+            typedef matrix<S,1,C> vec;
+            typedef matrix<S,1,3> vec3;
+            typedef matrix<S,1,2> vec2;
             typedef internal::mdata<S,L,C> mdata;
 
-        public:
             template<typename... Ss>
             matrix(const Ss... x) : mdata(x...) {}
 
             const S &operator()(size_t l, size_t c) const { return this->data[l*C+c]; }
             S &operator()(size_t l, size_t c)             { return this->data[l*C+c]; }
-
-            constexpr size_t lines() const   { return L; }
-            constexpr size_t columns() const { return C; }
-
+            const S &operator()(size_t i) const           { return this->data[i]; }
+            S &operator()(size_t i)                       { return this->data[i]; }
+            constexpr size_t lines() const                { return L; }
+            constexpr size_t columns() const              { return C; }
+            constexpr size_t dimension() const            { return L*C; }
 
             bool operator==(const mat &r) const
             {
@@ -158,7 +163,7 @@ namespace tiny
 
             mat &operator*=(const mat &r)
             {
-                static_assert(L == C, "in place multiplication only apply to square matrices");
+                SQUARE_ONLY(L,C);
                 (*this) = (*this) * r;
                 return *this;
             }
@@ -174,75 +179,57 @@ namespace tiny
 
             mat &transpose()
             {
-                static_assert(L == C, "in place transposition only apply to square matrices");
+                SQUARE_ONLY(L,C);
                 (*this) = this->transposed();
                 return (*this);
             }
 
-        };
-
-
-
-
-
-        template<typename S, size_t N>
-        class vector : public matrix<S,1,N>
-        {
-            typedef matrix<S,1,N> mat;
-            typedef vector<S,N> vec;
-            typedef vector<S,2> vec2;
-            typedef vector<S,3> vec3;
-            typedef vector<S,4> vec4;
-        public:
-            template<typename... Ss>
-            vector(const Ss... x) : mat(x...) {}
-
-            const S &operator()(size_t i) const { return this->data[i]; }
-            S &operator()(size_t i)             { return this->data[i]; }
-
-            constexpr size_t dimension() const { return N; }
-
-            S operator%(const vec &r) const
-            {
-                S accumulator = 0;
-                for (size_t i = 0; i < r.dimension(); ++i)
-                    accumulator += (*this)(i) * r(i);
-                return accumulator;
-            }
-
             vec operator^(const vec &r) const
             {
-                static_assert(sizeof(vec) == sizeof(vec3), "cross product only be applied to 3D vectors");
+                VECTOR_3_ONLY(L,C);
                 const auto &l = (*this);
                 return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
             }
 
-            auto length() const -> decltype(std::sqrt((*this) % (*this)))
+            S operator%(const vec &r) const
             {
-                return std::sqrt((*this) % (*this));
+                VECTOR_ONLY(L,C);
+                S accumulator = 0;
+                for (size_t i = 0; i < r.dimension(); ++i)
+                    accumulator += (*this)(0,i) * r(i);
+                return accumulator;
+            }
+
+            S length() const
+            {
+                VECTOR_ONLY(L,C);
+                return static_cast<S>(std::sqrt((*this) % (*this)));
             }
 
             vec &normalize()
             {
+                VECTOR_ONLY(L,C);
                 (*this) /= length();
                 return (*this);
             }
 
             vec normalized() const
             {
+                VECTOR_ONLY(L,C);
                 auto result = (*this);
                 return result.normalize();
             }
 
             vec &homogenize()
             {
-                static_assert(sizeof(vec) == sizeof(vec4), "homogenize only be applied to 4D vectors");
+                VECTOR_4_ONLY(L,C);
                 (*this) /= this->w;
                 return (*this);
             }
 
             vec homogenized() const
             {
+                VECTOR_4_ONLY(L,C);
                 auto result = (*this);
                 return result.homogenize();
             }
@@ -262,6 +249,9 @@ namespace tiny
             vec3 zyx() const { return vec3(this->z, this->y, this->x); }
         };
 
+
+        template<typename S, size_t N>
+        using vector = matrix<S,1,N>;
 
         using byte = unsigned char;
 
