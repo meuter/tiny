@@ -276,6 +276,7 @@ TEST(int3, has_cross_product)
     EXPECT_EQ(j, k ^ i);
     EXPECT_EQ(k, i ^ j);
 
+    int2x2 x = {1,2,3,4};
 }
 
 TEST(float4, can_be_homogenized)

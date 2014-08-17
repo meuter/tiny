@@ -158,6 +158,7 @@ namespace tiny
 
             mat &operator*=(const mat &r)
             {
+                static_assert(L == C, "in place multiplication only apply to square matrices");
                 (*this) = (*this) * r;
                 return *this;
             }
@@ -173,6 +174,7 @@ namespace tiny
 
             mat &transpose()
             {
+                static_assert(L == C, "in place transposition only apply to square matrices");
                 (*this) = this->transposed();
                 return (*this);
             }
@@ -190,6 +192,7 @@ namespace tiny
             typedef vector<S,N> vec;
             typedef vector<S,2> vec2;
             typedef vector<S,3> vec3;
+            typedef vector<S,4> vec4;
         public:
             template<typename... Ss>
             vector(const Ss... x) : mat(x...) {}
@@ -209,6 +212,7 @@ namespace tiny
 
             vec operator^(const vec &r) const
             {
+                static_assert(sizeof(vec) == sizeof(vec3), "cross product only be applied to 3D vectors");
                 const auto &l = (*this);
                 return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
             }
@@ -232,6 +236,7 @@ namespace tiny
 
             vec &homogenize()
             {
+                static_assert(sizeof(vec) == sizeof(vec4), "homogenize only be applied to 4D vectors");
                 (*this) /= this->w;
                 return (*this);
             }
