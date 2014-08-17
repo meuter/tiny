@@ -78,19 +78,19 @@ namespace tiny
             constexpr size_t columns() const              { return C; }
             constexpr size_t dimension() const            { return L*C; }
 
-            vec2 xy()  const { return vec2(this->x,this->y); }
-            vec2 xz()  const { return vec2(this->x,this->z); }
-            vec2 yz()  const { return vec2(this->y,this->z); }
-            vec2 yx()  const { return vec2(this->y,this->x); }
-            vec2 zx()  const { return vec2(this->z,this->x); }
-            vec2 zy()  const { return vec2(this->z,this->y); }
+            vec2 xy()  const                              { return vec2(this->x,this->y); }
+            vec2 xz()  const                              { return vec2(this->x,this->z); }
+            vec2 yz()  const                              { return vec2(this->y,this->z); }
+            vec2 yx()  const                              { return vec2(this->y,this->x); }
+            vec2 zx()  const                              { return vec2(this->z,this->x); }
+            vec2 zy()  const                              { return vec2(this->z,this->y); }
 
-            vec3 xyz() const { return vec3(this->x, this->y, this->z); }
-            vec3 xzy() const { return vec3(this->x, this->z, this->y); }
-            vec3 yxz() const { return vec3(this->y, this->x, this->z); }
-            vec3 yzx() const { return vec3(this->y, this->z, this->x); }
-            vec3 zxy() const { return vec3(this->z, this->x, this->y); }
-            vec3 zyx() const { return vec3(this->z, this->y, this->x); }
+            vec3 xyz() const                              { return vec3(this->x, this->y, this->z); }
+            vec3 xzy() const                              { return vec3(this->x, this->z, this->y); }
+            vec3 yxz() const                              { return vec3(this->y, this->x, this->z); }
+            vec3 yzx() const                              { return vec3(this->y, this->z, this->x); }
+            vec3 zxy() const                              { return vec3(this->z, this->x, this->y); }
+            vec3 zyx() const                              { return vec3(this->z, this->y, this->x); }
 
             bool operator==(const mat &r) const
             {
