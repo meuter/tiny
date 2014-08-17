@@ -15,12 +15,12 @@ namespace tiny
         namespace internal
         {
             template<typename S, size_t L, size_t C>
-            struct matrix_data
+            struct mdata
             {
-                matrix_data() {}
+                mdata() {}
 
                 template<typename... Ss>
-                matrix_data(const Ss... x) : data{x...} {
+                mdata(const Ss... x) : data{x...} {
                     static_assert(sizeof...(Ss) == L*C, "expecting LxC entries");
                 }
                 union
@@ -30,10 +30,10 @@ namespace tiny
             };
 
             template<typename S>
-            struct matrix_data<S,1,2>
+            struct mdata<S,1,2>
             {
-                matrix_data() {}
-                matrix_data(const S &x, const S &y) : data{x, y} {}
+                mdata() {}
+                mdata(const S &x, const S &y) : data{x, y} {}
                 union
                 {
                     S data[2];
@@ -43,10 +43,10 @@ namespace tiny
             };
 
             template<typename S>
-            struct matrix_data<S,1,3>
+            struct mdata<S,1,3>
             {
-                matrix_data() {}
-                matrix_data(const S &x, const S &y, const S &z) : data{x,y,z} {}
+                mdata() {}
+                mdata(const S &x, const S &y, const S &z) : data{x,y,z} {}
                 union
                 {
                     S data[3];
@@ -56,10 +56,10 @@ namespace tiny
             };
 
             template<typename S>
-            struct matrix_data<S,1,4>
+            struct mdata<S,1,4>
             {
-                matrix_data() {}
-                matrix_data(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
+                mdata() {}
+                mdata(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
                 union {
                     S data[4];
                     struct { S x, y, z, w; };
@@ -70,28 +70,21 @@ namespace tiny
 
 
         template<typename S, size_t L, size_t C>
-        class matrix : public internal::matrix_data<S,L,C>,
+        class matrix : public internal::mdata<S,L,C>,
                        private boost::additive<matrix<S,L,C>,
                                boost::multiplicative2<matrix<S,L,C>, S,
                                boost::equality_comparable<matrix<S,L,C>,
                                boost::partially_ordered<matrix<S,L,C> > > > >
         {
             typedef matrix<S,L,C> mat;
-            typedef internal::matrix_data<S,L,C> mat_data;
+            typedef internal::mdata<S,L,C> mdata;
 
         public:
             template<typename... Ss>
-            matrix(const Ss... x) : mat_data(x...) {}
+            matrix(const Ss... x) : mdata(x...) {}
 
-            const S &operator()(size_t l, size_t c) const
-            {
-                return this->data[l*C+c];
-            }
-
-            S &operator()(size_t l, size_t c)
-            {
-                return this->data[l*C+c];
-            }
+            const S &operator()(size_t l, size_t c) const { return this->data[l*C+c]; }
+            S &operator()(size_t l, size_t c)             { return this->data[l*C+c]; }
 
             constexpr size_t lines() const   { return L; }
             constexpr size_t columns() const { return C; }
@@ -189,6 +182,7 @@ namespace tiny
 
 
 
+
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
         {
@@ -201,7 +195,7 @@ namespace tiny
             vector(const Ss... x) : mat(x...) {}
 
             const S &operator()(size_t i) const { return this->data[i]; }
-            S &operator()(size_t i)  { return this->data[i]; }
+            S &operator()(size_t i)             { return this->data[i]; }
 
             constexpr size_t dimension() const { return N; }
 
@@ -216,9 +210,7 @@ namespace tiny
             vec operator^(const vec &r) const
             {
                 const auto &l = (*this);
-                return vector<S,3>( (l.y*r.z)-(r.y*l.z),
-                                    (l.z*r.x)-(r.z*l.x),
-                                    (l.x*r.y)-(r.x*l.y) );
+                return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
             }
 
             auto length() const -> decltype(std::sqrt((*this) % (*this)))
@@ -256,6 +248,7 @@ namespace tiny
             vec2 yx()  const { return vec2(this->y,this->x); }
             vec2 zx()  const { return vec2(this->z,this->x); }
             vec2 zy()  const { return vec2(this->z,this->y); }
+
             vec3 xyz() const { return vec3(this->x, this->y, this->z); }
             vec3 xzy() const { return vec3(this->x, this->z, this->y); }
             vec3 yxz() const { return vec3(this->y, this->x, this->z); }
