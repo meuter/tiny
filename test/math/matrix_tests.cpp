@@ -6,7 +6,8 @@ using namespace tiny::math;
 
 TEST(float2, can_be_declared)
 {
-    float2 v(1.0f,2.0f);
+    float2 u;
+    float2 v{1.0f,2.0f};
 
     EXPECT_EQ(sizeof(float)*2, sizeof(float2));
     EXPECT_EQ(1.0f, v.x);
@@ -15,7 +16,7 @@ TEST(float2, can_be_declared)
 
 TEST(int2, can_be_printed)
 {
-    int2 v(1,2);
+    int2 v{1,2};
     std::stringstream str;
     str << v;
 
@@ -51,8 +52,8 @@ TEST(matrix, has_a_number_of_lines)
 TEST(int2x2, can_be_printed)
 {
     int2x2 m = {
-        { 1, 2 },
-        { 3, 4 },
+        1, 2,
+        3, 4,
     };
     std::stringstream str;
     str << m;
@@ -64,13 +65,13 @@ TEST(int2x2, can_be_printed)
 TEST(int2x2, can_be_summed)
 {
     int2x2 m = {
-        { 1, 2 },
-        { 3, 4 }
+        1, 2,
+        3, 4
     };
 
     int2x2 n = {
-        { 4, 3 },
-        { 2, 1 }
+        4, 3,
+        2, 1
     };
 
     int2x2 r = m+n;
@@ -165,67 +166,31 @@ TEST(float3, can_be_normalized)
     EXPECT_FLOAT_EQ(v.z, 2/l);
 }
 
-TEST(int4, has_dot_product)
-{
-    int4 u(1,2,3,4), v(5,6,7,8);
-    int expected = 1*5+2*6+3*7+4*8;
-
-    EXPECT_EQ(expected, dot(u, v));
-    EXPECT_EQ(expected, dot(v, u));
-    EXPECT_EQ(expected, u % v);
-    EXPECT_EQ(expected, v % u);
-}
-
 TEST(general_sized_vector, has_dot_product)
 {
     vector<int,5> u{1,2,3,4,10}, v{5,6,7,8,20};
     int expected = 1*5+2*6+3*7+4*8+10*20;
 
-    EXPECT_EQ(expected, dot(u, v));
-    EXPECT_EQ(expected, dot(v, u));
     EXPECT_EQ(expected, u % v);
     EXPECT_EQ(expected, v % u);
 }
-
-TEST(int3, has_dot_product)
-{
-    int3 u(1,2,3), v(4,5,6);
-    int expected = 1*4+2*5+3*6;
-
-    EXPECT_EQ(expected, dot(u, v));
-    EXPECT_EQ(expected, dot(v, u));
-    EXPECT_EQ(expected, u % v);
-    EXPECT_EQ(expected, v % u);
-}
-
-TEST(int2, has_dot_product)
-{
-    int2 u(1,2), v(4,5);
-    int expected = 1*4+2*5;
-
-    EXPECT_EQ(expected, dot(u, v));
-    EXPECT_EQ(expected, dot(v, u));
-    EXPECT_EQ(expected, u % v);
-    EXPECT_EQ(expected, v % u);
-}
-
 
 TEST(matrices, can_be_multiplied)
 {
     matrix<int, 2, 3> a = {
-        { 1, 2, 3 },
-        { 4, 5, 6 },
+        1, 2, 3,
+        4, 5, 6,
     };
 
     matrix<int, 3, 2> b = {
-        { 7,  8  },
-        { 9,  10 },
-        { 11, 12 },
+        7,  8 ,
+        9,  10,
+        11, 12,
     };
 
     matrix<int, 2,2> expected = {
-        { 58, 64 },
-        { 139, 154 },
+        58, 64,
+        139, 154,
     };
 
     auto actual = a*b;
@@ -291,7 +256,7 @@ TEST(byte4, has_size_4)
 
 TEST(double3, can_be_compared)
 {
-    double3 v(1,2,3), u(2,3,4);
+    double3 v{1,2,3}, u{2,3,4};
 
     EXPECT_LE(v,v);
     EXPECT_GE(v,v);
@@ -307,12 +272,10 @@ TEST(int3, has_cross_product)
     int3 i(1,0,0), j(0,1,0), k(0,0,1);
     int4 l(1,0,0,0);
 
-    EXPECT_EQ(i, cross(j,k));
-    EXPECT_EQ(j, cross(k,i));
-    EXPECT_EQ(k, cross(i,j));
     EXPECT_EQ(i, j ^ k);
     EXPECT_EQ(j, k ^ i);
     EXPECT_EQ(k, i ^ j);
+
 }
 
 TEST(float4, can_be_homogenized)
@@ -330,8 +293,8 @@ TEST(float4, can_be_homogenized)
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
 {
     matrix<int,2,3> m = {
-        { 1,2,3 },
-        { 4,5,6 }
+        1,2,3,
+        4,5,6
     };
 
     EXPECT_EQ(1, m(0,0));
@@ -346,14 +309,14 @@ TEST(matrix, can_be_declared_and_initialized_with_scalars)
 TEST(matrix, can_be_transposed)
 {
     matrix<int,2,3> m = {
-        { 1,2,3 },
-        { 4,5,6 }
+        1,2,3,
+        4,5,6
     };
 
     matrix<int,3,2> expected = {
-        { 1,4 },
-        { 2,5 },
-        { 3,6 },
+        1,4,
+        2,5,
+        3,6,
     };
 
     EXPECT_EQ(expected, m.transposed());
@@ -362,13 +325,13 @@ TEST(matrix, can_be_transposed)
 TEST(square_matrix, can_be_transposed_in_place)
 {
     int2x2 m = {
-        { 1,2 },
-        { 3,4 }
+        1,2,
+        3,4
     };
 
     int2x2 expected = {
-        { 1,3 },
-        { 2,4 }
+        1,3,
+        2,4
     };
 
     m.transpose();
@@ -376,23 +339,31 @@ TEST(square_matrix, can_be_transposed_in_place)
     EXPECT_EQ(expected, m);
 }
 
+TEST(float2x2, has_an_identify)
+{
+    float2x2 i = {
+        1.0f, 0.0f,
+        0.0f, 1.0f
+    };
+}
+
 TEST(square_matrixes, can_be_multiplied_together)
 {
     int2x2 m = {
-        { 1,2 },
-        { 3,4 }
+        1,2,
+        3,4
     };
     int2x2 n = m;
     n*=m;
 
     int2x2 expected = {
-        { 7,  10 },
-        { 15, 22 },
+        7,  10,
+        15, 22,
     };
 
     matrix<int,2,3> o = {
-        { 1,2,3 },
-        { 4,5,6 }
+        1,2,3,
+        4,5,6
     };
 
     EXPECT_EQ(expected, m*m);

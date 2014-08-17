@@ -2,10 +2,10 @@
 #define __TINY_VECTOR_HPP__
 
 #include <iostream>
-#include <initializer_list>
 #include <stdexcept>
 #include <cstdint>
 #include <cmath>
+#include <string>
 #include <boost/operators.hpp>
 
 namespace tiny
@@ -18,17 +18,25 @@ namespace tiny
             struct matrix_data
             {
                 matrix_data() {}
-                S data[L][C];
+
+                template<typename... Ss>
+                matrix_data(const Ss... x) : data{x...} {
+                    static_assert(sizeof...(Ss) == L*C, "expecting LxC entries");
+                }
+                union
+                {
+                    S data[L*C];
+                };
             };
 
             template<typename S>
             struct matrix_data<S,1,2>
             {
                 matrix_data() {}
-                matrix_data(const S & x, const S& y) : x(x), y(y) {}
+                matrix_data(const S &x, const S &y) : data{x, y} {}
                 union
                 {
-                    S data[1][2];
+                    S data[2];
                     struct { S r, i; };
                     struct { S x, y; };
                 };
@@ -38,10 +46,10 @@ namespace tiny
             struct matrix_data<S,1,3>
             {
                 matrix_data() {}
-                matrix_data(const S & x, const S& y, const S &z) : x(x), y(y), z(z) {}
+                matrix_data(const S &x, const S &y, const S &z) : data{x,y,z} {}
                 union
                 {
-                    S data[1][3];
+                    S data[3];
                     struct { S x, y, z; };
                     struct { S r, g, b; };
                 };
@@ -51,9 +59,9 @@ namespace tiny
             struct matrix_data<S,1,4>
             {
                 matrix_data() {}
-                matrix_data(const S & x, const S& y, const S &z, const S &w) : x(x), y(y), z(z), w(w) {}
+                matrix_data(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
                 union {
-                    S data[1][4];
+                    S data[4];
                     struct { S x, y, z, w; };
                     struct { S r, g, b, a; };
                 };
@@ -72,37 +80,17 @@ namespace tiny
             typedef internal::matrix_data<S,L,C> mat_data;
 
         public:
-            matrix() {}
-
             template<typename... Ss>
-            matrix(const Ss... x) : mat_data(x...)
-            {
-                static_assert(sizeof...(Ss) == L*C, "wrong dimension");
-            }
-
-            matrix(const std::initializer_list<std::initializer_list<S>> &content)
-            {
-                S *ptr = reinterpret_cast<S*>(this);
-                if (content.size() != lines())
-                    throw std::invalid_argument("expecting " + std::to_string(lines()) + " lines");
-
-                for (const auto &line: content)
-                {
-                    if (line.size() != columns())
-                        throw std::invalid_argument("expecting " + std::to_string(columns()) + " entries per column");
-                    for (const auto & cell: line)
-                        (*ptr++) = cell;
-                }
-            }
+            matrix(const Ss... x) : mat_data(x...) {}
 
             const S &operator()(size_t l, size_t c) const
             {
-                return this->data[l][c];
+                return this->data[l*C+c];
             }
 
             S &operator()(size_t l, size_t c)
             {
-                return this->data[l][c];
+                return this->data[l*C+c];
             }
 
             constexpr size_t lines() const   { return L; }
@@ -198,24 +186,8 @@ namespace tiny
 
         };
 
-        template<typename S, size_t N>
-        class vector;
 
 
-        template<typename S>
-        vector<S,3> cross(const vector<S,3> &l, const vector<S,3> &r)
-        {
-            return vector<S,3>( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
-        }
-
-        template<typename S, size_t D>
-        S dot(const vector<S,D> &l, const vector<S,D> &r)
-        {
-            S accumulator = 0;
-            for (size_t i = 0; i < r.dimension(); ++i)
-                accumulator += l(i) * r(i);
-            return accumulator;
-        }
 
         template<typename S, size_t N>
         class vector : public matrix<S,1,N>
@@ -225,25 +197,33 @@ namespace tiny
             typedef vector<S,2> vec2;
             typedef vector<S,3> vec3;
         public:
-            vector() {}
-
             template<typename... Ss>
             vector(const Ss... x) : mat(x...) {}
-            vector(const mat &m) : mat(m) {}
-            vector(const std::initializer_list<S> &content) : mat({content}) {}
 
-
-            const S &operator()(size_t i) const { return this->data[0][i]; }
-            S &operator()(size_t i)  { return this->data[0][i]; }
+            const S &operator()(size_t i) const { return this->data[i]; }
+            S &operator()(size_t i)  { return this->data[i]; }
 
             constexpr size_t dimension() const { return N; }
 
-            S operator%(const vec &r) const  {  return dot(*this, r); }
-            vec operator^(const vec &r) const {  return cross(*this, r); }
-
-            auto length() const -> decltype(std::sqrt(dot(*this, *this)))
+            S operator%(const vec &r) const
             {
-                return std::sqrt(dot(*this, *this));
+                S accumulator = 0;
+                for (size_t i = 0; i < r.dimension(); ++i)
+                    accumulator += (*this)(i) * r(i);
+                return accumulator;
+            }
+
+            vec operator^(const vec &r) const
+            {
+                const auto &l = (*this);
+                return vector<S,3>( (l.y*r.z)-(r.y*l.z),
+                                    (l.z*r.x)-(r.z*l.x),
+                                    (l.x*r.y)-(r.x*l.y) );
+            }
+
+            auto length() const -> decltype(std::sqrt((*this) % (*this)))
+            {
+                return std::sqrt((*this) % (*this));
             }
 
             vec &normalize()
