@@ -101,6 +101,7 @@ TEST(int2, has_a_length)
     int2 u(0,1);
 
     EXPECT_EQ(1, u.length());
+    EXPECT_EQ(1, length(u));
 }
 
 
@@ -162,6 +163,7 @@ TEST(general_sized_vector, has_dot_product)
 
     EXPECT_EQ(expected, u % v);
     EXPECT_EQ(expected, v % u);
+    EXPECT_EQ(expected, dot(u,v));
 }
 
 TEST(matrices, can_be_multiplied)
@@ -264,6 +266,7 @@ TEST(int3, has_cross_product)
     EXPECT_EQ(i, j ^ k);
     EXPECT_EQ(j, k ^ i);
     EXPECT_EQ(k, i ^ j);
+    EXPECT_EQ(i ^ j, cross(i,j));
 
     int2x2 x {1,2,3,4};
 }

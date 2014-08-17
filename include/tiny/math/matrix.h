@@ -236,6 +236,40 @@ namespace tiny
             }
         };
 
+        template<typename vec>
+        auto dot(const vec &l, const vec &r) -> decltype(l % r)
+        {
+            return l % r;
+        }
+
+        template<typename vec>
+        auto cross(const vec &l, const vec &r) -> decltype(l ^ r)
+        {
+            return l ^ r;
+        }
+
+        template<typename vec>
+        auto length(const vec &l) -> decltype(l.length())
+        {
+            return l.length();
+        }
+        
+        template<typename S, size_t L, size_t C>
+        std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
+        {
+            size_t l, c;
+            for (l = 0; l < L; ++l)
+            {
+                out << "(";
+                for (c = 0; c < C-1; ++c)
+                    out << m(l,c) << ",";
+                out << m(l,c) << ")";
+
+                if (l+1!=L) out << std::endl;
+            }
+            return out;
+        }
+
 
         template<typename S, size_t N>
         using vector = matrix<S,1,N>;
@@ -277,22 +311,6 @@ namespace tiny
         using int4x4 = matrix<int,4,4>;
         using float4x4 = matrix<float,4,4>;
         using double4x4 = matrix<double,4,4>;
-
-        template<typename S, size_t L, size_t C>
-        std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
-        {
-            size_t l, c;
-            for (l = 0; l < L; ++l)
-            {
-                out << "(";
-                for (c = 0; c < C-1; ++c)
-                    out << m(l,c) << ",";
-                out << m(l,c) << ")";
-
-                if (l+1!=L) out << std::endl;
-            }
-            return out;
-        }
     }
 }
 
