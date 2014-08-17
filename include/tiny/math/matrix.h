@@ -1,12 +1,9 @@
 #ifndef __TINY_VECTOR_HPP__
 #define __TINY_VECTOR_HPP__
 
-#include <iostream>
-#include <stdexcept>
-#include <cstdint>
-#include <cmath>
-#include <string>
 #include <boost/operators.hpp>
+#include <iostream>
+#include <cmath>
 
 namespace tiny
 {
