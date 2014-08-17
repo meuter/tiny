@@ -218,19 +218,6 @@ namespace tiny
                 vec result = (*this);
                 return result.homogenize();
             }
-
-            vec &scale(const vec &r)
-            {
-                for (size_t i = 0; i < r.dimension(); ++i)
-                     (*this)(i) *= r(i);
-                return (*this);
-            }
-
-            vec scaled(const vec &r)
-            {
-                vec result = (*this) ;
-                return result.scale(r);
-            }
         };
 
         template<typename vec>

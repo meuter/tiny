@@ -341,17 +341,6 @@ TEST(float2x2, has_an_identify)
     };
 }
 
-TEST(vectors, can_be_scaled)
-{
-    int2 v{1,2}, u{3,3};
-    int2 r{3,6}, orig = v;
-
-    EXPECT_EQ(r, v.scaled(u));
-    EXPECT_EQ(orig, v);
-    EXPECT_EQ(r, v.scale(u));
-    EXPECT_EQ(r, v);
-}
-
 TEST(square_matrixes, can_be_multiplied_together)
 {
     int2x2 m {
