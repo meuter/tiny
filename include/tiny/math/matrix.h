@@ -17,50 +17,35 @@ namespace tiny
             template<typename S, size_t L, size_t C>
             struct mlayout
             {
-                mlayout() {}
-
                 template<typename... Ss>
-                mlayout(const Ss... x) : data{x...} { static_assert(sizeof...(Ss) == L*C, "wrong number of initializers");  }
-
+                mlayout(const Ss... x) : data{x...} {}
+                mlayout() {}
+            private:
                 S data[L*C];
             };
 
             template<typename S>
             struct mlayout<S,1,2>
             {
+                mlayout(const S &x, const S &y) : x{x}, y{y} {}
                 mlayout() {}
-                mlayout(const S &x, const S &y) : data{x, y} {}
-                union
-                {
-                    S data[2];
-                    struct { S r, i; };
-                    struct { S x, y; };
-                };
+                S x, y;
             };
 
             template<typename S>
             struct mlayout<S,1,3>
             {
+                mlayout(const S &x, const S &y, const S &z)  : x{x}, y{y}, z{z} {}
                 mlayout() {}
-                mlayout(const S &x, const S &y, const S &z) : data{x,y,z} {}
-                union
-                {
-                    S data[3];
-                    struct { S x, y, z; };
-                    struct { S r, g, b; };
-                };
+                S x, y, z;
             };
 
             template<typename S>
             struct mlayout<S,1,4>
             {
+                mlayout(const S &x, const S &y, const S &z, const S &w) : x{x}, y{y}, z{z}, w{w} {}
                 mlayout() {}
-                mlayout(const S &x, const S &y, const S &z, const S &w) : data{x,y,z,w} {}
-                union {
-                    S data[4];
-                    struct { S x, y, z, w; };
-                    struct { S r, g, b, a; };
-                };
+                S x, y, z, w;
             };
         };
 
@@ -83,15 +68,15 @@ namespace tiny
             template<typename... Ss>
             explicit matrix(const Ss... x) : mlayout(x...) {}
 
-            const S &operator()(size_t l, size_t c) const { return this->data[l*C+c]; }
-            const S &operator()(size_t i) const           { return this->data[i]; }
+            const S &operator()(size_t l, size_t c) const { return reinterpret_cast<const S*>(this)[l*C+c]; }
+            const S &operator()(size_t i) const           { return (*this)(0,i); }
 
-            S &operator()(size_t l, size_t c)  { return this->data[l*C+c]; }
-            S &operator()(size_t i)            { return this->data[i]; }
+            S &operator()(size_t l, size_t c)             { return reinterpret_cast<S*>(this)[l*C+c]; }
+            S &operator()(size_t i)                       { return (*this)(0,i); }
 
-            constexpr size_t lines() const     { return L; }
-            constexpr size_t columns() const   { return C; }
-            constexpr size_t dimension() const { return L*C; }
+            constexpr size_t lines() const                { return L; }
+            constexpr size_t columns() const              { return C; }
+            constexpr size_t dimension() const            { return L*C; }
 
             vec2 xy()  const { return vec2(this->x,this->y); }
             vec2 xz()  const { return vec2(this->x,this->z); }

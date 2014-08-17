@@ -7,8 +7,6 @@ env["CXXCOMSTR"]  = "CXX $TARGET"
 env["LINKCOMSTR"] = "LN  $TARGET"
 
 env.MergeFlags("-Wall -pedantic")
-env.MergeFlags("-Wno-gnu-anonymous-struct")
-env.MergeFlags("-Wno-nested-anon-types")
 env.MergeFlags("-Iinclude/")
 env.MergeFlags("-I/usr/local/include/")
 
