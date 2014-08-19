@@ -16,7 +16,7 @@ namespace tiny
 		public:
 			quaternion() {}
 			quaternion(const S &x, const S &y, const S &z, const S&w) : vec4(x,y,z,w) {}
-			quaternion(const vec3 &axis, const radian &angle) : vec4(axis.x, axis.y, axis.z, S()) 
+			quaternion(const vec3 &axis, const radian &angle) : vec4(axis) 
 			{				
 				(*this) *= sin(angle/2.0);
 				w = cos(angle/2.0);

@@ -375,3 +375,23 @@ TEST(float3, have_unary_minus_operator)
     EXPECT_EQ(-f.z, g.z);
 
 }
+
+TEST(float4, can_be_build_from_float3_and_1_float)
+{
+    float3 f(1,2,3);
+    float4 g(f,4), h(f), i(5,f);
+
+    EXPECT_EQ(float4(1,2,3,4), g);
+    EXPECT_EQ(float4(1,2,3,0), h);
+    EXPECT_EQ(float4(5,1,2,3), i);
+}
+
+TEST(float3, can_be_build_from_float2_and_1_float)
+{
+    float2 f(1,2);
+    float3 g(f,4), h(f), i(5,f);
+
+    EXPECT_EQ(float3(1,2,4), g);
+    EXPECT_EQ(float3(1,2,0), h);
+    EXPECT_EQ(float3(5,1,2), i);
+}

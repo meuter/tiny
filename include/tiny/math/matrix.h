@@ -34,7 +34,9 @@ namespace tiny
             template<typename S>
             struct mlayout<S,1,3>
             {
-                mlayout(const S &x, const S &y, const S &z)  : x{x}, y{y}, z{z} {}
+                mlayout(const S &x, const S &y, const S &z) : x{x}, y{y}, z{z} {}
+                mlayout(const mlayout<S,1,2> v, const S &z = S()) : x{v.x}, y{v.y}, z{z} {}
+                mlayout(const S &x, const mlayout<S,1,2> v) : x{x}, y{v.x}, z{v.y} {}
                 mlayout() {}
                 S x, y, z;
             };
@@ -43,6 +45,8 @@ namespace tiny
             struct mlayout<S,1,4>
             {
                 mlayout(const S &x, const S &y, const S &z, const S &w) : x{x}, y{y}, z{z}, w{w} {}
+                mlayout(const S &x, const mlayout<S,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
+                mlayout(const mlayout<S,1,3> v, const S &w = S()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
                 mlayout() {}
                 S x, y, z, w;
             };
@@ -78,8 +82,7 @@ namespace tiny
 
             constexpr static const S EPSILON = internal::epsilon<S>::value * S(2);
 
-            template<typename... Ss>
-            explicit matrix(const Ss... x) : mlayout(x...) {}
+            using mlayout::mlayout;
 
             const S &operator()(size_t l, size_t c) const { return reinterpret_cast<const S*>(this)[l*C+c]; }
             const S &operator()(size_t i) const           { return (*this)(0,i); }
