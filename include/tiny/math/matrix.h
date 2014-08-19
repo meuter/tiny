@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <cfloat>
+#include <tiny/math/trigo.h>
 
 namespace tiny
 {
@@ -190,11 +191,7 @@ namespace tiny
                 static_assert(L == C, "trace only applies to square matrices");
                 S accumulator = static_cast<S>(0.0);
                 for (size_t i = 0; i < lines(); ++i)
-                {
-                    std::cout << "adding" << (*this)(i,i) << std::endl;
                     accumulator += (*this)(i,i);
-
-                }
                 return accumulator;
             }
 
@@ -273,6 +270,28 @@ namespace tiny
         auto length(const vec &l) -> decltype(l.length())
         {
             return l.length();
+        }
+
+        template<typename vec, typename S>
+        vec lerp(const vec &start, const vec &end, const S &percent)
+        {
+            return start + percent * (end-start);
+        }
+
+        template<typename vec, typename S>
+        vec nlerp(const vec &start, const vec &end, const S &percent)
+        {
+            return lerp(start, end, percent).normalized();
+        }
+
+        template <typename vec, typename S>
+        vec slerp(const vec &start, const vec &end, const S &percent)
+        {
+            double cosTheta = dot(start, end);
+            radian theta(acos(cosTheta) * percent);
+            vec relative = ((end - start) * cosTheta).normalize();
+
+            return start * math::cos(theta) + relative * math::sin(theta);
         }
 
         template<typename S, size_t L, size_t C>

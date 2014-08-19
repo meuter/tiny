@@ -406,3 +406,29 @@ TEST(float3, can_be_build_from_float2_and_1_float)
     EXPECT_EQ(float3(1,2,0), h);
     EXPECT_EQ(float3(5,1,2), i);
 }
+
+TEST(lerp, can_be_used_on_float)
+{
+    EXPECT_FLOAT_EQ(3.0f, lerp(1,5,0.5f));
+}
+
+TEST(lerp, can_be_used_on_float2)
+{
+    float2 start(1,5), end(7,-15);
+
+    EXPECT_EQ(float2(4,-5), lerp(start,end,0.5f));
+}
+
+TEST(nlerp, can_be_used_on_float2)
+{
+    float2 start(1,5), end(7,-15);
+
+    EXPECT_EQ(float2(4,-5).normalized(), nlerp(start,end,0.5f));
+}
+
+TEST(slerp, can_be_used_on_float2)
+{
+    float2 start(1,5), end(7,-15);
+
+    EXPECT_EQ(float2(4,-5),slerp(start,end,0.5f));
+}
