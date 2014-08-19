@@ -1,13 +1,15 @@
-#ifndef __TINY_VECTOR_HPP__
-#define __TINY_VECTOR_HPP__
+#ifndef __TINY_MATRIX_HPP__
+#define __TINY_MATRIX_HPP__
 
 #include <boost/operators.hpp>
 #include <iostream>
 #include <cmath>
+#include <cfloat>
 
 namespace tiny
 {
-    namespace math {
+    namespace math 
+    {
 
         namespace internal
         {
@@ -44,6 +46,18 @@ namespace tiny
                 mlayout() {}
                 S x, y, z, w;
             };
+
+            template<typename S>
+            struct epsilon { constexpr static const S value = 0; };
+
+            template<>
+            struct epsilon<float> { constexpr static const float value = FLT_EPSILON; };
+
+            template<>
+            struct epsilon<double> { constexpr static const double value = DBL_EPSILON; };
+
+            template<>
+            struct epsilon<long double> { constexpr static const long double value = LDBL_EPSILON; };
         };
 
         template<typename S, size_t L, size_t C>
@@ -61,6 +75,8 @@ namespace tiny
             typedef matrix<S,1,3> vec3;
             typedef matrix<S,1,3> vec4;
             typedef internal::mlayout<S,L,C> mlayout;
+
+            constexpr static const S EPSILON = internal::epsilon<S>::value * S(2);
 
             template<typename... Ss>
             explicit matrix(const Ss... x) : mlayout(x...) {}
@@ -93,7 +109,7 @@ namespace tiny
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
-                        if ((*this)(l,c) != r(l,c))
+                        if (fabs((*this)(l,c) - r(l,c)) > EPSILON)
                             return false;
                 return true;
             }
@@ -238,21 +254,21 @@ namespace tiny
             return l.length();
         }
 
-        template<typename S, size_t L, size_t C>
-        std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
-        {
-            size_t l, c;
-            for (l = 0; l < L; ++l)
-            {
-                out << "(";
-                for (c = 0; c < C-1; ++c)
-                    out << m(l,c) << ",";
-                out << m(l,c) << ")";
+        // template<typename S, size_t L, size_t C>
+        // std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
+        // {
+        //     size_t l, c;
+        //     for (l = 0; l < L; ++l)
+        //     {
+        //         out << "(";
+        //         for (c = 0; c < C-1; ++c)
+        //             out << m(l,c) << ",";
+        //         out << m(l,c) << ")";
 
-                if (l+1!=L) out << std::endl;
-            }
-            return out;
-        }
+        //         if (l+1!=L) out << std::endl;
+        //     }
+        //     return out;
+        // }
 
 
         template<typename S, size_t N>
