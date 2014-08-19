@@ -317,6 +317,17 @@ TEST(matrix, can_be_transposed)
     EXPECT_EQ(orig, m);
 }
 
+TEST(square_matrix, has_a_trace)
+{
+    int3x3 m{
+        1, 2, 5,
+        6, 7, 2,
+        3, 7, 6
+    };
+
+    EXPECT_EQ(1+7+6, m.trace());
+}
+
 TEST(square_matrix, can_be_transposed_in_place)
 {
     int2x2 m{

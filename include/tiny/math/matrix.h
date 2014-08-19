@@ -185,6 +185,19 @@ namespace tiny
                 return *this;
             }
 
+            S trace() const 
+            {
+                static_assert(L == C, "trace only applies to square matrices");
+                S accumulator = static_cast<S>(0.0);
+                for (size_t i = 0; i < lines(); ++i)
+                {
+                    std::cout << "adding" << (*this)(i,i) << std::endl;
+                    accumulator += (*this)(i,i);
+
+                }
+                return accumulator;
+            }
+
             tmat transposed() const
             {
                 tmat result;
