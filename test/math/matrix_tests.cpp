@@ -14,14 +14,14 @@ TEST(float2, can_be_declared)
     EXPECT_EQ(2.0f, v.y);
 }
 
-// TEST(int2, can_be_printed)
-// {
-//     int2 v{1,2};
-//     std::stringstream str;
-//     str << v;
+TEST(int2, can_be_printed)
+{
+    int2 v{1,2};
+    std::stringstream str;
+    str << v;
 
-//     EXPECT_EQ("(1,2)", str.str());
-// }
+    EXPECT_EQ("(1,2)", str.str());
+}
 
 TEST(int3x3, can_be_declared)
 {
@@ -49,17 +49,17 @@ TEST(matrix, has_a_number_of_lines)
     EXPECT_EQ(2, m.columns());
 }
 
-// TEST(int2x2, can_be_printed)
-// {
-//     int2x2 m {
-//         1, 2,
-//         3, 4,
-//     };
-//     std::stringstream str;
-//     str << m;
+TEST(int2x2, can_be_printed)
+{
+    int2x2 m {
+        1, 2,
+        3, 4,
+    };
+    std::stringstream str;
+    str << m;
 
-//     EXPECT_EQ("(1,2)\n(3,4)", str.str());
-// }
+    EXPECT_EQ("(1,2)\n(3,4)", str.str());
+}
 
 
 TEST(int2x2, can_be_summed)
@@ -362,4 +362,16 @@ TEST(square_matrixes, can_be_multiplied_together)
 
     EXPECT_EQ(expected, m*m);
     EXPECT_EQ(expected, n);
+}
+
+TEST(float3, have_unary_minus_operator)
+{
+    float3 f(1,2,3),g;
+
+    g = -f;
+
+    EXPECT_EQ(-f.x, g.x);
+    EXPECT_EQ(-f.y, g.y);
+    EXPECT_EQ(-f.z, g.z);
+
 }

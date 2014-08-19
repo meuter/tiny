@@ -155,6 +155,11 @@ namespace tiny
                 return (*this);
             }
 
+            mat operator-()
+            {
+                return -1 * (*this);
+            }
+
             template<size_t M>
             matrix<S,L,M> operator*(const matrix<S,C,M> &r) const
             {
@@ -254,21 +259,21 @@ namespace tiny
             return l.length();
         }
 
-        // template<typename S, size_t L, size_t C>
-        // std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
-        // {
-        //     size_t l, c;
-        //     for (l = 0; l < L; ++l)
-        //     {
-        //         out << "(";
-        //         for (c = 0; c < C-1; ++c)
-        //             out << m(l,c) << ",";
-        //         out << m(l,c) << ")";
+        template<typename S, size_t L, size_t C>
+        std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
+        {
+            size_t l, c;
+            for (l = 0; l < L; ++l)
+            {
+                out << "(";
+                for (c = 0; c < C-1; ++c)
+                    out << m(l,c) << ",";
+                out << m(l,c) << ")";
 
-        //         if (l+1!=L) out << std::endl;
-        //     }
-        //     return out;
-        // }
+                if (l+1!=L) out << std::endl;
+            }
+            return out;
+        }
 
 
         template<typename S, size_t N>

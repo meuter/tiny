@@ -27,8 +27,10 @@ TEST(quaternion, can_be_multiplied_together)
 
 TEST(quaternion, can_be_used_to_rotate_3d_vectors)
 {
-	float3 v(3,0,0), yAxis(0,1,0);
-	quaternion rotation(yAxis, toRadian(90));
+	float3 xAxis(1,0,0), yAxis(0,1,0), zAxis(0,0,1);
 
-	EXPECT_EQ(float3(-3,0,0), rotation.rotate(v));
+	EXPECT_EQ(-xAxis, quaternion(yAxis, toRadian(180)).rotate(xAxis));
+	EXPECT_EQ(-3*xAxis, quaternion(yAxis, toRadian(180)).rotate(3*xAxis));
+	EXPECT_EQ(yAxis, quaternion(zAxis, toRadian(90)).rotate(xAxis));
+	EXPECT_EQ(-xAxis, quaternion(yAxis, toRadian(-90)).rotate(zAxis));
 }
