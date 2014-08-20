@@ -9,15 +9,16 @@ namespace tiny {
 
 	namespace gl {
 
-		using vec3 = tiny::math::float3;
-		using mat4 = tiny::math::float4x4;
-		using quat = tiny::math::quaternion;
-		using rad  = tiny::math::radian;
 
 		class Transformable 
 		{
+			using rad  = tiny::math::radian;
+			using vec3 = tiny::math::float3;
+			using mat4 = tiny::math::float4x4;
+			using quat = tiny::math::quaternion;
+			
 		public:
-			Transformable() : mScale(1,1,1), mTranslation(0,0,0), mRotation(0,0,0,1) {}
+			Transformable() : mScale(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) {}
 
 			Transformable &scale(const vec3 &factors)
 			{
@@ -47,13 +48,13 @@ namespace tiny {
 
 			Transformable &translate(const vec3 &displacement)
 			{
-				mTranslation += displacement;
+				mPosition += displacement;
 				return (*this);
 			}
 
 			Transformable &translate(float dx, float dy, float dz)
 			{
-				mTranslation += vec3(dx, dy, dz);
+				mPosition += vec3(dx, dy, dz);
 				return (*this);
 			}
 
@@ -66,9 +67,9 @@ namespace tiny {
 			{
 				return mat4
 				{
-					1.0f, 0.0f, 0.0f, mTranslation.x,
-					0.0f, 1.0f, 0.0f, mTranslation.y,
-					0.0f, 0.0f, 1.0f, mTranslation.z,
+					1.0f, 0.0f, 0.0f, mPosition.x,
+					0.0f, 1.0f, 0.0f, mPosition.y,
+					0.0f, 0.0f, 1.0f, mPosition.z,
 					0.0f, 0.0f, 0.0f, 1.0f,
 				};
 			}
@@ -91,7 +92,7 @@ namespace tiny {
 
 		private:
 			vec3 mScale;
-			vec3 mTranslation;
+			vec3 mPosition;
 			quat mRotation;
 		};
 

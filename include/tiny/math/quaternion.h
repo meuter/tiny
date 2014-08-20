@@ -8,30 +8,30 @@ namespace tiny
 	namespace math 
 	{
 
-		class quaternion : public vector<float, 4>
+		class quaternion : public float4
 		{
-			typedef float S;
-			typedef vector<S,4> vec4;
-			typedef vector<S,3> vec3;
-			typedef matrix<S,4,4> mat4;
+			using vec4 = float4;
+			using vec3 = float3;
+			using mat4 = float4x4;
+			using quat = quaternion;
 		public:
 			quaternion() {}
 			quaternion(const vec4 &v) : vec4(v) {}
-			quaternion(const S &x, const S &y, const S &z, const S&w) : vec4(x,y,z,w) {}
+			quaternion(const float &x, const float &y, const float &z, const float&w) : vec4(x,y,z,w) {}
 			quaternion(const vec3 &axis, const radian &angle) : vec4(axis) 
 			{				
-				(*this) *= (float)sin(angle/2.0);
+				(*this) *= sin(angle/2.0);
 				w = cos(angle/2.0);
 			}
 
-			quaternion conjugate() const
+			quat conjugate() const
 			{
-				return quaternion(-x,-y,-z,w);
+				return quat(-x,-y,-z,w);
 			}
 
-			quaternion operator*(const quaternion &r) const 
+			quat operator*(const quat &r) const 
 			{
-				return quaternion(w*r.x + x*r.w + y*r.z - z*r.y,
+				return quat(w*r.x + x*r.w + y*r.z - z*r.y,
 								  w*r.y + y*r.w + z*r.x - x*r.z,
 							      w*r.z + z*r.w + x*r.y - y*r.x,
 							      w*r.w - x*r.x - y*r.y - z*r.z);
@@ -39,7 +39,7 @@ namespace tiny
 
 			vec3 rotate(const vec3 &v) const
 			{
-				return ((*this) * quaternion(v.x, v.y, v.z, 0) * conjugate()).xyz();
+				return ((*this) * quat(v.x, v.y, v.z, 0) * conjugate()).xyz();
 			}
 
 			mat4 getMatrix() const 
