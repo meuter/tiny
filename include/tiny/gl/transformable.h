@@ -35,13 +35,13 @@ namespace tiny {
 
 			Transformable &rotate(const quat &rotation)
 			{
-				mRotation *= rotation;
+				mRotation = (rotation * mRotation).normalized();
 				return (*this);
 			}
 
 			Transformable &rotate(const vec3 axis, const rad &angle)
 			{
-				mRotation *= quat(axis, angle);
+				mRotation = (quat(axis, angle) * mRotation).normalized();
 				return (*this);
 			}
 
@@ -59,7 +59,7 @@ namespace tiny {
 
 			mat4 getMatrix() const
 			{
-				return getScalingMatrix() * getTranslationMatrix() * getRotationMatrix();
+				return getTranslationMatrix() * getRotationMatrix() * getScalingMatrix();
 			}
 
 			mat4 getTranslationMatrix() const
