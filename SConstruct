@@ -15,6 +15,7 @@ test.MergeFlags("-Wno-unused")
 test.MergeFlags("-ggdb -O0 -Itest")
 
 math_tests = Glob("test/math/*_tests.cpp")
-gtest     = Split("test/gmock_main.cc test/gmock-gtest-all.cc")
+gl_tests   = Glob("test/gl/*_tests.cpp")
+gtest      = Split("test/gmock_main.cc test/gmock-gtest-all.cc")
 
-test.Program("test/all", gtest + math_tests)
+test.Program("test/all", gtest + math_tests + gl_tests)
