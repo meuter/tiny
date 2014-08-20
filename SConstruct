@@ -14,8 +14,8 @@ test = env.Clone()
 test.MergeFlags("-Wno-unused")
 test.MergeFlags("-ggdb -O0 -Itest")
 
-math_tests = Glob("test/math/*_tests.cpp")
-gl_tests   = Glob("test/gl/*_tests.cpp")
+math_tests = Glob("test/tiny/math/*_tests.cpp")
+gl_tests   = Glob("test/tiny/gl/*_tests.cpp")
 gtest      = Split("test/gmock_main.cc test/gmock-gtest-all.cc")
 
 test.Program("test/all", gtest + math_tests + gl_tests)
