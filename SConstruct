@@ -2,33 +2,42 @@ env = Environment()
 
 CacheDir("/tmp/sconscache/")
 
-env["CXX"] = "clang++ -m32 -std=c++11 -fcolor-diagnostics"
-env["CXXCOMSTR"]    = "CXX $TARGET"
-env["LINKCOMSTR"]   = "LN  $TARGET"
-env["ARCOMSTR"]     = "AR  $TARGET"
-env["RANLIBCOMSTR"] = "RL  $TARGET"
+debug   = ARGUMENTS.get("debug", 0)
+verbose = ARGUMENTS.get("verbose", 0)
+
+env["CXX"] = "clang++ -std=c++11 -fcolor-diagnostics"
+if not verbose:
+	env["CXXCOMSTR"]    = " CXX  $TARGET"
+	env["LINKCOMSTR"]   = " LN   $TARGET"
+	env["ARCOMSTR"]     = " AR   $TARGET"
+	env["RANLIBCOMSTR"] = " RL   $TARGET"
 
 env.MergeFlags("-Wall -pedantic")
 env.MergeFlags("-Isrc/")
 env.MergeFlags("-I/usr/local/include/")
-env.MergeFlags("-O3")
-
-
+env.MergeFlags("-ggdb -O0" if debug else "-O3")
 env.Library("tiny", Split("""
 	src/tiny/core/transformable.cpp
 	src/tiny/rendering/window.cpp
 
 """))
 
+example = env.Clone()
+example.MergeFlags("-L. -ltiny")
+example.MergeFlags("-framework SDL2 -framework OpenGL")
+example.Program("window_example", Split("""
+	test/tiny/example/window_example.cpp
+"""));
+
 test = env.Clone()
-test.MergeFlags("-Wno-unused")
-test.MergeFlags("-ggdb -O0 -Itest")
+test.MergeFlags("-Itest/gtest")
+test.MergeFlags("-L. -ltiny")
+test.Program("test/tiny/all", Split("""
+	test/tiny/core/transformable_tests.cpp
+	test/tiny/math/matrix_tests.cpp
+	test/tiny/math/quaternion_tests.cpp
+	test/tiny/math/trigo_tests.cpp
+	test/gtest/gmock-gtest-all.cc
+	test/gtest/gmock_main.cc
+"""))
 
-math_tests = Glob("test/tiny/math/*_tests.cpp")
-gl_tests   = Glob("test/tiny/gl/*_tests.cpp")
-gtest      = Split("test/gmock_main.cc test/gmock-gtest-all.cc")
-
-window_test = test.Clone()
-window_test.MergeFlags("-framework SDL2 -framework OpenGL -framework GLEW -L. -ltiny");
-window_test.Program("test/all", gtest + math_tests + gl_tests)
-window_test.Program("test/window", Split("test/window_main.cpp"))
