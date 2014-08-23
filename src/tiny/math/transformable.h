@@ -1,9 +1,9 @@
 #ifndef __TINY_GL_TRANSFORMABLE_H__
 #define __TINY_GL_TRANSFORMABLE_H__
 
-#include <tiny/math/matrix.h>
-#include <tiny/math/quaternion.h>
-#include <tiny/math/trigo.h>
+#include "matrix.h"
+#include "quaternion.h"
+#include "trigo.h"
 
 namespace tiny {
 
@@ -15,7 +15,7 @@ namespace tiny {
 			using rad  = tiny::math::radian;
 			using vec3 = tiny::math::float3;
 			using mat4 = tiny::math::float4x4;
-			using quat = tiny::math::quaternion;
+			using quat = tiny::math::quaternion<float>;
 			
 		public:
 			Transformable() : mScale(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) {}

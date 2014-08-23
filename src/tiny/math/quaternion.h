@@ -1,8 +1,8 @@
 #ifndef __TINY_MATH_QUATERNION_H__
 #define __TINY_MATH_QUATERNION_H__
 
-#include <tiny/math/matrix.h>
-#include <tiny/math/trigo.h>
+#include "matrix.h"
+#include "trigo.h"
 #include <iostream>
 
 namespace tiny 
@@ -10,25 +10,31 @@ namespace tiny
 	namespace math 
 	{
 
-		class quaternion : public float4
+		template<typename S>
+		struct quaternion : vector<S,4>
 		{
-			using vec4 = float4;
-			using vec3 = float3;
-			using mat4 = float4x4;
-			using quat = quaternion;
-		public:
+			using vector<S,4>::x;
+			using vector<S,4>::y;
+			using vector<S,4>::z;
+			using vector<S,4>::w;
+
+			using vec4 = vector<S,4>;
+			using vec3 = vector<S,3>;
+			using mat4 = matrix<S,4,4>;
+			using quat = quaternion<S>;
+
 			quaternion() {}
 			quaternion(const vec4 &v) : vec4(v) {}
 			quaternion(const float &x, const float &y, const float &z, const float&w) : vec4(x,y,z,w) {}
 			quaternion(const vec3 &axis, const radian &angle) : vec4(axis) 
 			{				
 				(*this) *= sin(angle/2.0);
-				w = cos(angle/2.0);
+				this->w = cos(angle/2.0);
 			}
 
 			quat conjugate() const
 			{
-				return quat(-x,-y,-z,w);
+				return quat(-this->x,-this->y,-this->z,this->w);
 			}
 
 			quat operator*(const quat &r) const 

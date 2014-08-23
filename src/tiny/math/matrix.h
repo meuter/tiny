@@ -2,7 +2,7 @@
 #define __TINY_MATH_MATRIX_HPP__
 
 #include <boost/operators.hpp>
-#include <tiny/math/trigo.h>
+#include "trigo.h"
 #include <iostream>
 #include <cmath>
 #include <cfloat>

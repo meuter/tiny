@@ -1,7 +1,10 @@
 #include <iostream>
 #include <tiny/rendering/window.h>
 
-using tiny::gl::Window;
+#include <SDL2/SDL.h>
+
+
+using tiny::rendering::Window;
 
 int main(int argc, char **argv)
 {
