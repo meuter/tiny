@@ -3,8 +3,10 @@ env = Environment()
 CacheDir("/tmp/sconscache/")
 
 env["CXX"] = "clang++ -m32 -std=c++11 -fcolor-diagnostics"
-env["CXXCOMSTR"]  = "CXX $TARGET"
-env["LINKCOMSTR"] = "LN  $TARGET"
+env["CXXCOMSTR"]    = "CXX $TARGET"
+env["LINKCOMSTR"]   = "LN  $TARGET"
+env["ARCOMSTR"]     = "AR  $TARGET"
+env["RANLIBCOMSTR"] = "RL  $TARGET"
 
 env.MergeFlags("-Wall -pedantic")
 env.MergeFlags("-Isrc/")
@@ -13,7 +15,9 @@ env.MergeFlags("-O3")
 
 
 env.Library("tiny", Split("""
+	src/tiny/core/transformable.cpp
 	src/tiny/rendering/window.cpp
+
 """))
 
 test = env.Clone()

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <gtest/gtest.h>
 
+
 using namespace tiny::math;
 
 TEST(float2, can_be_declared)
@@ -41,7 +42,7 @@ TEST(int3, can_be_compared_for_equality)
     EXPECT_NE(t, u);
 }
 
-TEST(matrix, has_a_number_of_lines)
+TEST(int5x2, has_a_number_of_lines)
 {
     matrix<int,5,2> m;
 

@@ -25,16 +25,16 @@ namespace tiny
 
 			quaternion() {}
 			quaternion(const vec4 &v) : vec4(v) {}
-			quaternion(const float &x, const float &y, const float &z, const float&w) : vec4(x,y,z,w) {}
+			quaternion(const S &x, const S &y, const S &z, const S &w) : vec4(x,y,z,w) {}
 			quaternion(const vec3 &axis, const radian &angle) : vec4(axis) 
 			{				
 				(*this) *= sin(angle/2.0);
-				this->w = cos(angle/2.0);
+				w = cos(angle/2.0);
 			}
 
 			quat conjugate() const
 			{
-				return quat(-this->x,-this->y,-this->z,this->w);
+				return quat(-x,-y,-z,w);
 			}
 
 			quat operator*(const quat &r) const 

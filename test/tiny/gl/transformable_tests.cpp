@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <tiny/math/transformable.h>
+#include <tiny/core/transformable.h>
 
-using namespace tiny::gl;
+using tiny::core::Transformable;
 using namespace testing;
 
 TEST(Transform, can_be_declared)
