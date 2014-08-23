@@ -1,10 +1,12 @@
+#ifndef __TINY_MATH_QUATERNION_H__
+#define __TINY_MATH_QUATERNION_H__
+
 #include <tiny/math/matrix.h>
 #include <tiny/math/trigo.h>
 #include <iostream>
 
 namespace tiny 
 {
-
 	namespace math 
 	{
 
@@ -55,3 +57,5 @@ namespace tiny
 
 	}
 }
+
+#endif

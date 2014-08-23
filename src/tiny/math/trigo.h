@@ -2,7 +2,7 @@
 #define __TINY_MATH_TRIGO_H__
 
 #include <cmath>
-#include <tiny/units.h>
+#include <tiny/math/units.h>
 #include <boost/math/constants/constants.hpp>
 
 namespace tiny
@@ -10,8 +10,8 @@ namespace tiny
     namespace math
     {
 
-        const double PI = boost::math::constants::pi<double>();
-        const double PI_2 = PI / 2.0;
+        constexpr double PI = boost::math::constants::pi<double>();
+        constexpr double PI_2 = PI / 2.0;
 
         DEFINE_UNIT(radian, double);
         DEFINE_UNIT(degree, double);

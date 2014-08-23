@@ -1,11 +1,11 @@
-#ifndef __TINY_MATRIX_HPP__
-#define __TINY_MATRIX_HPP__
+#ifndef __TINY_MATH_MATRIX_HPP__
+#define __TINY_MATH_MATRIX_HPP__
 
 #include <boost/operators.hpp>
+#include <tiny/math/trigo.h>
 #include <iostream>
 #include <cmath>
 #include <cfloat>
-#include <tiny/math/trigo.h>
 
 namespace tiny
 {

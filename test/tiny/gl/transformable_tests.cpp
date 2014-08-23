@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <tiny/gl/transformable.h>
+#include <tiny/math/transformable.h>
 
 using namespace tiny::gl;
 using namespace testing;

@@ -1,3 +1,6 @@
+#ifndef __TINY_MATH_UNIT_H__
+#define __TINY_MATH_UNIT_H__
+
 #include <boost/config.hpp>
 #include <boost/operators.hpp>
 
@@ -28,3 +31,5 @@
     private:                                                                    \
         T mValue;                                                               \
     }
+
+#endif
