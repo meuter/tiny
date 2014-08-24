@@ -3,39 +3,34 @@
 
 #include <tiny/core/types.h>
 
-namespace tiny {
+namespace tiny { namespace core {
 
-	namespace core {
+	class Transformable 
+	{	
+	public:
+		Transformable();
+		virtual ~Transformable();
 
+		Transformable &scale(const vec3 &factors);
+		Transformable &scale(float sx, float sy, float sz);
 
-		class Transformable 
-		{	
-		public:
-			Transformable();
-			virtual ~Transformable();
+		Transformable &rotate(const quat &rotation);
+		Transformable &rotate(const vec3 axis, const rad &angle);
 
-			Transformable &scale(const vec3 &factors);
-			Transformable &scale(float sx, float sy, float sz);
+		Transformable &translate(const vec3 &displacement);
+		Transformable &translate(float dx, float dy, float dz);
 
-			Transformable &rotate(const quat &rotation);
-			Transformable &rotate(const vec3 axis, const rad &angle);
+		mat4 getMatrix() const;
+		mat4 getTranslationMatrix() const;
+		mat4 getScalingMatrix() const;
+		mat4 getRotationMatrix() const;
 
-			Transformable &translate(const vec3 &displacement);
-			Transformable &translate(float dx, float dy, float dz);
+	protected:
+		vec3 mScale;
+		vec3 mPosition;
+		quat mRotation;
+	};
 
-			mat4 getMatrix() const;
-			mat4 getTranslationMatrix() const;
-			mat4 getScalingMatrix() const;
-			mat4 getRotationMatrix() const;
-
-		protected:
-			vec3 mScale;
-			vec3 mPosition;
-			quat mRotation;
-		};
-
-	}
-
-}
+}}
 
 #endif
