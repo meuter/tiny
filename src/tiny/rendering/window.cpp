@@ -1,5 +1,6 @@
 #include "window.h"
-
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
 
 namespace tiny { namespace rendering {
 
@@ -21,7 +22,6 @@ Window::Window(int width, int height, std::string title) : mHeight(height), mWid
 
 	if (GLEW_OK != glewInit())
 		throw std::runtime_error("could not initiazlie GLEW");
-
 }
 
 Window::~Window() 
@@ -29,6 +29,11 @@ Window::~Window()
 	SDL_GL_DeleteContext(mGLContext);
 	SDL_DestroyWindow(mSDLWindow);
 	SDL_Quit();
+}
+
+void Window::update()
+{
+	SDL_GL_SwapWindow(mSDLWindow);
 }
 
 
