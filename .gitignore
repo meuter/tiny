@@ -12,3 +12,4 @@ test/tiny/math/matrix_tests.o
 test/tiny/math/quaternion_tests.o
 test/tiny/math/trigo_tests.o
 window_example
+test/tiny/math/matrix2_tests.o

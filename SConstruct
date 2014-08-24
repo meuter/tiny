@@ -24,7 +24,7 @@ env.Library("tiny", Split("""
 
 example = env.Clone()
 example.MergeFlags("-L. -ltiny")
-example.MergeFlags("-framework SDL2 -framework OpenGL")
+example.MergeFlags("-L/usr/local/lib -lGLEW -lSDL2")
 example.Program("window_example", Split("""
 	test/tiny/example/window_example.cpp
 """));

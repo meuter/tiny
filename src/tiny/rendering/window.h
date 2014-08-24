@@ -2,8 +2,8 @@
 #define __TINY_GC_WINDOW_H__
 
 #include <string>
-
-struct SDL_Window;
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
 
 namespace tiny {
 
@@ -18,9 +18,11 @@ namespace tiny {
 
 			inline int width() const  { return mHeight; }
 			inline int height() const { return mWidth; }
+			inline float apsect() const { return (float)mHeight/(float)mWidth; }
 
 		private:
  			SDL_Window *mSDLWindow;
+ 			SDL_GLContext mGLContext;
  			int mHeight, mWidth;
  		};
 
