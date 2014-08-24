@@ -15,67 +15,67 @@ namespace tiny
 
         namespace internal
         {
-            template<typename S, size_t L, size_t C>
+            template<typename scalar, size_t L, size_t C>
             struct default_layout
             {
-                template<typename... Ss>
-                default_layout(const Ss... x) : data{x...} {}
+                template<typename... scalars>
+                default_layout(const scalars... x) : data{x...} {}
                 default_layout() {}
             private:
-                S data[L*C];
+                scalar data[L*C];
             };
 
-            template<typename S>
-            struct default_layout<S,1,2>
+            template<typename scalar>
+            struct default_layout<scalar,1,2>
             {
-                default_layout(const S &x, const S &y) : x{x}, y{y} {}
+                default_layout(const scalar &x, const scalar &y) : x{x}, y{y} {}
                 default_layout() {}
-                S x, y;
+                scalar x, y;
             };
 
-            template<typename S>
-            struct default_layout<S,1,3>
+            template<typename scalar>
+            struct default_layout<scalar,1,3>
             {
-                default_layout(const S &x, const S &y, const S &z) : x{x}, y{y}, z{z} {}
-                default_layout(const default_layout<S,1,2> v, const S &z = S()) : x{v.x}, y{v.y}, z{z} {}
-                default_layout(const S &x, const default_layout<S,1,2> v) : x{x}, y{v.x}, z{v.y} {}
+                default_layout(const scalar &x, const scalar &y, const scalar &z) : x{x}, y{y}, z{z} {}
+                default_layout(const default_layout<scalar,1,2> v, const scalar &z = scalar()) : x{v.x}, y{v.y}, z{z} {}
+                default_layout(const scalar &x, const default_layout<scalar,1,2> v) : x{x}, y{v.x}, z{v.y} {}
                 default_layout() {}
-                S x, y, z;
+                scalar x, y, z;
             };
 
-            template<typename S>
-            struct default_layout<S,1,4>
+            template<typename scalar>
+            struct default_layout<scalar,1,4>
             {
-                default_layout(const S &x, const S &y, const S &z, const S &w) : x{x}, y{y}, z{z}, w{w} {}
-                default_layout(const S &x, const default_layout<S,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
-                default_layout(const default_layout<S,1,3> v, const S &w = S()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
+                default_layout(const scalar &x, const scalar &y, const scalar &z, const scalar &w) : x{x}, y{y}, z{z}, w{w} {}
+                default_layout(const scalar &x, const default_layout<scalar,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
+                default_layout(const default_layout<scalar,1,3> v, const scalar &w = scalar()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
                 default_layout() {}
-                S x, y, z, w;
+                scalar x, y, z, w;
             };
         };
 
-        template<typename S, size_t L, size_t C, typename layout=internal::default_layout<S,L,C> >
+        template<typename scalar, size_t L, size_t C, typename layout=internal::default_layout<scalar,L,C> >
         struct matrix : layout,
-                        boost::additive<matrix<S,L,C>,
-                        boost::multiplicative2<matrix<S,L,C>, S,
-                        boost::equality_comparable<matrix<S,L,C>,
-                        boost::partially_ordered<matrix<S,L,C> > > > >
+                        boost::additive<matrix<scalar,L,C>,
+                        boost::multiplicative2<matrix<scalar,L,C>, scalar,
+                        boost::equality_comparable<matrix<scalar,L,C>,
+                        boost::partially_ordered<matrix<scalar,L,C> > > > >
         {
-            typedef matrix<S,L,C> mat;
-            typedef matrix<S,1,C> vec;
-            typedef matrix<S,1,2> vec2;
-            typedef matrix<S,1,3> vec3;
-            typedef matrix<S,1,3> vec4;
+            typedef matrix<scalar,L,C> mat;
+            typedef matrix<scalar,1,C> vec;
+            typedef matrix<scalar,1,2> vec2;
+            typedef matrix<scalar,1,3> vec3;
+            typedef matrix<scalar,1,3> vec4;
 
-            constexpr static const S EPSILON = std::numeric_limits<S>::epsilon() * static_cast<S>(2.0);
+            constexpr static const scalar EPSILON = std::numeric_limits<scalar>::epsilon() * static_cast<scalar>(2.0);
 
             using layout::layout;
 
-            const S &operator()(size_t l, size_t c) const { return reinterpret_cast<const S*>(this)[l*C+c]; }
-            const S &operator()(size_t i) const           { return (*this)(0,i); }
+            const scalar &operator()(size_t l, size_t c) const { return reinterpret_cast<const scalar*>(this)[l*C+c]; }
+            const scalar &operator()(size_t i) const           { return (*this)(0,i); }
 
-            S &operator()(size_t l, size_t c)             { return reinterpret_cast<S*>(this)[l*C+c]; }
-            S &operator()(size_t i)                       { return (*this)(0,i); }
+            scalar &operator()(size_t l, size_t c)             { return reinterpret_cast<scalar*>(this)[l*C+c]; }
+            scalar &operator()(size_t i)                       { return (*this)(0,i); }
 
             constexpr size_t lines() const                { return L; }
             constexpr size_t columns() const              { return C; }
@@ -129,7 +129,7 @@ namespace tiny
                 return (*this);
             }
 
-            mat &operator*=(const S &s)
+            matrix &operator*=(const scalar &s)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -137,7 +137,7 @@ namespace tiny
                 return (*this);
             }
 
-            mat &operator/=(const S &s)
+            matrix &operator/=(const scalar &s)
             {
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
@@ -145,15 +145,15 @@ namespace tiny
                 return (*this);
             }
 
-            mat operator-()
+            matrix operator-()
             {
                 return -1 * (*this);
             }
 
             template<size_t M>
-            matrix<S,L,M> operator*(const matrix<S,C,M> &r) const
+            matrix<scalar,L,M> operator*(const matrix<scalar,C,M> &r) const
             {
-                matrix<S,L,M> result;
+                matrix<scalar,L,M> result;
                 for (size_t i = 0; i < result.lines(); ++i)
                 {
                     for (size_t j = 0; j < result.columns(); ++j)
@@ -172,18 +172,18 @@ namespace tiny
                 return *this;
             }
 
-            S trace() const 
+            scalar trace() const 
             {
                 static_assert(L == C, "trace only applies to square matrices");
-                S accumulator = static_cast<S>(0.0);
+                scalar accumulator = static_cast<scalar>(0.0);
                 for (size_t i = 0; i < lines(); ++i)
                     accumulator += (*this)(i,i);
                 return accumulator;
             }
 
-            matrix<S,C,L> transposed() const
+            matrix<scalar,C,L> transposed() const
             {
-                matrix<S,C,L> result;
+                matrix<scalar,C,L> result;
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
                         result(c,l) = (*this)(l,c);
@@ -202,17 +202,17 @@ namespace tiny
                 return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
             }
 
-            S operator%(const vec &r) const
+            scalar operator%(const vec &r) const
             {
-                S accumulator = static_cast<S>(0.0);
+                scalar accumulator = static_cast<scalar>(0.0);
                 for (size_t i = 0; i < r.dimension(); ++i)
                     accumulator += (*this)(i) * r(i);
                 return accumulator;
             }
 
-            S length() const
+            scalar length() const
             {
-                return static_cast<S>(std::sqrt((*this) % (*this)));
+                return static_cast<scalar>(std::sqrt((*this) % (*this)));
             }
 
             vec &normalize()
@@ -258,8 +258,8 @@ namespace tiny
             return l.length();
         }
 
-        template<typename vec, typename S>
-        vec lerp(const vec &start, const vec &end, const S &percent)
+        template<typename vec, typename scalar>
+        vec lerp(const vec &start, const vec &end, const scalar &percent)
         {
             return start + percent * (end-start);
         }
