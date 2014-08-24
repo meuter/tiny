@@ -16,63 +16,60 @@ namespace tiny
         namespace internal
         {
             template<typename S, size_t L, size_t C>
-            struct mlayout
+            struct default_layout
             {
                 template<typename... Ss>
-                mlayout(const Ss... x) : data{x...} {}
-                mlayout() {}
+                default_layout(const Ss... x) : data{x...} {}
+                default_layout() {}
             private:
                 S data[L*C];
             };
 
             template<typename S>
-            struct mlayout<S,1,2>
+            struct default_layout<S,1,2>
             {
-                mlayout(const S &x, const S &y) : x{x}, y{y} {}
-                mlayout() {}
+                default_layout(const S &x, const S &y) : x{x}, y{y} {}
+                default_layout() {}
                 S x, y;
             };
 
             template<typename S>
-            struct mlayout<S,1,3>
+            struct default_layout<S,1,3>
             {
-                mlayout(const S &x, const S &y, const S &z) : x{x}, y{y}, z{z} {}
-                mlayout(const mlayout<S,1,2> v, const S &z = S()) : x{v.x}, y{v.y}, z{z} {}
-                mlayout(const S &x, const mlayout<S,1,2> v) : x{x}, y{v.x}, z{v.y} {}
-                mlayout() {}
+                default_layout(const S &x, const S &y, const S &z) : x{x}, y{y}, z{z} {}
+                default_layout(const default_layout<S,1,2> v, const S &z = S()) : x{v.x}, y{v.y}, z{z} {}
+                default_layout(const S &x, const default_layout<S,1,2> v) : x{x}, y{v.x}, z{v.y} {}
+                default_layout() {}
                 S x, y, z;
             };
 
             template<typename S>
-            struct mlayout<S,1,4>
+            struct default_layout<S,1,4>
             {
-                mlayout(const S &x, const S &y, const S &z, const S &w) : x{x}, y{y}, z{z}, w{w} {}
-                mlayout(const S &x, const mlayout<S,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
-                mlayout(const mlayout<S,1,3> v, const S &w = S()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
-                mlayout() {}
+                default_layout(const S &x, const S &y, const S &z, const S &w) : x{x}, y{y}, z{z}, w{w} {}
+                default_layout(const S &x, const default_layout<S,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
+                default_layout(const default_layout<S,1,3> v, const S &w = S()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
+                default_layout() {}
                 S x, y, z, w;
             };
         };
 
-        template<typename S, size_t L, size_t C>
-        struct matrix : internal::mlayout<S,L,C>,
+        template<typename S, size_t L, size_t C, typename layout=internal::default_layout<S,L,C> >
+        struct matrix : layout,
                         boost::additive<matrix<S,L,C>,
                         boost::multiplicative2<matrix<S,L,C>, S,
                         boost::equality_comparable<matrix<S,L,C>,
                         boost::partially_ordered<matrix<S,L,C> > > > >
         {
             typedef matrix<S,L,C> mat;
-            typedef matrix<S,C,L> tmat;
-            typedef matrix<S,L,L> sqmat;
             typedef matrix<S,1,C> vec;
             typedef matrix<S,1,2> vec2;
             typedef matrix<S,1,3> vec3;
             typedef matrix<S,1,3> vec4;
-            typedef internal::mlayout<S,L,C> mlayout;
 
-            constexpr static const S EPSILON = std::numeric_limits<S>::epsilon() * S(2);
+            constexpr static const S EPSILON = std::numeric_limits<S>::epsilon() * static_cast<S>(2.0);
 
-            using mlayout::mlayout;
+            using layout::layout;
 
             const S &operator()(size_t l, size_t c) const { return reinterpret_cast<const S*>(this)[l*C+c]; }
             const S &operator()(size_t i) const           { return (*this)(0,i); }
@@ -169,7 +166,7 @@ namespace tiny
                 return result;
             }
 
-            sqmat &operator*=(const sqmat &r)
+            matrix &operator*=(const matrix &r)
             {
                 (*this) = (*this) * r;
                 return *this;
@@ -184,16 +181,16 @@ namespace tiny
                 return accumulator;
             }
 
-            tmat transposed() const
+            matrix<S,C,L> transposed() const
             {
-                tmat result;
+                matrix<S,C,L> result;
                 for (size_t l = 0; l < lines(); ++l)
                     for (size_t c = 0; c < columns(); ++c)
                         result(c,l) = (*this)(l,c);
                 return result;
             }
 
-            sqmat &transpose()
+            matrix &transpose()
             {
                 (*this) = this->transposed();
                 return (*this);
