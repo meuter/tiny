@@ -5,6 +5,7 @@
 #include "trigo.h"
 #include <iostream>
 #include <cmath>
+#include <limits>
 #include <cfloat>
 
 namespace tiny
@@ -51,18 +52,6 @@ namespace tiny
                 mlayout() {}
                 S x, y, z, w;
             };
-
-            template<typename S>
-            struct epsilon { constexpr static const S value = 0; };
-
-            template<>
-            struct epsilon<float> { constexpr static const float value = FLT_EPSILON; };
-
-            template<>
-            struct epsilon<double> { constexpr static const double value = DBL_EPSILON; };
-
-            template<>
-            struct epsilon<long double> { constexpr static const long double value = LDBL_EPSILON; };
         };
 
         template<typename S, size_t L, size_t C>
@@ -81,7 +70,7 @@ namespace tiny
             typedef matrix<S,1,3> vec4;
             typedef internal::mlayout<S,L,C> mlayout;
 
-            constexpr static const S EPSILON = internal::epsilon<S>::value * S(2);
+            constexpr static const S EPSILON = std::numeric_limits<S>::epsilon() * S(2);
 
             using mlayout::mlayout;
 
