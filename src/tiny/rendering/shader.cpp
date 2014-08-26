@@ -45,6 +45,7 @@ void Shader::loadShader(const std::string &filename)
 		throw std::runtime_error("could not open " + filename);
 
 	std::stringstream buffer;
+	buffer << fileStream.rdbuf();
 	std::string shaderSource = buffer.str();
 
 	const GLchar *sources[] = { shaderSource.c_str() };
