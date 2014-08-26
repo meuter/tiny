@@ -1,6 +1,7 @@
 #include "window.h"
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <stdexcept>
 
 namespace tiny { namespace rendering {
 

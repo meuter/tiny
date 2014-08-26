@@ -19,7 +19,7 @@ env.MergeFlags("-ggdb -O0" if debug else "-O3")
 env.Library("tiny", Split("""
 	src/tiny/core/transformable.cpp
 	src/tiny/rendering/window.cpp
-
+	src/tiny/rendering/shader.cpp
 """))
 
 example = env.Clone()

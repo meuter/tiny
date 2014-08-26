@@ -63,9 +63,8 @@ namespace tiny { namespace math {
         typedef matrix<scalar,1,3> vec3;
         typedef matrix<scalar,1,3> vec4;
 
-        constexpr static const scalar EPSILON = std::numeric_limits<scalar>::epsilon() * static_cast<scalar>(2.0);
-
-        using layout::layout;
+        template<typename... scalars>
+        matrix(const scalars... x) : layout{x...} {}
 
         const scalar &operator()(size_t l, size_t c) const { return reinterpret_cast<const scalar*>(this)[l*C+c]; }
         const scalar &operator()(size_t i) const           { return (*this)(0,i); }
@@ -93,6 +92,8 @@ namespace tiny { namespace math {
 
         bool operator==(const matrix &r) const
         {
+            constexpr static const scalar EPSILON = std::numeric_limits<scalar>::epsilon() * static_cast<scalar>(2.0);
+
             for (size_t l = 0; l < lines(); ++l)
                 for (size_t c = 0; c < columns(); ++c)
                     if (fabs((*this)(l,c) - r(l,c)) > EPSILON)
