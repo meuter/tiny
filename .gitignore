@@ -14,3 +14,4 @@ test/tiny/math/trigo_tests.o
 window_example
 test/tiny/math/matrix2_tests.o
 src/tiny/rendering/shader.o
+test/tiny/rendering/shader_tests.o
