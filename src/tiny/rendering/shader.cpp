@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 static void glCheckShaderError(GLint handle, GLenum status, const std::string &step)
 {
@@ -38,9 +39,12 @@ Shader::~Shader()
 
 void Shader::loadShader(const std::string &filename)
 {
-	std::stringstream buffer;
 	std::ifstream fileStream(filename.c_str());
-	buffer << fileStream.rdbuf();
+
+	if (fileStream.fail())
+		throw std::runtime_error("could not open " + filename);
+
+	std::stringstream buffer;
 	std::string shaderSource = buffer.str();
 
 	const GLchar *sources[] = { shaderSource.c_str() };

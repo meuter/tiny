@@ -33,11 +33,13 @@ example.Program("window_example", Split("""
 test = env.Clone()
 test.MergeFlags("-Itest/gtest")
 test.MergeFlags("-L. -ltiny")
+test.MergeFlags("-L/usr/local/lib -lGLEW -lSDL2")
 test.Program("test/tiny/all", Split("""
 	test/tiny/core/transformable_tests.cpp
 	test/tiny/math/matrix_tests.cpp
 	test/tiny/math/quaternion_tests.cpp
 	test/tiny/math/trigo_tests.cpp
+	test/tiny/rendering/shader_tests.cpp
 	test/gtest/gmock-gtest-all.cc
 	test/gtest/gmock_main.cc
 """))
