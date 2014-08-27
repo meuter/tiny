@@ -18,24 +18,9 @@ namespace tiny { namespace rendering {
 
 		void loadShader(const std::string &filename);
 		void compileShader();
+		void checkForErrors();
 
 		GLuint mShaderHandle;
-	};
-
-	class ShaderProgram
-	{
-	public:
-		ShaderProgram(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename);
-		virtual ~ShaderProgram();
-
-		inline GLuint getHandle() const { return mProgramHandle; }
-
-	private:
-
-		void linkProgram();
-
-		GLuint mProgramHandle;
-		Shader mVertexShader, mFragmentShader;
 	};
 
 }}

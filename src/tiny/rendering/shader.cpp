@@ -4,19 +4,6 @@
 #include <sstream>
 #include <iostream>
 
-static void glCheckShaderError(GLint handle, GLenum status, const std::string &step)
-{
-	GLint success;
-
-	glGetShaderiv(handle, status, &success);
-
-	if (!success)
-	{
-		char errorMessage[1024];
-		glGetShaderInfoLog(handle, sizeof(errorMessage), NULL, errorMessage);
-		throw std::runtime_error(step + " error:\n" + std::string(errorMessage));
-	}
-}
 
 namespace tiny { namespace rendering {
 
@@ -29,6 +16,7 @@ Shader::Shader(GLenum shaderType, const std::string &filename)
 
 	loadShader(filename);
 	compileShader();
+	checkForErrors();
 }
 
 Shader::~Shader()
@@ -57,39 +45,21 @@ void Shader::loadShader(const std::string &filename)
 void Shader::compileShader() 
 {
 	glCompileShader(mShaderHandle);
-	glCheckShaderError(mShaderHandle, GL_COMPILE_STATUS, "compilation");
 }
 
 
-
-ShaderProgram::ShaderProgram(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
-	: mVertexShader(GL_VERTEX_SHADER, vertexShaderFilename),
-	  mFragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFilename)
+void Shader::checkForErrors()
 {
-	mProgramHandle = glCreateProgram();
-	if (mProgramHandle == 0)
-		throw std::runtime_error("could not create program");
+	GLint success;
 
-	glAttachShader(mProgramHandle, mVertexShader.getHandle());
-	glAttachShader(mProgramHandle, mFragmentShader.getHandle());
+	glGetShaderiv(mShaderHandle, GL_COMPILE_STATUS, &success);
 
-	linkProgram();
+	if (!success)
+	{
+		char errorMessage[1024];
+		glGetShaderInfoLog(mShaderHandle, sizeof(errorMessage), NULL, errorMessage);
+		throw std::runtime_error("shader error:\n" + std::string(errorMessage));
+	}
 }
-
-ShaderProgram::~ShaderProgram()
-{
-	glDetachShader(mProgramHandle, mVertexShader.getHandle());
-	glDetachShader(mProgramHandle, mFragmentShader.getHandle());
-	glDeleteProgram(mProgramHandle);
-}
-
-void ShaderProgram::linkProgram()
-{
-	glLinkProgram(mProgramHandle);
-	glCheckShaderError(mProgramHandle, GL_LINK_STATUS, "linking");
-	glValidateProgram(mProgramHandle);
-	glCheckShaderError(mProgramHandle, GL_LINK_STATUS, "validation");
-}
-
 
 }}
