@@ -11,6 +11,14 @@ Window::Window(int width, int height, std::string title) : mHeight(height), mWid
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
 
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,32);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+
 	mSDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 
 	if (mSDLWindow == NULL)
@@ -21,6 +29,7 @@ Window::Window(int width, int height, std::string title) : mHeight(height), mWid
 	if (mGLContext == NULL)
 		throw std::runtime_error("could not create GL context");
 
+	glewExperimental = GL_TRUE; 
 	if (GLEW_OK != glewInit())
 		throw std::runtime_error("could not initiazlie GLEW");
 }
