@@ -9,15 +9,21 @@ namespace tiny { namespace rendering {
 
 
 ShaderProgram::ShaderProgram(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
-	: mVertexShader(GL_VERTEX_SHADER, vertexShaderFilename),
-	  mFragmentShader(GL_FRAGMENT_SHADER, fragmentShaderFilename)
+	: mVertexShader(GL_VERTEX_SHADER),
+	  mFragmentShader(GL_FRAGMENT_SHADER)
 {
+	mVertexShader.loadFile(vertexShaderFilename);
+	mFragmentShader.loadFile(fragmentShaderFilename);
+
 	mProgramHandle = glCreateProgram();
 	if (mProgramHandle == 0)
 		throw std::runtime_error("could not create program");
 
 	glAttachShader(mProgramHandle, mVertexShader.getHandle());
 	glAttachShader(mProgramHandle, mFragmentShader.getHandle());
+
+	mVertexShader.compile();
+	mFragmentShader.compile();
 
 	linkProgram();
 }
