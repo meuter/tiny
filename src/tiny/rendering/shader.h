@@ -9,6 +9,8 @@ namespace tiny { namespace rendering {
 	class Shader
 	{
 	public:
+		static Shader fromFile(GLenum shaderType, const std::string filename);
+
 		Shader(GLenum shaderType);
 		Shader(const Shader &other) = delete;
 		Shader(Shader &&other);

@@ -3,44 +3,52 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <utility>
 
 
 namespace tiny { namespace rendering {
 
-
 ShaderProgram::ShaderProgram(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
-	: mVertexShader(GL_VERTEX_SHADER),
-	  mFragmentShader(GL_FRAGMENT_SHADER)
 {
-	mVertexShader.loadFile(vertexShaderFilename);
-	mFragmentShader.loadFile(fragmentShaderFilename);
-
 	mProgramHandle = glCreateProgram();
 	if (mProgramHandle == 0)
 		throw std::runtime_error("could not create program");
 
-	glAttachShader(mProgramHandle, mVertexShader.getHandle());
-	glAttachShader(mProgramHandle, mFragmentShader.getHandle());
-
-	mVertexShader.compile();
-	mFragmentShader.compile();
-
-	linkProgram();
+	addShader(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
+	addShader(Shader::fromFile(GL_VERTEX_SHADER, vertexShaderFilename));
+	compile();
+	link();
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	glDetachShader(mProgramHandle, mVertexShader.getHandle());
-	glDetachShader(mProgramHandle, mFragmentShader.getHandle());
+	for (Shader &shader : mShaders)
+		glDetachShader(mProgramHandle, shader.getHandle());
 	glDeleteProgram(mProgramHandle);
 }
+
+void ShaderProgram::addShader(Shader &&shader)
+{	
+	glAttachShader(mProgramHandle, shader.getHandle());
+	mShaders.push_back(std::move(shader));
+
+	std::cout << "stolen shader = " << shader.getHandle() << std::endl;
+
+}
+
+void ShaderProgram::compile()
+{
+	for (Shader &shader : mShaders)
+		shader.compile();
+}
+
 
 void ShaderProgram::use()
 {
 	glUseProgram(mProgramHandle);
 }
 
-void ShaderProgram::linkProgram()
+void ShaderProgram::link()
 {
 	glLinkProgram(mProgramHandle);
 	checkForErrors();

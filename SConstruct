@@ -5,7 +5,7 @@ CacheDir("/tmp/sconscache/")
 debug   = ARGUMENTS.get("debug", 0)
 verbose = ARGUMENTS.get("verbose", 0)
 
-env["CXX"] = "clang++ -std=c++11 -fcolor-diagnostics"
+env["CXX"] = "clang++ -std=c++11 -stdlib=libc++ -fcolor-diagnostics"
 if not verbose:
 	env["CXXCOMSTR"]    = " CXX  $TARGET"
 	env["LINKCOMSTR"]   = " LN   $TARGET"
