@@ -1,8 +1,6 @@
 #ifndef __TINY_CODE_KEYS_H__
 #define __TINY_CODE_KEYS_H__
 
-#include <SDL2/SDL_keycode.h>
-
 namespace tiny { namespace core {
 
 	enum class Key {

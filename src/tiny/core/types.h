@@ -12,6 +12,9 @@ namespace tiny { namespace core {
 	using vec3 = tiny::math::vector<float,3>;
 	using vec4 = tiny::math::vector<float,4>;
 	using quat = tiny::math::quaternion<float>;
+
+	using ivec2 = tiny::math::vector<int, 2>;
+	
 	using rad  = tiny::math::radian;
 
 }}

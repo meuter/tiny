@@ -16,6 +16,7 @@ using tiny::rendering::ShaderProgram;
 using tiny::core::vec3;
 using tiny::core::Inputs;
 using tiny::core::Key;
+using tiny::core::MouseButton;
 
 #define NUM_BUFFERS 1
 
@@ -60,6 +61,13 @@ struct Triangle
 };
 
 
+class CoreEngine
+{
+private:
+
+};
+
+
 
 int main(int argc, char **argv)
 {
@@ -70,7 +78,7 @@ int main(int argc, char **argv)
 
 	while (window.isOpen())
 	{
-		inputs.update();
+		inputs.refresh();
 
 		if (inputs.isWindowCloseRequested())
 			window.close();

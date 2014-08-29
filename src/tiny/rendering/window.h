@@ -2,12 +2,11 @@
 #define __TINY_GC_WINDOW_H__
 
 #include <string>
-#include <tiny/math/matrix.h>
+#include <tiny/core/inputs.h>
 
 struct SDL_Window;
 
 namespace tiny { namespace rendering {
-
 
 	class Window 
 	{
