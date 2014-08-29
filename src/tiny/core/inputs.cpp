@@ -6,16 +6,15 @@ namespace tiny { namespace core {
 
 Inputs::Inputs() 
 	: mWindowCloseRequested(false),
-	  mKeyPressed(static_cast<int>(Key::MAX), false), mKeyReleased(static_cast<int>(Key::MAX), false), mKeyHeld(static_cast<int>(Key::MAX), false)
+	  mKeyPressed(static_cast<int>(Key::KEY_MAX), false), mKeyReleased(static_cast<int>(Key::KEY_MAX), false), mKeyHeld(static_cast<int>(Key::KEY_MAX), false)
 {
-
 }
 
 
 void Inputs::update()
 {
-	mKeyPressed.assign(static_cast<int>(Key::MAX),false);
-	mKeyReleased.assign(static_cast<int>(Key::MAX),false);
+	mKeyPressed.assign(static_cast<int>(Key::KEY_MAX),false);
+	mKeyReleased.assign(static_cast<int>(Key::KEY_MAX),false);
 
 	SDL_Event event;	
 	while(SDL_PollEvent(&event))
