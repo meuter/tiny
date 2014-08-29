@@ -6,6 +6,8 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+#include <iostream>
+
 
 using tiny::rendering::Window;
 using tiny::rendering::ShaderProgram;
@@ -57,35 +59,22 @@ struct Triangle
 
 int main(int argc, char **argv)
 {
-	try {
+	Window window(1080,768, "3D");
+	ShaderProgram shaderProgram("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
+	Triangle triangle;
 
-		bool quit;
-		Window window(1080,768, "3D");
-		ShaderProgram shaderProgram("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
-		Triangle triangle;
-
-		do
-		{
-			SDL_Event e;
-			while(SDL_PollEvent(&e))
-				quit = (e.type == SDL_QUIT);
-
-			glClearColor(0,0,0.5,1);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			shaderProgram.use();
-			triangle.draw();
-
-			window.update();
-		}
-		while(!quit);
-	}
-	catch (const std::exception &e)
+	while (window.isOpen())
 	{
-		std::cout << e.what() << std::endl;
-		return EXIT_FAILURE;
+		if (window.isKeyDown(Window::KEY_LEFT_CMD) && window.isKeyPressed(Window::KEY_Z))
+			window.close();
+
+		glClearColor(0,0,0.5,1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shaderProgram.use();
+		triangle.draw();
+		window.update();
 	}
-			
 
 	return EXIT_SUCCESS;
 }
