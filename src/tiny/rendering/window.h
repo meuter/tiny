@@ -16,9 +16,9 @@ namespace tiny { namespace rendering {
 
 		inline int width() const  { return mHeight; }
 		inline int height() const { return mWidth; }
-		inline float apsect() const { return (float)mHeight/(float)mWidth; }
+		inline float apsect() const { return (float)mHeight/(float)mWidth; }		
 
-		void update();		
+		void update();
 
 	private:
 		SDL_Window *mSDLWindow;
