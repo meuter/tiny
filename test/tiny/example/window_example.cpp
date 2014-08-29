@@ -2,6 +2,8 @@
 #include <tiny/rendering/window.h>
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/core/types.h>
+#include <tiny/core/inputs.h>
+#include <tiny/core/keys.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <vector>
@@ -12,6 +14,8 @@
 using tiny::rendering::Window;
 using tiny::rendering::ShaderProgram;
 using tiny::core::vec3;
+using tiny::core::Inputs;
+using tiny::core::Key;
 
 #define NUM_BUFFERS 1
 
@@ -60,12 +64,18 @@ struct Triangle
 int main(int argc, char **argv)
 {
 	Window window(1080,768, "3D");
+	Inputs inputs;	
 	ShaderProgram shaderProgram("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 	Triangle triangle;
 
 	while (window.isOpen())
 	{
-		if (window.isKeyDown(Window::KEY_LEFT_CMD) && window.isKeyPressed(Window::KEY_Z))
+		inputs.update();
+
+		if (inputs.isWindowCloseRequested())
+			window.close();
+
+		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
 			window.close();
 
 		glClearColor(0,0,0.5,1);

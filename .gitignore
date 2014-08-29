@@ -16,3 +16,4 @@ test/tiny/math/matrix2_tests.o
 src/tiny/rendering/shader.o
 test/tiny/rendering/shader_tests.o
 src/tiny/rendering/shaderprogram.o
+src/tiny/core/inputs.o

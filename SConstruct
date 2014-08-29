@@ -18,6 +18,7 @@ env.MergeFlags("-I/usr/local/include/")
 env.MergeFlags("-ggdb -O0" if debug else "-O3")
 env.Library("tiny", Split("""
 	src/tiny/core/transformable.cpp
+	src/tiny/core/inputs.cpp
 	src/tiny/rendering/window.cpp
 	src/tiny/rendering/shader.cpp
 	src/tiny/rendering/shaderprogram.cpp
