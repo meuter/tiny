@@ -72,6 +72,16 @@ TEST(int2x2, can_be_summed)
     EXPECT_EQ(r, m+n);
 }
 
+TEST(int2x2, can_be_summed_with_int)
+{
+    int2x2 m { 1, 2, 3, 4 };
+    int2x2 r { 3, 4, 5, 6 };
+
+    EXPECT_EQ(r, m+2);
+    EXPECT_EQ(r, 2+m);
+}
+
+
 TEST(int2, can_be_modified)
 {
     int2 v;

@@ -54,9 +54,10 @@ namespace tiny { namespace math {
     template<typename scalar, size_t L, size_t C, typename layout=internal::default_layout<scalar,L,C> >
     struct matrix : layout,
                     boost::additive<matrix<scalar,L,C>,
+                    boost::additive2<matrix<scalar,L,C>, scalar,
                     boost::multiplicative2<matrix<scalar,L,C>, scalar,
                     boost::equality_comparable<matrix<scalar,L,C>,
-                    boost::partially_ordered<matrix<scalar,L,C> > > > >
+                    boost::partially_ordered<matrix<scalar,L,C> > > > > >
     {
         typedef matrix<scalar,1,C> vec;
         typedef matrix<scalar,1,2> vec2;
@@ -123,6 +124,22 @@ namespace tiny { namespace math {
             for (size_t l = 0; l < lines(); ++l)
                 for (size_t c = 0; c < columns(); ++c)
                     (*this)(l,c) -= r(l,c);
+            return (*this);
+        }
+
+        matrix &operator+=(const scalar &s)
+        {
+            for (size_t l = 0; l < lines(); ++l)
+                for (size_t c = 0; c < columns(); ++c)
+                    (*this)(l,c) += s;
+            return (*this);
+        }
+
+        matrix &operator-=(const scalar &s)
+        {
+            for (size_t l = 0; l < lines(); ++l)
+                for (size_t c = 0; c < columns(); ++c)
+                    (*this)(l,c) -= s;
             return (*this);
         }
 
