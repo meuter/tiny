@@ -35,12 +35,6 @@ void ShaderProgram::add(Shader &&shader)
 	mShaders.push_back(std::move(shader));
 }
 
-void ShaderProgram::compile()
-{
-	for (Shader &shader : mShaders)
-		shader.compile();
-}
-
 void ShaderProgram::use()
 {
 	glUseProgram(mProgramHandle);

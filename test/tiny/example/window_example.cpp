@@ -67,9 +67,7 @@ ShaderProgram flatShader()
 	ShaderProgram result;
 	result.add(Shader::fromFile(GL_VERTEX_SHADER,   "res/shaders/flat_vertex.glsl"));
 	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, "res/shaders/flat_fragment.glsl"));
-	result.compile();
 	result.link();
-
 	return result;
 }
 

@@ -20,7 +20,6 @@ namespace tiny { namespace rendering {
 		ShaderProgram &operator=(const ShaderProgram &other) = delete;
 
 		void add(Shader &&shader);
-		void compile();
 		void link();
 		void use();
 	private:

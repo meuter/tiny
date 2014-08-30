@@ -11,6 +11,7 @@ Shader Shader::fromFile(GLenum shaderType, const std::string filename)
 {
 	Shader shader(shaderType);
 	shader.loadFile(filename);
+	shader.compile();
 	return shader;
 }
 
