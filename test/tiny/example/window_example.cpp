@@ -62,19 +62,10 @@ struct Triangle
 	std::vector<vec3> vertices;
 };
 
-ShaderProgram flatShader()
-{
-	ShaderProgram result;
-	result.add(Shader::fromFile(GL_VERTEX_SHADER,   "res/shaders/flat_vertex.glsl"));
-	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, "res/shaders/flat_fragment.glsl"));
-	result.link();
-	return result;
-}
-
 int main(int argc, char **argv)
 {
 	Window window(1080,768, "3D");
-	ShaderProgram shaderProgram = flatShader();
+	ShaderProgram shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 	Inputs inputs;	
 	Triangle triangle;
 

@@ -12,6 +12,8 @@ namespace tiny { namespace rendering {
 	class ShaderProgram
 	{
 	public:
+		static ShaderProgram fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename);
+
 		ShaderProgram();
 		ShaderProgram(const ShaderProgram &other) = delete;
 		ShaderProgram(ShaderProgram &&other);

@@ -2,11 +2,19 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 #include <utility>
 
 
 namespace tiny { namespace rendering {
+
+ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
+{
+	ShaderProgram result;
+	result.add(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
+	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
+	result.link();
+	return result;
+}
 
 ShaderProgram::ShaderProgram() : mProgramHandle(glCreateProgram())
 {

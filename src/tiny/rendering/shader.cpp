@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 
 namespace tiny { namespace rendering {
@@ -19,14 +18,10 @@ Shader::Shader(GLenum shaderType) : mShaderHandle(glCreateShader(shaderType))
 {
 	if (mShaderHandle == 0)
 		throw std::runtime_error("could not create shader");
-
-	std::cout << "shader created " << mShaderHandle << std::endl;
 }
 
 Shader::Shader(Shader &&other) : mShaderHandle(other.mShaderHandle)
 {
-	std::cout << "shader moved " << mShaderHandle << std::endl;
-
 	other.mShaderHandle = 0;
 }
 
