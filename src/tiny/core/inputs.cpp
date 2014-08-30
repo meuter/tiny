@@ -16,6 +16,9 @@ Inputs::Inputs()
 {
 }
 
+Inputs::~Inputs()
+{	
+}
 
 void Inputs::refresh()
 {

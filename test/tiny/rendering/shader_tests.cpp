@@ -27,3 +27,8 @@ TEST_F(ShaderTest, does_not_throw_if_file_exisits_and_is_empty)
 
 	EXPECT_NO_THROW(shader.loadFile("test/tiny/rendering/test_shader.glsl"));
 }
+
+TEST(Window, can_be_moved_around)
+{
+	auto window = Window(10,10,"test");
+}

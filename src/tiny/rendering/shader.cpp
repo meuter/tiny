@@ -8,7 +8,7 @@ namespace tiny { namespace rendering {
 
 Shader Shader::fromFile(GLenum shaderType, const std::string filename)
 {
-	Shader shader(shaderType);
+	auto shader = Shader(shaderType);
 	shader.loadFile(filename);
 	shader.compile();
 	return shader;

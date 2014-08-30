@@ -12,8 +12,13 @@ namespace tiny { namespace core {
 	{		
 	public:
 		Inputs();
+		Inputs(const Inputs &other) = delete;
+		Inputs(Inputs &&other) = default;
+		virtual ~Inputs();
 
-		void refresh();
+		Inputs &operator=(const Inputs &other) = delete;
+
+		void refresh();		
 		
 		inline bool isWindowCloseRequested() const { return mWindowCloseRequested; }
 

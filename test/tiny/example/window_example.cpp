@@ -66,10 +66,10 @@ struct Triangle
 
 int main(int argc, char **argv)
 {
-	Window window(1080,768, "3D");
-	ShaderProgram shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
-	Texture bricksTexture = Texture::fromFile("res/textures/bricks.jpg");
-	Inputs inputs;	
+	auto window = Window(1080,768, "3D");
+	auto shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
+	auto bricksTexture = Texture::fromFile("res/textures/bricks.jpg");
+	auto inputs = Inputs();
 	Triangle triangle;
 
 	while (window.isOpen())

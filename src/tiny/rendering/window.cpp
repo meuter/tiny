@@ -2,10 +2,12 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <stdexcept>
+#include <iostream>
 
 namespace tiny { namespace rendering {
 
-Window::Window(int width, int height, std::string title) : mHeight(height), mWidth(width), mIsOpen(true)
+Window::Window(int width, int height, std::string title) 
+	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width), mIsOpen(true)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
@@ -25,11 +27,21 @@ Window::Window(int width, int height, std::string title) : mHeight(height), mWid
 		throw std::runtime_error("could not initiazlie GLEW");
 }
 
+Window::Window(Window &&other) 
+	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
+{
+	other.mSDLWindow = NULL;
+	other.mGLContext = NULL;
+}
+
 Window::~Window() 
 {
-	SDL_GL_DeleteContext(mGLContext);
-	SDL_DestroyWindow(mSDLWindow);
-	SDL_Quit();
+	if (mSDLWindow != NULL)
+	{
+		SDL_GL_DeleteContext(mGLContext);
+		SDL_DestroyWindow(mSDLWindow);
+		SDL_Quit();
+	}
 }
 
 void Window::update()

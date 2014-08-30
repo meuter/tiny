@@ -9,7 +9,7 @@ namespace tiny { namespace rendering {
 
 ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
 {
-	ShaderProgram result;
+	auto result = ShaderProgram();
 	result.add(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
 	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
 	result.link();

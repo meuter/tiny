@@ -12,7 +12,11 @@ namespace tiny { namespace rendering {
 	{
 	public:
 		Window(int width, int height, std::string title);
+		Window(const Window &other) = delete;
+		Window(Window &&window);
 		virtual ~Window();
+
+		Window &operator=(const Window &other) = delete;
 
 		inline int   width()  const { return mHeight; }
 		inline int   height() const { return mWidth; }

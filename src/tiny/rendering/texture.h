@@ -24,7 +24,6 @@ namespace tiny { namespace rendering {
 
 	private:
 		GLuint mTextureHandle;
-
 	};
 
 }}
