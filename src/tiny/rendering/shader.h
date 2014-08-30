@@ -16,7 +16,6 @@ namespace tiny { namespace rendering {
 		Shader(Shader &&other);
 		virtual ~Shader();
 
-		Shader &operator=(Shader &&other);
 		Shader &operator=(const Shader &other) = delete;
 
 		void loadSource(const std::string &shaderSource);

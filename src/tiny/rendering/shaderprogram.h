@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
+#include <initializer_list>
 #include "shader.h"
 
 namespace tiny { namespace rendering {
@@ -11,19 +12,18 @@ namespace tiny { namespace rendering {
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename);
+		ShaderProgram();
+		ShaderProgram(const ShaderProgram &other) = delete;
+		ShaderProgram(ShaderProgram &&other);
 		virtual ~ShaderProgram();
 
-		void addShader(Shader &&shader);
+		ShaderProgram &operator=(const ShaderProgram &other) = delete;
 
-		inline GLuint getHandle() const { return mProgramHandle; }
-
+		void add(Shader &&shader);
 		void compile();
 		void link();
 		void use();
 	private:
-		void checkForErrors();
-
 		GLuint mProgramHandle;
 		std::vector<Shader> mShaders;
 	};

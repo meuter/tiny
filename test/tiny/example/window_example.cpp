@@ -1,6 +1,7 @@
 #include <iostream>
 #include <tiny/rendering/window.h>
 #include <tiny/rendering/shaderprogram.h>
+#include <tiny/rendering/shader.h>
 #include <tiny/core/types.h>
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
@@ -13,6 +14,7 @@
 
 using tiny::rendering::Window;
 using tiny::rendering::ShaderProgram;
+using tiny::rendering::Shader;
 using tiny::core::vec3;
 using tiny::core::Inputs;
 using tiny::core::Key;
@@ -60,20 +62,22 @@ struct Triangle
 	std::vector<vec3> vertices;
 };
 
-
-class CoreEngine
+ShaderProgram flatShader()
 {
-private:
+	ShaderProgram result;
+	result.add(Shader::fromFile(GL_VERTEX_SHADER,   "res/shaders/flat_vertex.glsl"));
+	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, "res/shaders/flat_fragment.glsl"));
+	result.compile();
+	result.link();
 
-};
-
-
+	return result;
+}
 
 int main(int argc, char **argv)
 {
 	Window window(1080,768, "3D");
+	ShaderProgram shaderProgram = flatShader();
 	Inputs inputs;	
-	ShaderProgram shaderProgram("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 	Triangle triangle;
 
 	while (window.isOpen())

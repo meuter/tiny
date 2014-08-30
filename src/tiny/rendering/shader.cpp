@@ -35,14 +35,6 @@ Shader::~Shader()
 		glDeleteShader(mShaderHandle);
 }
 
-Shader &Shader::operator=(Shader &&other)
-{
-	mShaderHandle = other.mShaderHandle;
-	other.mShaderHandle = 0;
-	
-	return (*this);
-}
-
 void Shader::loadSource(const std::string &shaderSource)
 {
 	const GLchar *sources[] = { shaderSource.c_str() };
