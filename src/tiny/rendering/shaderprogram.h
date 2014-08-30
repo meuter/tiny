@@ -23,7 +23,7 @@ namespace tiny { namespace rendering {
 
 		void add(Shader &&shader);
 		void link();
-		void use();
+		void use();		
 	private:
 		GLuint mProgramHandle;
 		std::vector<Shader> mShaders;

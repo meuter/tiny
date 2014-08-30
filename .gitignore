@@ -17,3 +17,4 @@ src/tiny/rendering/shader.o
 test/tiny/rendering/shader_tests.o
 src/tiny/rendering/shaderprogram.o
 src/tiny/core/inputs.o
+src/tiny/rendering/texture.o

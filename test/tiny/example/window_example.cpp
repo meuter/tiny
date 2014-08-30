@@ -2,6 +2,7 @@
 #include <tiny/rendering/window.h>
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/shader.h>
+#include <tiny/rendering/texture.h>
 #include <tiny/core/types.h>
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
@@ -15,6 +16,7 @@
 using tiny::rendering::Window;
 using tiny::rendering::ShaderProgram;
 using tiny::rendering::Shader;
+using tiny::rendering::Texture;
 using tiny::core::vec3;
 using tiny::core::Inputs;
 using tiny::core::Key;
@@ -66,6 +68,7 @@ int main(int argc, char **argv)
 {
 	Window window(1080,768, "3D");
 	ShaderProgram shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
+	Texture bricksTexture = Texture::fromFile("res/textures/bricks.jpg");
 	Inputs inputs;	
 	Triangle triangle;
 
