@@ -6,6 +6,7 @@
 #include <tiny/core/types.h>
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
+#include <tiny/core/engine.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <vector>
@@ -18,6 +19,7 @@ using tiny::rendering::ShaderProgram;
 using tiny::rendering::Shader;
 using tiny::rendering::Texture;
 using tiny::core::vec3;
+using tiny::core::Engine;
 using tiny::core::Inputs;
 using tiny::core::Key;
 using tiny::core::MouseButton;
@@ -65,100 +67,6 @@ struct Triangle
 };
 
 
-class Engine
-{
-	using InputsCallback = std::function<void(Engine &engine, Inputs &inputs)>;
-	using UpdateCallback = std::function<void(Engine &engine, double dt)>;
-	using RenderCallback = std::function<void(Engine &engine)>;
-
-	const InputsCallback NO_INPUTS_CB = [](Engine &engine, Inputs &inputs){};
-	const UpdateCallback NO_UPDATE_CB = [](Engine &engine, double dt){};
-	const RenderCallback NO_RENDER_CB = [](Engine &engine){};
-
-public:
-	Engine(Window && window) 
-		: mWindow(std::move(window)), 
-		  mIsRunning(false), 
-		  mInputsCallback(NO_INPUTS_CB),
-		  mUpdateCallback(NO_UPDATE_CB),
-		  mRenderCallback(NO_RENDER_CB) {}
-
-	Engine(Engine &&engine) = default;
-	Engine(const Engine &other) = delete;
-	virtual ~Engine() {}
-
-	void onInputs(InputsCallback inputsCallback)
-	{
-		mInputsCallback = inputsCallback;
-	}
-
-	void onUpdate(UpdateCallback updateCallback)
-	{
-		mUpdateCallback = updateCallback;
-	}
-
-	void onRender(RenderCallback renderCallback)
-	{
-		mRenderCallback = renderCallback;
-	}
-
-	void start() 
-	{
-		if (isRunning())
-			return;
-
- 		mIsRunning = true; 
- 		run();
-	}
-
-	void stop() 
-	{
-		if (!isRunning())
-			return;
-
-		mIsRunning = false; 
-	}
-
-private:
-	void run()
-	{
-		while (isRunning())
-		{
-			input();
-			update();
-			render();
-		}
-	}
-	
-	bool isRunning() 
-	{
-		return mIsRunning; 
-	}
-
-	void input()
-	{
-		mInputs.refresh();
-		mInputsCallback(*this, mInputs);
-	}
-
-	void update()
-	{
-		mUpdateCallback(*this, 0.0);
-	}
-
-	void render()
-	{
-		mRenderCallback(*this);
-		mWindow.update();
-	}
-
-	Window mWindow;
-	Inputs mInputs;
-	bool mIsRunning;
-	InputsCallback mInputsCallback;
-	UpdateCallback mUpdateCallback;
-	RenderCallback mRenderCallback;
-};
 
 int main(int argc, char **argv)
 {

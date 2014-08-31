@@ -18,3 +18,4 @@ test/tiny/rendering/shader_tests.o
 src/tiny/rendering/shaderprogram.o
 src/tiny/core/inputs.o
 src/tiny/rendering/texture.o
+src/tiny/core/engine.o
