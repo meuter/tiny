@@ -3,7 +3,7 @@
 
 #include <boost/operators.hpp>
 #include "trigo.h"
-#include <iostream>
+#include <ostream>
 #include <cmath>
 #include <limits>
 #include <cfloat>

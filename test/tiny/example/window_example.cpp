@@ -2,62 +2,15 @@
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/shader.h>
 #include <tiny/rendering/texture.h>
+#include <tiny/rendering/mesh.h>
 #include <tiny/core/types.h>
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
 #include <tiny/core/engine.h>
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-#include <vector>
-
 #include <iostream>
 
 using namespace tiny::rendering;
 using namespace tiny::core;
-
-#define NUM_BUFFERS 1
-
-class Mesh
-{
-public:	
-	Mesh()
-	{
-		vertices.push_back(vec3(-0.5, -0.5, 0));
-		vertices.push_back(vec3( 0,   0.5,  0));
-		vertices.push_back(vec3(0.5,-0.5, 0));
-
-		glGenVertexArrays(1, &vertexArrayHandle);
-		glBindVertexArray(vertexArrayHandle);
-
-		glGenBuffers(NUM_BUFFERS, vertexArrayBufferHandles);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexArrayBufferHandles[0]);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 0,0);
-
-		glBindVertexArray(0);
-	}
-
-	~Mesh()
-	{
-		glDeleteVertexArrays(1, &vertexArrayHandle);
-	}
-
-	void draw()
-	{
-		glBindVertexArray(vertexArrayHandle);
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-		glBindVertexArray(0);
-
-	}
-
-
-	GLuint vertexArrayHandle;
-	GLuint vertexArrayBufferHandles[NUM_BUFFERS];
-	std::vector<vec3> vertices;
-};
-
 
 class MyGame
 {
