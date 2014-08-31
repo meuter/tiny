@@ -5,6 +5,11 @@
 
 namespace tiny { namespace rendering {
 
+Window::Window() : mSDLWindow(NULL), mGLContext(NULL)
+{
+
+}
+
 Window::Window(int width, int height, std::string title) 
 	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width)
 {
@@ -43,6 +48,18 @@ Window::~Window()
 		SDL_DestroyWindow(mSDLWindow);
 		SDL_Quit();
 	}
+}
+
+Window &Window::operator=(Window &&other)
+{
+	mSDLWindow = other.mSDLWindow;
+	mGLContext = other.mGLContext;
+	mHeight = other.mHeight;
+	mWidth = other.mWidth;
+
+	other.mSDLWindow = NULL;
+	other.mGLContext = NULL;
+	return (*this);
 }
 
 void Window::vsync(bool onoff)

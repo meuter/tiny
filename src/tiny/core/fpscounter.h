@@ -25,9 +25,9 @@ namespace tiny { namespace core {
 			Game::inputs(engine);
 		}
 
-		void update(Engine &engine, sec dt)
+		void update(Engine &engine)
 		{
-			sinceLastFrame += dt;
+			sinceLastFrame += engine.dt();
 			if( sinceLastFrame > sec(1))
 			{
 				std::cout << nFrames << " FPS" << std::endl;
@@ -35,7 +35,7 @@ namespace tiny { namespace core {
 				sinceLastFrame = sec(0);
 			}
 
-			Game::update(engine, dt);
+			Game::update(engine);
 		}
 
 		void render(Engine &engine)

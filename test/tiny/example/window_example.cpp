@@ -7,13 +7,14 @@
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
 #include <tiny/core/engine.h>
+#include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
 #include <iostream>
 
 using namespace tiny::rendering;
 using namespace tiny::core;
 
-class MyGame
+class MyGame : public Game
 {
 public:
 
@@ -21,19 +22,22 @@ public:
 	{
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
+
 		engine.window().vsync(false);
 	}
 
-	void update(Engine &engine, sec dt)
+	void update(Engine &engine)
 	{
 	}
 
 	void inputs(Engine &engine)
 	{
-		if (engine.inputs().isWindowCloseRequested())
+		Inputs &inputs = engine.inputs();
+
+		if (inputs.isWindowCloseRequested())
 			engine.stop();
 
-		if (engine.inputs().isKeyHeld(Key::KEY_LEFT_CMD) && engine.inputs().isKeyPressed(Key::KEY_Z))
+		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
 			engine.stop();
 	}
 
@@ -46,6 +50,7 @@ public:
 	}
 
 private:	
+
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
