@@ -2,7 +2,6 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <stdexcept>
-#include <iostream>
 
 namespace tiny { namespace rendering {
 
@@ -25,6 +24,8 @@ Window::Window(int width, int height, std::string title)
 	glewExperimental = GL_TRUE; 
 	if (GLEW_OK != glewInit())
 		throw std::runtime_error("could not initiazlie GLEW");
+
+	glClearColor(0,0,0,1);
 }
 
 Window::Window(Window &&other) 
@@ -42,6 +43,17 @@ Window::~Window()
 		SDL_DestroyWindow(mSDLWindow);
 		SDL_Quit();
 	}
+}
+
+void Window::vsync(bool onoff)
+{
+	SDL_GL_SetSwapInterval(onoff ? 1 : 0);
+}
+
+
+void Window::clear()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Window::swapBuffer()

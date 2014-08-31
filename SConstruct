@@ -38,6 +38,7 @@ test = env.Clone()
 test.MergeFlags("-Itest/gtest")
 test.MergeFlags("-L. -ltiny")
 test.MergeFlags("-L/usr/local/lib -lGLEW -lSDL2")
+test.MergeFlags("-framework OpenGL")
 test.Program("test/tiny/all", Split("""
 	test/tiny/core/transformable_tests.cpp
 	test/tiny/math/matrix_tests.cpp

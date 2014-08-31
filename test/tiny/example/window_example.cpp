@@ -1,4 +1,3 @@
-#include <iostream>
 #include <tiny/rendering/window.h>
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/shader.h>
@@ -13,21 +12,14 @@
 
 #include <iostream>
 
-using tiny::rendering::Window;
-using tiny::rendering::ShaderProgram;
-using tiny::rendering::Shader;
-using tiny::rendering::Texture;
-using tiny::core::vec3;
-using tiny::core::Engine;
-using tiny::core::Inputs;
-using tiny::core::Key;
-using tiny::core::MouseButton;
-using tiny::core::sec;
+using namespace tiny::rendering;
+using namespace tiny::core;
 
 #define NUM_BUFFERS 1
 
-struct Mesh
+class Mesh
 {
+public:	
 	Mesh()
 	{
 		vertices.push_back(vec3(-0.5, -0.5, 0));
@@ -75,13 +67,13 @@ public:
 	{
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
-
-		SDL_GL_SetSwapInterval(0);
-		glClearColor(0,0,0.5,1);
+		engine.window().vsync(false);
 	}
 
-	void inputs(Engine &engine, Inputs &inputs)
+	void inputs(Engine &engine)
 	{
+		Inputs &inputs = engine.inputs();
+
 		if (inputs.isWindowCloseRequested())
 			engine.stop();
 
@@ -103,8 +95,7 @@ public:
 
 	void render(Engine &engine)
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		engine.window().clear();
 		mShaderProgram.use();
 		mMesh.draw();
 		nFrames++;

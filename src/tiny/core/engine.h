@@ -11,8 +11,9 @@ namespace tiny { namespace core {
 	class Engine
 	{
 	public:
+		using Window = rendering::Window;
 		using InitCallback   = std::function<void(Engine &engine)>;
-		using InputsCallback = std::function<void(Engine &engine, Inputs &inputs)>;
+		using InputsCallback = std::function<void(Engine &engine)>;
 		using UpdateCallback = std::function<void(Engine &engine, sec dt)>;
 		using RenderCallback = std::function<void(Engine &engine)>;
 
@@ -34,13 +35,15 @@ namespace tiny { namespace core {
 		template<typename Game>
 		void play(Game &&game)
 		{
-			onInit  ([&game](Engine &engine)                 { game.init(engine); });
-			onInputs([&game](Engine &engine, Inputs &inputs) { game.inputs(engine, inputs); });
-			onUpdate([&game](Engine &engine, sec dt)         { game.update(engine, dt); });
-			onRender([&game](Engine &engine)                 { game.render(engine); });
+			onInit  ([&game](Engine &engine)          { game.init(engine); });
+			onInputs([&game](Engine &engine)          { game.inputs(engine); });
+			onUpdate([&game](Engine &engine, sec dt)  { game.update(engine, dt); });
+			onRender([&game](Engine &engine)          { game.render(engine); });
 			start();
 		}
 
+		inline Window &window() { return mWindow; }
+		inline Inputs &inputs() { return mInputs; }
 
 	protected:
 		void run();
@@ -51,7 +54,7 @@ namespace tiny { namespace core {
 		void render();
 
 	private:
-		rendering::Window mWindow;
+		Window mWindow;
 		Inputs mInputs;
 		bool mIsRunning;
 		InitCallback mInitCallback;

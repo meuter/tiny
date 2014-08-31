@@ -4,13 +4,15 @@
 
 namespace tiny { namespace core {
 
-static const auto NO_INPUTS_CB = [](Engine &engine, Inputs &inputs){};
+static const auto NO_INIT_CB   = [](Engine &engine) {};
+static const auto NO_INPUTS_CB = [](Engine &engine) {};
 static const auto NO_UPDATE_CB = [](Engine &engine, sec dt){};
-static const auto NO_RENDER_CB = [](Engine &engine){};
+static const auto NO_RENDER_CB = [](Engine &engine) {};
 
 Engine::Engine(rendering::Window && window) 
 	: mWindow(std::move(window)), 
 	  mIsRunning(false), 
+	  mInitCallback(NO_INIT_CB),
 	  mInputsCallback(NO_INPUTS_CB),
 	  mUpdateCallback(NO_UPDATE_CB),
 	  mRenderCallback(NO_RENDER_CB) {}
@@ -99,7 +101,7 @@ void Engine::init()
 void Engine::input()
 {
 	mInputs.refresh();
-	mInputsCallback(*this, mInputs);
+	mInputsCallback(*this);
 }
 
 void Engine::update(sec dt)

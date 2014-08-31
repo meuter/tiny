@@ -2,7 +2,6 @@
 #define __TINY_GC_WINDOW_H__
 
 #include <string>
-#include <tiny/core/inputs.h>
 
 struct SDL_Window;
 
@@ -22,6 +21,8 @@ namespace tiny { namespace rendering {
 		inline int   height() const { return mWidth; }
 		inline float apsect() const { return (float)mHeight/(float)mWidth; }		
 
+		void vsync(bool onoff);
+		void clear();
 		void swapBuffer();
 
 	private:
