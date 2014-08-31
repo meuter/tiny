@@ -2,8 +2,10 @@
 #define __TINY_CORE_ENGINE_H__
 
 #include <functional>
+#include <chrono>
 #include "Inputs.h"
-#include "../rendering/Window.h"
+#include "types.h"
+#include "../rendering/window.h"
 
 namespace tiny { namespace core {
 
@@ -11,7 +13,7 @@ namespace tiny { namespace core {
 	{
 	public:
 		using InputsCallback = std::function<void(Engine &engine, Inputs &inputs)>;
-		using UpdateCallback = std::function<void(Engine &engine, double dt)>;
+		using UpdateCallback = std::function<void(Engine &engine, sec dt)>;
 		using RenderCallback = std::function<void(Engine &engine)>;
 
 		Engine(rendering::Window && window);
@@ -32,7 +34,7 @@ namespace tiny { namespace core {
 		void run();
 		bool isRunning() ;
 		void input();
-		void update();
+		void update(sec dt);
 		void render();
 
 	private:

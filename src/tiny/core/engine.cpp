@@ -1,11 +1,9 @@
 #include "Engine.h"
 
-
-
 namespace tiny { namespace core {
 
 static const auto NO_INPUTS_CB = [](Engine &engine, Inputs &inputs){};
-static const auto NO_UPDATE_CB = [](Engine &engine, double dt){};
+static const auto NO_UPDATE_CB = [](Engine &engine, sec dt){};
 static const auto NO_RENDER_CB = [](Engine &engine){};
 
 Engine::Engine(rendering::Window && window) 
@@ -54,10 +52,28 @@ void Engine::stop()
 
 void Engine::run()
 {
+
+	const auto FRAME_CAP = 500;
+	const auto dt = std::chrono::duration<double>(1.0/FRAME_CAP);
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	auto unprocessedTime = std::chrono::duration<double>(0.0);
+
 	while (isRunning())
 	{
-		input();
-		update();
+		auto newTime = std::chrono::high_resolution_clock::now();
+		auto frameTime = std::chrono::duration_cast<std::chrono::duration<double> >(newTime - currentTime);
+		currentTime = newTime;
+
+		unprocessedTime += frameTime;
+
+		while (unprocessedTime >= dt)
+		{
+			input();
+			update(dt);
+			unprocessedTime -= dt;			
+		}
+
 		render();
 	}
 }
@@ -73,9 +89,9 @@ void Engine::input()
 	mInputsCallback(*this, mInputs);
 }
 
-void Engine::update()
+void Engine::update(sec dt)
 {
-	mUpdateCallback(*this, 0.0);
+	mUpdateCallback(*this, dt);
 }
 
 void Engine::render()

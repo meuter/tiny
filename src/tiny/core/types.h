@@ -4,6 +4,7 @@
 #include <tiny/math/matrix.h>
 #include <tiny/math/quaternion.h>
 #include <tiny/math/trigo.h>
+#include <chrono>
 
 namespace tiny { namespace core {
 	
@@ -36,9 +37,9 @@ namespace tiny { namespace core {
 
 	using quat = tiny::math::quaternion<float>;
 
-	
-	using rad  = tiny::math::radian;
+	using rad = tiny::math::radian;
 
+	using sec = std::chrono::duration<double>;
 }}
 
 #endif
