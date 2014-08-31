@@ -23,6 +23,7 @@ using tiny::core::Engine;
 using tiny::core::Inputs;
 using tiny::core::Key;
 using tiny::core::MouseButton;
+using tiny::core::sec;
 
 #define NUM_BUFFERS 1
 
@@ -70,6 +71,9 @@ struct Triangle
 
 int main(int argc, char **argv)
 {
+	int nFrames = 0;
+	sec sinceLastFrame;
+
 	auto engine = Engine(Window(1080,768, "3D"));
 	auto shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 	auto bricksTexture = Texture::fromFile("res/textures/bricks.jpg");
@@ -84,13 +88,26 @@ int main(int argc, char **argv)
 			engine.stop();
 	});
 
+	engine.onUpdate([&](Engine &engine, sec dt)
+	{
+		sinceLastFrame += dt;
+		if( sinceLastFrame > sec(1))
+		{
+			std::cout << nFrames << " FPS" << std::endl;
+			nFrames = 0;
+			sinceLastFrame = sec(0);
+		}
+	});
+
 	engine.onRender([&](Engine &engine) 
 	{
+		SDL_GL_SetSwapInterval(0);
 		glClearColor(0,0,0.5,1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.use();
 		triangle.draw();
+		nFrames++;
 	});
 
 	engine.start();

@@ -56,36 +56,21 @@ void Engine::run()
 {
 	static const auto dt = sec(1.0/5000);
 
-	int nFrames = 0;
-
 	auto clock = Clock();
 	auto unprocessedTime = sec(0);
-	auto sinceLastFrame = sec(0);
 
 	while (isRunning())
 	{
-		auto lap = clock.lap();
-		unprocessedTime += lap;
-		sinceLastFrame  += lap;
+		unprocessedTime += clock.lap();
 
 		while (unprocessedTime >= dt)
 		{
 			input();
 			update(dt);
 			unprocessedTime -= dt;			
-
-		}
-
-
-		if (sinceLastFrame >= sec(1))
-		{
-			std::cout << nFrames << " FPS" << std::endl;
-			nFrames = 0;
-			sinceLastFrame = sec(0);
 		}
 
 		render();
-		nFrames++;
 	}
 }
 
