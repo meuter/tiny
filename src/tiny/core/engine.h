@@ -19,9 +19,12 @@ namespace tiny { namespace core {
 		Engine &operator=(const Engine &other) = delete;
 
 		void start();
-		bool isRunning() { return mIsRunning; }
-		void run();
 		void stop();
+		
+		bool isRunning() const;
+
+	protected:
+		void run();
 
 	private:
 		Game &mGame;

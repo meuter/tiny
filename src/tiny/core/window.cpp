@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <stdexcept>
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace core {
 
 Window::Window() : mSDLWindow(NULL), mGLContext(NULL), mIsOpen(false)
 {

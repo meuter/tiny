@@ -3,15 +3,13 @@
 
 #include "engine.h"
 #include "inputs.h"
-#include "../rendering/window.h"
+#include "window.h"
 
 namespace tiny { namespace core {
 
 	class Game
 	{
 	public:
-		using Window = rendering::Window;
-
 		Game(Window &&window) : mWindow(std::move(window)), mEngine(*this) {}
 		Game(const Game &other) = delete;
 		Game(Game &&other) = default;

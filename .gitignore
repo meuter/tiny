@@ -19,3 +19,4 @@ src/tiny/rendering/shaderprogram.o
 src/tiny/core/inputs.o
 src/tiny/rendering/texture.o
 src/tiny/core/engine.o
+src/tiny/core/window.o

@@ -5,7 +5,7 @@
 
 struct SDL_Window;
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace core {
 
 	class Window 
 	{

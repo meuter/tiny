@@ -26,6 +26,16 @@ void Engine::start()
 	run();
 }
 
+bool Engine::isRunning() const
+{
+	return mIsRunning;
+}
+
+void Engine::stop()
+{
+	mIsRunning = false;
+}
+
 void Engine::run()
 {
 	const auto dt = sec(1.0/5000.0);
@@ -56,9 +66,5 @@ void Engine::run()
 	}
 }
 
-void Engine::stop()
-{
-	mIsRunning = false;
-}
 
 }}

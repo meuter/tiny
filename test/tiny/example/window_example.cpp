@@ -1,15 +1,10 @@
-#include <tiny/rendering/window.h>
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/shader.h>
 #include <tiny/rendering/texture.h>
 #include <tiny/rendering/mesh.h>
-#include <tiny/core/types.h>
-#include <tiny/core/inputs.h>
-#include <tiny/core/keys.h>
-#include <tiny/core/engine.h>
+
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
-#include <iostream>
 
 using namespace tiny::rendering;
 using namespace tiny::core;
