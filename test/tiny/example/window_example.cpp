@@ -7,6 +7,7 @@
 #include <tiny/core/inputs.h>
 #include <tiny/core/keys.h>
 #include <tiny/core/engine.h>
+#include <tiny/core/fpscounter.h>
 #include <iostream>
 
 using namespace tiny::rendering;
@@ -23,47 +24,36 @@ public:
 		engine.window().vsync(false);
 	}
 
-	void inputs(Engine &engine)
-	{
-		Inputs &inputs = engine.inputs();
-
-		if (inputs.isWindowCloseRequested())
-			engine.stop();
-
-		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
-			engine.stop();
-	}
-
-
 	void update(Engine &engine, sec dt)
 	{
-		sinceLastFrame += dt;
-		if( sinceLastFrame > sec(1))
-		{
-			std::cout << nFrames << " FPS" << std::endl;
-			nFrames = 0;
-			sinceLastFrame = sec(0);
-		}
+	}
+
+	void inputs(Engine &engine)
+	{
+		if (engine.inputs().isWindowCloseRequested())
+			engine.stop();
+
+		if (engine.inputs().isKeyHeld(Key::KEY_LEFT_CMD) && engine.inputs().isKeyPressed(Key::KEY_Z))
+			engine.stop();
 	}
 
 	void render(Engine &engine)
 	{
 		engine.window().clear();
 		mShaderProgram.use();
+		mTexture.bind();
 		mMesh.draw();
-		nFrames++;
 	}
 
 private:	
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
-	int nFrames;
-	sec sinceLastFrame;
 };
+
 
 int main(int argc, char **argv)
 {
-	Engine(Window(1080, 768, "GameEngine")).play(MyGame());
+	Engine(Window(1080, 768, "GameEngine")).play(FPSCounter<MyGame>());
 	return EXIT_SUCCESS;
 }
