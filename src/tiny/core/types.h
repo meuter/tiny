@@ -40,6 +40,9 @@ namespace tiny { namespace core {
 	using rad = tiny::math::radian;
 
 	using sec = std::chrono::duration<double>;
+	using msec = std::chrono::duration<double, std::milli>;
+	using usec = std::chrono::duration<double, std::micro>;
+	using nsec = std::chrono::duration<double, std::nano>;
 }}
 
 #endif
