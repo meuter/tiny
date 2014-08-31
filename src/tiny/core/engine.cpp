@@ -1,4 +1,5 @@
-#include "Engine.h"
+#include "engine.h"
+#include "clock.h"
 
 namespace tiny { namespace core {
 
@@ -52,20 +53,14 @@ void Engine::stop()
 
 void Engine::run()
 {
+	static const auto dt = sec(1.0/5000);
 
-	const auto FRAME_CAP = 500;
-	const auto dt = std::chrono::duration<double>(1.0/FRAME_CAP);
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	auto unprocessedTime = std::chrono::duration<double>(0.0);
+	auto clock = Clock();
+	auto unprocessedTime = sec(0.0);
 
 	while (isRunning())
 	{
-		auto newTime = std::chrono::high_resolution_clock::now();
-		auto frameTime = std::chrono::duration_cast<std::chrono::duration<double> >(newTime - currentTime);
-		currentTime = newTime;
-
-		unprocessedTime += frameTime;
+		unprocessedTime += clock.lap();
 
 		while (unprocessedTime >= dt)
 		{
