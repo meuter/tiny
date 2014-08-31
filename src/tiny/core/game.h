@@ -2,13 +2,17 @@
 #define __TINY_CORE_GAME_H__
 
 #include "engine.h"
+#include "inputs.h"
+#include "../rendering/window.h"
 
 namespace tiny { namespace core {
 
 	class Game
 	{
 	public:
-		Game() {}
+		using Window = rendering::Window;
+
+		Game(Window &&window) : mWindow(std::move(window)), mEngine(*this) {}
 		Game(const Game &other) = delete;
 		Game(Game &&other) = default;
 		virtual ~Game() {}
@@ -16,10 +20,21 @@ namespace tiny { namespace core {
 		Game &operator=(const Game &other) = delete;
 		Game &operator=(Game &&other) = default;
 
-		virtual void init(Engine &engine)    {}
-		virtual void inputs(Engine &engine)  {}
-		virtual void update(Engine &engine)  {}
-		virtual void render(Engine &engine)  {}
+		virtual void init()         {}
+		virtual void inputs()       {}
+		virtual void update(sec dt) {}
+		virtual void render()       {}
+
+		void start() { mEngine.start(); }
+		void stop()  { mEngine.stop();  }
+
+		inline Window &getWindow() { return mWindow; }
+		inline Inputs &getInputs() { return mInputs; }
+
+	private:
+		Window mWindow;
+		Inputs mInputs;
+		Engine mEngine;
 	};
 
 }}

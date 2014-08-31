@@ -6,7 +6,7 @@
 
 namespace tiny { namespace core {
 
-Engine::Engine(rendering::Window && window) : mWindow(std::move(window))
+Engine::Engine(Game &game) : mGame(game), mIsRunning(false)
 {
 
 }
@@ -16,35 +16,49 @@ Engine::~Engine()
 
 }
 
-void Engine::play(Game &&game)
+void Engine::start()
 {
+	if (isRunning())
+		return;
+
+	mIsRunning = true;
+	mGame.init();
+	run();
+}
+
+void Engine::run()
+{
+	const auto dt = sec(1.0/5000.0);
 	auto clock = Clock();
 	auto unprocessedTime = sec(0);
 
-	game.init(*this);
-
-	while (mWindow.isOpen())
+	while (isRunning())
 	{
 		unprocessedTime += clock.lap();
 
-		if (unprocessedTime < delta())
+		if (unprocessedTime < dt)
 		{
 			std::this_thread::sleep_for(msec(1));
 			continue;
 		}
 			
-		while (unprocessedTime >= delta())
+		while (unprocessedTime >= dt)
 		{
-			mInputs.refresh();
-			game.inputs(*this);
-			game.update(*this);
-			unprocessedTime -= delta();			
+			mGame.getInputs().refresh();
+			mGame.inputs();
+			mGame.update(dt);
+			unprocessedTime -= dt;			
 		}
 
-		mWindow.clear();
-		game.render(*this);
-		mWindow.swapBuffer();
+		mGame.getWindow().clear();
+		mGame.render();				
+		mGame.getWindow().swapBuffer();
 	}
+}
+
+void Engine::stop()
+{
+	mIsRunning = false;
 }
 
 }}

@@ -18,42 +18,49 @@ class MyGame : public Game
 {
 public:
 
-	void init(Engine &engine)
+	MyGame(Window &&window) : Game(std::move(window))
+	{			
+	}
+
+	void init()
 	{
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
-
-		engine.window().vsync(false);
+		getWindow().vsync(false);		
 	}
 
-	void inputs(Engine &engine)
+	void update(sec dt)
 	{
-		Inputs &inputs = engine.inputs();
-
-		if (inputs.isWindowCloseRequested())
-			engine.window().close();
-
-		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
-			engine.window().close();
+		mFPSCounter.update(dt);
 	}
 
-	void render(Engine &engine)
+	void inputs()
+	{
+		if (getInputs().isWindowCloseRequested())
+			stop();
+
+		if (getInputs().isKeyHeld(Key::KEY_LEFT_CMD) && getInputs().isKeyPressed(Key::KEY_Z))
+			stop();
+	}
+
+	void render()
 	{
 		mShaderProgram.use();
 		mTexture.bind();
 		mMesh.draw();
+		mFPSCounter.newFrame();
 	}
 
 private:	
-
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
+	FPSCounter mFPSCounter;
 };
 
 
 int main(int argc, char **argv)
 {
-	Engine(Window(1080, 768, "GameEngine")).play(FPSCounter<MyGame>());
+	MyGame(Window(1080, 768, "MyGame")).start();
 	return EXIT_SUCCESS;
 }

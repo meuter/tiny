@@ -3,44 +3,27 @@
 
 #include <iostream>
 #include "types.h"
-#include "engine.h"
 
 namespace tiny { namespace core {
 
-	template<class Game>
-	class FPSCounter : public Game
+	class FPSCounter 
 	{
-
 	public:
+		FPSCounter() : nFrames(0), sinceLastFrame(0.0) {}
 
-		void init(Engine &engine)
+		void update(sec dt)
 		{
-			nFrames = 0;
-			sinceLastFrame = sec(0);
-			Game::init(engine);
-		}
-
-		void inputs(Engine &engine)
-		{
-			Game::inputs(engine);
-		}
-
-		void update(Engine &engine)
-		{
-			sinceLastFrame += engine.delta();
+			sinceLastFrame += dt;
 			if( sinceLastFrame > sec(1))
 			{
 				std::cout << nFrames << " FPS" << std::endl;
 				nFrames = 0;
 				sinceLastFrame = sec(0);
 			}
-
-			Game::update(engine);
 		}
 
-		void render(Engine &engine)
+		void newFrame()
 		{
-			Game::render(engine);
 			nFrames++;
 		}
 
