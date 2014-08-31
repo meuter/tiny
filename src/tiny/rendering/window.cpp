@@ -5,13 +5,13 @@
 
 namespace tiny { namespace rendering {
 
-Window::Window() : mSDLWindow(NULL), mGLContext(NULL)
+Window::Window() : mSDLWindow(NULL), mGLContext(NULL), mIsOpen(false)
 {
 
 }
 
 Window::Window(int width, int height, std::string title) 
-	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width)
+	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width), mIsOpen(true)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
@@ -34,7 +34,7 @@ Window::Window(int width, int height, std::string title)
 }
 
 Window::Window(Window &&other) 
-	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth)
+	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
 {
 	other.mSDLWindow = NULL;
 	other.mGLContext = NULL;
@@ -67,10 +67,15 @@ void Window::vsync(bool onoff)
 	SDL_GL_SetSwapInterval(onoff ? 1 : 0);
 }
 
-
 void Window::clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Window::clear(float r, float g, float b, float a)
+{
+	glClearColor(r,g,b,a);
+	clear();
 }
 
 void Window::swapBuffer()

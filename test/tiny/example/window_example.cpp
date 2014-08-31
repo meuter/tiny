@@ -26,24 +26,19 @@ public:
 		engine.window().vsync(false);
 	}
 
-	void update(Engine &engine)
-	{
-	}
-
 	void inputs(Engine &engine)
 	{
 		Inputs &inputs = engine.inputs();
 
 		if (inputs.isWindowCloseRequested())
-			engine.stop();
+			engine.window().close();
 
 		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
-			engine.stop();
+			engine.window().close();
 	}
 
 	void render(Engine &engine)
 	{
-		engine.window().clear();
 		mShaderProgram.use();
 		mTexture.bind();
 		mMesh.draw();

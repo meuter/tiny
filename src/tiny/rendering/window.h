@@ -25,12 +25,17 @@ namespace tiny { namespace rendering {
 
 		void vsync(bool onoff);
 		void clear();
+		void clear(float r, float g, float b, float a);
 		void swapBuffer();
+
+		bool isOpen() { return mIsOpen; }
+		void close()  { mIsOpen = false; }
 
 	private:
 		SDL_Window *mSDLWindow;
 		void *mGLContext;
 		int mHeight, mWidth;
+		int mIsOpen;
 	};
 
 }}

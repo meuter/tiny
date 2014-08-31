@@ -6,7 +6,7 @@
 
 namespace tiny { namespace core {
 
-Engine::Engine(rendering::Window && window) : mWindow(std::move(window)), mIsRunning(false) 
+Engine::Engine(rendering::Window && window) : mWindow(std::move(window))
 {
 
 }
@@ -16,62 +16,34 @@ Engine::~Engine()
 
 }
 
-void Engine::start(Game &game)
-{
-	if (mIsRunning)
-		return;
-
-	mIsRunning = true;
-	game.init(*this);
-}  
-
-void Engine::stop()
-{
-	if (!mIsRunning)
-		return;
-
-	mIsRunning = false;
-}
-
-void Engine::inputs(Game &game)
-{
-	mInputs.refresh();
-	game.inputs(*this);
-}
-
-void Engine::render(Game &game)
-{
-	mWindow.clear();
-	game.render(*this);
-	mWindow.swapBuffer();
-}
-
-
 void Engine::play(Game &&game)
 {
 	auto clock = Clock();
 	auto unprocessedTime = sec(0);
 
-	start(game);
+	game.init(*this);
 
-	while (mIsRunning)
+	while (mWindow.isOpen())
 	{
 		unprocessedTime += clock.lap();
 
-		if (unprocessedTime < dt())
+		if (unprocessedTime < delta())
 		{
-			std::this_thread::sleep_for(usec(100));
+			std::this_thread::sleep_for(msec(1));
 			continue;
 		}
 			
-		while (unprocessedTime >= dt())
+		while (unprocessedTime >= delta())
 		{
-			inputs(game);
+			mInputs.refresh();
+			game.inputs(*this);
 			game.update(*this);
-			unprocessedTime -= dt();			
+			unprocessedTime -= delta();			
 		}
 
-		render(game);
+		mWindow.clear();
+		game.render(*this);
+		mWindow.swapBuffer();
 	}
 }
 

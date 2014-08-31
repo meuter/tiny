@@ -27,7 +27,7 @@ namespace tiny { namespace core {
 
 		void update(Engine &engine)
 		{
-			sinceLastFrame += engine.dt();
+			sinceLastFrame += engine.delta();
 			if( sinceLastFrame > sec(1))
 			{
 				std::cout << nFrames << " FPS" << std::endl;

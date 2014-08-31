@@ -24,19 +24,13 @@ namespace tiny { namespace core {
 
 		void play(Game &&game);
 
-		inline sec     dt()        const { return sec(1.0/5000); }
-		inline Window &window()          { return mWindow; }
-		inline Inputs &inputs()          { return mInputs; }
+		inline sec     delta()  const { return sec(1.0/5000.0); }
+		inline Window &window()       { return mWindow; }
+		inline Inputs &inputs()       { return mInputs; }
 
-		void stop();
 	private:
-		void start(Game &game);
-		void inputs(Game &game);
-		void render(Game &game);
-
 		Window mWindow;
 		Inputs mInputs;
-		bool mIsRunning;
 	};
 
 
