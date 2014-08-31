@@ -1,17 +1,17 @@
-#ifndef __TINY_CORE_CLOCK_H__
-#define __TINY_CORE_CLOCK_H__
+#ifndef __TINY_CORE_STOPWATCH_H__
+#define __TINY_CORE_STOPWATCH_H__
 
 #include "types.h"
 #include <chrono>
 
 namespace tiny { namespace core {
 
-	class Clock
+	class Stopwatch
 	{
 		using high_res = std::chrono::high_resolution_clock;
 
 	public:	
-		Clock() : mStart(high_res::now()) {}
+		Stopwatch() : mStart(high_res::now()) {}
 
 		inline sec lap() 
 		{

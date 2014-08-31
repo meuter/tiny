@@ -1,5 +1,5 @@
 #include "engine.h"
-#include "clock.h"
+#include "stopwatch.h"
 #include "game.h"
 #include <thread>
 
@@ -39,12 +39,12 @@ void Engine::stop()
 void Engine::run()
 {
 	const auto dt = sec(1.0/5000.0);
-	auto clock = Clock();
+	auto stopwatch = Stopwatch();
 	auto unprocessedTime = sec(0);
 
 	while (isRunning())
 	{
-		unprocessedTime += clock.lap();
+		unprocessedTime += stopwatch.lap();
 
 		if (unprocessedTime < dt)
 		{
