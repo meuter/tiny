@@ -78,7 +78,7 @@ void Window::clear(float r, float g, float b, float a)
 	clear();
 }
 
-void Window::swapBuffer()
+void Window::swap()
 {
 	SDL_GL_SwapWindow(mSDLWindow);
 }

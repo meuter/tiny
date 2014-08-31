@@ -62,7 +62,7 @@ void Engine::run()
 
 		mGame.getWindow().clear();
 		mGame.render();				
-		mGame.getWindow().swapBuffer();
+		mGame.getWindow().swap();
 	}
 }
 

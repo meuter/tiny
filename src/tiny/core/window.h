@@ -26,7 +26,7 @@ namespace tiny { namespace core {
 		void vsync(bool onoff);
 		void clear();
 		void clear(float r, float g, float b, float a);
-		void swapBuffer();
+		void swap();
 
 		bool isOpen() { return mIsOpen; }
 		void close()  { mIsOpen = false; }
