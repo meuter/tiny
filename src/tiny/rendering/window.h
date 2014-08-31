@@ -21,16 +21,13 @@ namespace tiny { namespace rendering {
 		inline int   width()  const { return mHeight; }
 		inline int   height() const { return mWidth; }
 		inline float apsect() const { return (float)mHeight/(float)mWidth; }		
-		inline bool  isOpen() const { return mIsOpen; }
-		inline void  close()        { mIsOpen = false; }
 
-		void update();
+		void swapBuffer();
 
 	private:
 		SDL_Window *mSDLWindow;
 		void *mGLContext;
 		int mHeight, mWidth;
-		bool mIsOpen;
 	};
 
 }}

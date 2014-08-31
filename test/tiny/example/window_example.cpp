@@ -13,7 +13,6 @@
 
 #include <iostream>
 
-
 using tiny::rendering::Window;
 using tiny::rendering::ShaderProgram;
 using tiny::rendering::Shader;
@@ -27,9 +26,9 @@ using tiny::core::sec;
 
 #define NUM_BUFFERS 1
 
-struct Triangle
+struct Mesh
 {
-	Triangle()
+	Mesh()
 	{
 		vertices.push_back(vec3(-0.5, -0.5, 0));
 		vertices.push_back(vec3( 0,   0.5,  0));
@@ -48,7 +47,7 @@ struct Triangle
 		glBindVertexArray(0);
 	}
 
-	~Triangle()
+	~Mesh()
 	{
 		glDeleteVertexArrays(1, &vertexArrayHandle);
 	}
@@ -68,27 +67,30 @@ struct Triangle
 };
 
 
-
-int main(int argc, char **argv)
+class MyGame
 {
-	int nFrames = 0;
-	sec sinceLastFrame;
+public:
 
-	auto engine = Engine(Window(1080,768, "3D"));
-	auto shaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
-	auto bricksTexture = Texture::fromFile("res/textures/bricks.jpg");
-	Triangle triangle;
+	void init(Engine &engine)
+	{
+		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
+		mTexture = Texture::fromFile("res/textures/bricks.jpg");
 
-	engine.onInputs([](Engine &engine, Inputs &inputs) 
+		SDL_GL_SetSwapInterval(0);
+		glClearColor(0,0,0.5,1);
+	}
+
+	void inputs(Engine &engine, Inputs &inputs)
 	{
 		if (inputs.isWindowCloseRequested())
 			engine.stop();
 
 		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
 			engine.stop();
-	});
+	}
 
-	engine.onUpdate([&](Engine &engine, sec dt)
+
+	void update(Engine &engine, sec dt)
 	{
 		sinceLastFrame += dt;
 		if( sinceLastFrame > sec(1))
@@ -97,20 +99,27 @@ int main(int argc, char **argv)
 			nFrames = 0;
 			sinceLastFrame = sec(0);
 		}
-	});
+	}
 
-	engine.onRender([&](Engine &engine) 
+	void render(Engine &engine)
 	{
-		SDL_GL_SetSwapInterval(0);
-		glClearColor(0,0,0.5,1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		shaderProgram.use();
-		triangle.draw();
+		mShaderProgram.use();
+		mMesh.draw();
 		nFrames++;
-	});
+	}
 
-	engine.start();
+private:	
+	ShaderProgram mShaderProgram;
+	Texture mTexture;		
+	Mesh mMesh;
+	int nFrames;
+	sec sinceLastFrame;
+};
 
+int main(int argc, char **argv)
+{
+	Engine(Window(1080, 768, "GameEngine")).play(MyGame());
 	return EXIT_SUCCESS;
 }

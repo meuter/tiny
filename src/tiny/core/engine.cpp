@@ -20,6 +20,11 @@ Engine::~Engine()
 
 }
 
+void Engine::onInit(InitCallback initCallback)
+{
+	mInitCallback = initCallback;
+}
+
 void Engine::onInputs(InputsCallback inputsCallback)
 {
 	mInputsCallback = inputsCallback;
@@ -58,6 +63,9 @@ void Engine::run()
 
 	auto clock = Clock();
 	auto unprocessedTime = sec(0);
+	bool hasUpdated = false;
+
+	init();
 
 	while (isRunning())
 	{
@@ -67,16 +75,25 @@ void Engine::run()
 		{
 			input();
 			update(dt);
+			hasUpdated = true;
 			unprocessedTime -= dt;			
 		}
 
-		render();
+		if (hasUpdated)
+			render();
+		else
+			std::this_thread::sleep_for(usec(100));
 	}
 }
 
 bool Engine::isRunning() 
 {
 	return mIsRunning; 
+}
+
+void Engine::init()
+{
+	mInitCallback(*this);
 }
 
 void Engine::input()
@@ -93,7 +110,7 @@ void Engine::update(sec dt)
 void Engine::render()
 {
 	mRenderCallback(*this);
-	mWindow.update();
+	mWindow.swapBuffer();
 }
 
 

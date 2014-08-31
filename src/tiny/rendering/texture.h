@@ -17,6 +17,7 @@ namespace tiny { namespace rendering {
 		virtual ~Texture();
 
 		Texture &operator=(const Texture &other) = delete;
+		Texture &operator=(Texture &&other);
 
 		void loadData(unsigned char *data, int width, int height);
 		void loadFile(const std::string &filename);

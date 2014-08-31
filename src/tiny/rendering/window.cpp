@@ -7,7 +7,7 @@
 namespace tiny { namespace rendering {
 
 Window::Window(int width, int height, std::string title) 
-	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width), mIsOpen(true)
+	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
@@ -28,7 +28,7 @@ Window::Window(int width, int height, std::string title)
 }
 
 Window::Window(Window &&other) 
-	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
+	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth)
 {
 	other.mSDLWindow = NULL;
 	other.mGLContext = NULL;
@@ -44,7 +44,7 @@ Window::~Window()
 	}
 }
 
-void Window::update()
+void Window::swapBuffer()
 {
 	SDL_GL_SwapWindow(mSDLWindow);
 }

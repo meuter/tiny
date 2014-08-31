@@ -2,7 +2,6 @@
 #define __TINY_CORE_ENGINE_H__
 
 #include <functional>
-#include <chrono>
 #include "Inputs.h"
 #include "types.h"
 #include "../rendering/window.h"
@@ -12,6 +11,7 @@ namespace tiny { namespace core {
 	class Engine
 	{
 	public:
+		using InitCallback   = std::function<void(Engine &engine)>;
 		using InputsCallback = std::function<void(Engine &engine, Inputs &inputs)>;
 		using UpdateCallback = std::function<void(Engine &engine, sec dt)>;
 		using RenderCallback = std::function<void(Engine &engine)>;
@@ -23,6 +23,7 @@ namespace tiny { namespace core {
 
 		Engine &operator=(const Engine &other) = delete;
 
+		void onInit(InitCallback initCallback);
 		void onInputs(InputsCallback inputsCallback);
 		void onUpdate(UpdateCallback updateCallback);
 		void onRender(RenderCallback renderCallback);
@@ -30,9 +31,21 @@ namespace tiny { namespace core {
 		void start();
 		void stop();
 
+		template<typename Game>
+		void play(Game &&game)
+		{
+			onInit  ([&game](Engine &engine)                 { game.init(engine); });
+			onInputs([&game](Engine &engine, Inputs &inputs) { game.inputs(engine, inputs); });
+			onUpdate([&game](Engine &engine, sec dt)         { game.update(engine, dt); });
+			onRender([&game](Engine &engine)                 { game.render(engine); });
+			start();
+		}
+
+
 	protected:
 		void run();
-		bool isRunning() ;
+		bool isRunning();
+		void init();
 		void input();
 		void update(sec dt);
 		void render();
@@ -41,6 +54,7 @@ namespace tiny { namespace core {
 		rendering::Window mWindow;
 		Inputs mInputs;
 		bool mIsRunning;
+		InitCallback mInitCallback;
 		InputsCallback mInputsCallback;
 		UpdateCallback mUpdateCallback;
 		RenderCallback mRenderCallback;

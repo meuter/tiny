@@ -42,6 +42,13 @@ Texture::~Texture()
 		glDeleteTextures(1, &mTextureHandle);
 }
 
+Texture &Texture::operator=(Texture &&other)
+{
+	mTextureHandle = other.mTextureHandle;
+	other.mTextureHandle = 0;
+	return (*this);
+}
+
 void Texture::loadData(unsigned char *data, int width, int height) 
 {
 	bind();

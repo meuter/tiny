@@ -37,6 +37,13 @@ ShaderProgram::~ShaderProgram()
 	glDeleteProgram(mProgramHandle);
 }
 
+ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
+{
+	mProgramHandle = other.mProgramHandle;
+	other.mProgramHandle = 0;
+	return (*this);
+}
+
 void ShaderProgram::add(Shader &&shader)
 {	
 	glAttachShader(mProgramHandle, shader.getHandle());
