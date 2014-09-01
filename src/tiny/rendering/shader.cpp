@@ -27,8 +27,16 @@ Shader::Shader(Shader &&other) : mShaderHandle(other.mShaderHandle)
 
 Shader::~Shader()
 {
-	if (mShaderHandle != 0)
-		glDeleteShader(mShaderHandle);
+	destroy();
+}
+
+Shader &Shader::operator=(Shader &&other)
+{
+	destroy();
+	mShaderHandle = other.mShaderHandle;
+	other.mShaderHandle = 0;
+
+	return (*this);
 }
 
 void Shader::loadSource(const std::string &shaderSource)
@@ -67,5 +75,13 @@ void Shader::compile()
 		throw std::runtime_error("shader error:\n" + std::string(errorMessage));
 	}
 }
+
+
+void Shader::destroy()
+{
+	if (mShaderHandle != 0)
+		glDeleteShader(mShaderHandle);
+}
+
 
 }}

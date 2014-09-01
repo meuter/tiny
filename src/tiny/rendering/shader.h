@@ -17,12 +17,16 @@ namespace tiny { namespace rendering {
 		virtual ~Shader();
 
 		Shader &operator=(const Shader &other) = delete;
+		Shader &operator=(Shader &&other);
 
 		void loadSource(const std::string &shaderSource);
 		void loadFile(const std::string &filename);
 		void compile();
 
 		inline GLuint getHandle() const { return mShaderHandle; }
+
+	protected:		
+		void destroy();
 
 	private:
 		GLuint mShaderHandle;

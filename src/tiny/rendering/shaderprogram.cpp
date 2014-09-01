@@ -29,16 +29,12 @@ ShaderProgram::ShaderProgram(ShaderProgram &&other) : mProgramHandle(other.mProg
 
 ShaderProgram::~ShaderProgram()
 {
-	if (mProgramHandle == 0)
-		return;
-
-	for (Shader &shader : mShaders)
-		glDetachShader(mProgramHandle, shader.getHandle());
-	glDeleteProgram(mProgramHandle);
+	destroy();
 }
 
 ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
 {
+	destroy();
 	mProgramHandle = other.mProgramHandle;
 	other.mProgramHandle = 0;
 	return (*this);
@@ -80,6 +76,14 @@ void ShaderProgram::checkProgramError(GLenum linkingStage)
 
 }
 
-
+void ShaderProgram::destroy()
+{
+	if (mProgramHandle != 0)
+	{
+		for (Shader &shader : mShaders)
+			glDetachShader(mProgramHandle, shader.getHandle());
+		glDeleteProgram(mProgramHandle);
+	}
+}
 
 }}

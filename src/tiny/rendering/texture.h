@@ -23,6 +23,9 @@ namespace tiny { namespace rendering {
 		void loadFile(const std::string &filename);
 		void bind();
 
+	protected:
+		void destroy();
+
 	private:
 		GLuint mTextureHandle;
 	};

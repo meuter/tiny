@@ -31,10 +31,10 @@ namespace tiny { namespace core {
 		bool isOpen() { return mIsOpen; }
 		void close()  { mIsOpen = false; }
 
-	private:
-
+	protected:
 		void destroy();
 
+	private:
 		SDL_Window *mSDLWindow;
 		void *mGLContext;
 		int mHeight, mWidth;

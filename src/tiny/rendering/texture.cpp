@@ -38,12 +38,12 @@ Texture::Texture(Texture &&other)
 
 Texture::~Texture() 
 {
-	if (mTextureHandle != 0)
-		glDeleteTextures(1, &mTextureHandle);
+	destroy();
 }
 
 Texture &Texture::operator=(Texture &&other)
 {
+	destroy();
 	mTextureHandle = other.mTextureHandle;
 	other.mTextureHandle = 0;
 	return (*this);
@@ -72,6 +72,10 @@ void Texture::bind()
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
 }
 
-
+void Texture::destroy()
+{
+	if (mTextureHandle != 0)
+		glDeleteTextures(1, &mTextureHandle);
+}
 
 }}
