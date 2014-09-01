@@ -17,6 +17,7 @@ namespace tiny { namespace core {
 		virtual ~Engine();
 
 		Engine &operator=(const Engine &other) = delete;
+		Engine &operator=(Engine &&other) = default;
 
 		void start();
 		void stop();

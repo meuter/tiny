@@ -48,20 +48,17 @@ Window::Window(Window &&other)
 
 Window::~Window() 
 {
-	if (mSDLWindow != NULL)
-	{
-		SDL_GL_DeleteContext(mGLContext);
-		SDL_DestroyWindow(mSDLWindow);
-		SDL_Quit();
-	}
+	destroy();
 }
 
 Window &Window::operator=(Window &&other)
 {
+	destroy();
+
 	mSDLWindow = other.mSDLWindow;
 	mGLContext = other.mGLContext;
-	mHeight = other.mHeight;
-	mWidth = other.mWidth;
+	mHeight    = other.mHeight;
+	mWidth     = other.mWidth;
 
 	other.mSDLWindow = NULL;
 	other.mGLContext = NULL;
@@ -87,6 +84,17 @@ void Window::clear(float r, float g, float b, float a)
 void Window::swap()
 {
 	SDL_GL_SwapWindow(mSDLWindow);
+}
+
+
+void Window::destroy()
+{
+	if (mSDLWindow != NULL)
+	{
+		SDL_GL_DeleteContext(mGLContext);
+		SDL_DestroyWindow(mSDLWindow);
+		SDL_Quit();
+	}	
 }
 
 

@@ -32,6 +32,9 @@ namespace tiny { namespace core {
 		void close()  { mIsOpen = false; }
 
 	private:
+
+		void destroy();
+
 		SDL_Window *mSDLWindow;
 		void *mGLContext;
 		int mHeight, mWidth;
