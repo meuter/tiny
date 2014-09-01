@@ -4,7 +4,8 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
-#include <initializer_list>
+#include <map>
+#include "../core/types.h"
 #include "shader.h"
 
 namespace tiny { namespace rendering {
@@ -22,8 +23,16 @@ namespace tiny { namespace rendering {
 		ShaderProgram &operator=(const ShaderProgram &other) = delete;
 		ShaderProgram &operator=(ShaderProgram &&other);
 
-		void add(Shader &&shader);
+		void addShader(Shader &&shader);
 		void link();
+
+		void detectUniform(const std::string &uniform);
+		void setUniform(const std::string &uniform, float value);
+		void setUniform(const std::string &uniform, core::vec2 value);
+		void setUniform(const std::string &uniform, core::vec3 value);
+		void setUniform(const std::string &uniform, core::vec4 value);
+		void setUniform(const std::string &uniform, core::mat4 value);
+
 		void use();		
 
 	protected:
@@ -33,6 +42,7 @@ namespace tiny { namespace rendering {
 	private:
 		GLuint mProgramHandle;
 		std::vector<Shader> mShaders;
+		std::map<std::string, GLint> mUniformLocations;
 	};
 
 }}

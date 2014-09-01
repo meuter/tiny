@@ -7,7 +7,7 @@
 #include <chrono>
 
 namespace tiny { namespace core {
-	
+
 	using mat2   = tiny::math::matrix<float,2,2>;
 	using mat2x2 = tiny::math::matrix<float,2,2>;
 	using mat2x3 = tiny::math::matrix<float,2,3>;
@@ -43,6 +43,7 @@ namespace tiny { namespace core {
 	using msec = std::chrono::duration<double, std::milli>;
 	using usec = std::chrono::duration<double, std::micro>;
 	using nsec = std::chrono::duration<double, std::nano>;
+	
 }}
 
 #endif
