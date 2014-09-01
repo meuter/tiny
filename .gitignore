@@ -20,3 +20,4 @@ src/tiny/core/inputs.o
 src/tiny/rendering/texture.o
 src/tiny/core/engine.o
 src/tiny/core/window.o
+src/tiny/rendering/mesh.o

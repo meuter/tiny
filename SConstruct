@@ -23,6 +23,7 @@ env.Library("tiny", Split("""
 	src/tiny/core/window.cpp
 	src/tiny/rendering/shader.cpp
 	src/tiny/rendering/shaderprogram.cpp
+	src/tiny/rendering/mesh.cpp
 	src/tiny/rendering/texture.cpp
 """))
 

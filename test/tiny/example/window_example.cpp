@@ -9,12 +9,21 @@
 using namespace tiny::rendering;
 using namespace tiny::core;
 
+
 class MyGame : public Game
 {
 public:
 
 	MyGame(Window &&window) : Game(std::move(window))
-	{			
+	{		
+		std::vector<Mesh::vertex> vertices = 
+		{
+			{ vec3(-1.0, -1.0, 0.0) },
+			{ vec3( 0.0,  1.0, 0.0) },
+			{ vec3( 1.0, -1.0, 0.0) },
+		};
+
+		mMesh.loadVertices(vertices);
 	}
 
 	void init()
