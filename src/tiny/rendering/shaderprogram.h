@@ -26,6 +26,9 @@ namespace tiny { namespace rendering {
 		void link();
 		void use();		
 	private:
+
+		void checkProgramError(GLenum linkingStage);
+
 		GLuint mProgramHandle;
 		std::vector<Shader> mShaders;
 	};

@@ -57,19 +57,27 @@ void ShaderProgram::use()
 
 void ShaderProgram::link()
 {
+	glLinkProgram(mProgramHandle);
+	checkProgramError(GL_LINK_STATUS);
+
+	glValidateProgram(mProgramHandle);
+	checkProgramError(GL_VALIDATE_STATUS);
+}
+
+void ShaderProgram::checkProgramError(GLenum linkingStage)
+{
 	GLint success;
 
-	glLinkProgram(mProgramHandle);
-	glValidateProgram(mProgramHandle);
-	glGetProgramiv(mProgramHandle, GL_LINK_STATUS, &success);
+	glGetProgramiv(mProgramHandle, linkingStage, &success);
 
 	if (!success)
 	{
 		char errorMessage[1024];
 		glGetProgramInfoLog(mProgramHandle, sizeof(errorMessage), NULL, errorMessage);
 
-		throw std::runtime_error("linking error:\n" + std::string(errorMessage));
+		throw std::runtime_error("shader program error:\n" + std::string(errorMessage));
 	}
+
 }
 
 
