@@ -31,6 +31,12 @@ Window::Window(int width, int height, std::string title)
 		throw std::runtime_error("could not initiazlie GLEW");
 
 	glClearColor(0,0,0,1);
+
+	glEnable(GL_DEPTH_TEST);
+	
+	glFrontFace(GL_CW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 }
 
 Window::Window(Window &&other) 
@@ -69,7 +75,7 @@ void Window::vsync(bool onoff)
 
 void Window::clear()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::clear(float r, float g, float b, float a)
