@@ -26,9 +26,9 @@ public:
 	{
 		std::vector<Mesh::vertex> vertices = 
 		{
-			{ vec3(-1.0, -1.0, 0) },
-			{ vec3( 0.0,  1.0, 0) },
-			{ vec3( 1.0, -1.0, 0) },
+			{ vec3(-1.0, -1.0, 0), vec2(0.0f, 0.0f) },
+			{ vec3( 0.0,  1.0, 0), vec2(0.5f, 1.0f) },
+			{ vec3( 1.0, -1.0, 0), vec2(1.0f, 0.0f) },
 		};
 
 		mMesh.loadVertices(vertices);
@@ -80,6 +80,6 @@ private:
 
 int main(int argc, char **argv)
 {
-	MyGame(Window(1900, 1200, "MyGame")).start();
+	MyGame(Window(1024, 768, "MyGame")).start();
 	return EXIT_SUCCESS;
 }

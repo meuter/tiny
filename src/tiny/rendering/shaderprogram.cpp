@@ -104,7 +104,7 @@ GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const
 	GLint result = glGetAttribLocation(mProgramHandle, attribute.c_str());
 
 	if (result == -1)
-		throw std::runtime_error("could not get attribute location for attribyte '" + attribute + "'");
+		throw std::runtime_error("could not get attribute location for attribute '" + attribute + "'");
 
 	return result;
 }

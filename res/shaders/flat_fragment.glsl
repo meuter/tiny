@@ -1,8 +1,11 @@
 #version 120
 
-varying vec4 position0;
+uniform sampler2D texture;
+
+varying vec2 textureCoord0;
 
 void main()
 {
-	gl_FragColor = position0;
+
+	gl_FragColor = texture2D(texture, textureCoord0);
 }

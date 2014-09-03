@@ -16,6 +16,7 @@ namespace tiny { namespace rendering {
 		struct vertex
 		{
 			core::vec3 position;
+			core::vec2 textureCoord;
 		};
 
 		Mesh();

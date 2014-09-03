@@ -49,7 +49,7 @@ void Engine::run()
 
 		if (unprocessedTime < dt)
 		{
-			std::this_thread::sleep_for(msec(1));
+			std::this_thread::sleep_for(msec(5));
 			continue;
 		}
 			

@@ -67,14 +67,18 @@ void Mesh::unload()
 void Mesh::draw(const ShaderProgram &shaderProgram)
 {
 	GLint positionAttributeLocation = shaderProgram.getAttributeLocation("position");
+	GLint textureCoordAttributeLocation = shaderProgram.getAttributeLocation("textureCoord");
 
 	glBindVertexArray(mVertexArrayHandle);
 	glEnableVertexAttribArray(positionAttributeLocation);
+	glEnableVertexAttribArray(textureCoordAttributeLocation);
 
 	glVertexAttribPointer(positionAttributeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
+	glVertexAttribPointer(textureCoordAttributeLocation, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));
 	glDrawArrays(GL_TRIANGLES, 0, mNumberOfVertices);
 
 	glDisableVertexAttribArray(positionAttributeLocation);
+	glDisableVertexAttribArray(textureCoordAttributeLocation);
 	glBindVertexArray(0);
 }
 
