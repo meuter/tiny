@@ -39,6 +39,7 @@ void Engine::stop()
 void Engine::run()
 {
 	const auto dt = sec(1.0/5000.0);
+	auto t = sec(0);
 	auto stopwatch = Stopwatch();
 	auto unprocessedTime = sec(0);
 
@@ -56,8 +57,9 @@ void Engine::run()
 		{
 			mGame.getInputs().refresh();
 			mGame.inputs();
-			mGame.update(dt);
+			mGame.update(t, dt);
 			unprocessedTime -= dt;			
+			t += dt;
 		}
 
 		mGame.getWindow().clear();

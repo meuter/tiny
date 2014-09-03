@@ -36,13 +36,10 @@ public:
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
 		getWindow().vsync(false);		
-		t = sec{0};
 	}
 
-	void update(sec dt)
+	void update(sec t, sec dt)
 	{
-		t += dt;
-
 		mFPSCounter.update(dt);
 
  		float sint = sin(rad{t.count()});
@@ -79,8 +76,6 @@ private:
 	Mesh mMesh;
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
-
-	sec t;
 };
 
 
