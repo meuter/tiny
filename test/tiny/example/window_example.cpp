@@ -42,10 +42,10 @@ public:
 	{
 		mFPSCounter.update(dt);
 
- 	// 	float sint = sin(rad{t.count()});
-		// mTransform.setPosition(sint,0,0);
-		// mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
-		// mTransform.setScale(sint,sint,sint);
+ 		float sint = sin(rad{t.count()});
+		mTransform.setPosition(sint,0,0);
+		mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
+		mTransform.setScale(sint,sint,sint);
 	}
 
 	void inputs()
@@ -80,6 +80,6 @@ private:
 
 int main(int argc, char **argv)
 {
-	MyGame(Window(1024, 768, "MyGame")).start();
+	MyGame(Window(1900, 1200, "MyGame")).start();
 	return EXIT_SUCCESS;
 }

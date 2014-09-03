@@ -26,6 +26,7 @@ namespace tiny { namespace rendering {
 		void bind(GLuint textureUnit = 0);
 
 	protected:
+		void flip(unsigned *pixels, unsigned width, unsigned height);
 		void destroy();
 
 	private:

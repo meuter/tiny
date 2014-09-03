@@ -60,6 +60,8 @@ void Texture::loadFile(const std::string &filename)
 	int width, height, nComponents;
 	unsigned char *pixels = stbi_load(filename.c_str(), &width, &height, &nComponents, 4);
 
+	flip((unsigned *)pixels, (unsigned)width, (unsigned)height);
+
 	if (pixels == NULL)
 		throw std::runtime_error("could not load texture file '"+filename+"'");
 
@@ -74,6 +76,21 @@ void Texture::bind(GLuint textureUnit)
 
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
+}
+
+void Texture::flip(unsigned* buffer, unsigned width, unsigned height)
+{
+    unsigned rows = height / 2; // Iterate only half the buffer to get a full flip
+    unsigned* tempRow = (unsigned*)malloc(width * sizeof(unsigned));
+
+    for (unsigned rowIndex = 0; rowIndex < rows; rowIndex++)
+    {
+        memcpy(tempRow, buffer + rowIndex * width, width * sizeof(unsigned));
+        memcpy(buffer + rowIndex * width, buffer + (height - rowIndex - 1) * width, width * sizeof(unsigned));
+        memcpy(buffer + (height - rowIndex - 1) * width, tempRow, width * sizeof(unsigned));
+    }
+
+    free(tempRow);
 }
 
 void Texture::destroy()
