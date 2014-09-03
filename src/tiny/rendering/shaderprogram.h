@@ -10,6 +10,8 @@
 
 namespace tiny { namespace rendering {
 
+	class Texture;
+
 	class ShaderProgram
 	{
 	public:
@@ -28,10 +30,10 @@ namespace tiny { namespace rendering {
 
 		void detectUniform(const std::string &uniform);
 		void setUniform(const std::string &uniform, float value);
-		void setUniform(const std::string &uniform, core::vec2 value);
-		void setUniform(const std::string &uniform, core::vec3 value);
-		void setUniform(const std::string &uniform, core::vec4 value);
-		void setUniform(const std::string &uniform, core::mat4 value);
+		void setUniform(const std::string &uniform, const core::vec2 &value);
+		void setUniform(const std::string &uniform, const core::vec3 &value);
+		void setUniform(const std::string &uniform, const core::vec4 &value);
+		void setUniform(const std::string &uniform, const core::mat4 &value);
 
 		void use();		
 

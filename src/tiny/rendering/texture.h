@@ -19,6 +19,8 @@ namespace tiny { namespace rendering {
 		Texture &operator=(const Texture &other) = delete;
 		Texture &operator=(Texture &&other);
 
+		inline GLuint getHandle() const { return mTextureHandle; }
+
 		void loadData(unsigned char *data, int width, int height);
 		void loadFile(const std::string &filename);
 		void bind();
