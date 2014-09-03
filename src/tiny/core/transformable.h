@@ -11,14 +11,14 @@ namespace tiny { namespace core {
 		Transformable();
 		virtual ~Transformable();
 
-		Transformable &scale(const vec3 &factors);
-		Transformable &scale(float sx, float sy, float sz);
+		void setPosition(float dx, float dy, float dz);
+		void setPosition(const vec3 &displacement);
 
-		Transformable &rotate(const quat &rotation);
-		Transformable &rotate(const vec3 axis, const rad &angle);
+		void setScale(const vec3 &factors);
+		void setScale(float sx, float sy, float sz);
 
-		Transformable &translate(const vec3 &displacement);
-		Transformable &translate(float dx, float dy, float dz);
+		void setRotation(const quat &rotation);
+		void setRotation(const vec3 axis, const rad &angle);
 
 		mat4 getMatrix() const;
 		mat4 getTranslationMatrix() const;

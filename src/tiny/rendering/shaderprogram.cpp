@@ -95,7 +95,7 @@ void ShaderProgram::setUniform(const std::string &uniform, core::vec4 value)
 
 void ShaderProgram::setUniform(const std::string &uniform, core::mat4 value)
 {
-	glUniformMatrix4fv(mUniformLocations[uniform], 1, GL_FALSE, &value(0,0));
+	glUniformMatrix4fv(mUniformLocations[uniform], 1, GL_TRUE, &value(0,0));
 }
 
 

@@ -5,6 +5,7 @@
 
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
+#include <tiny/core/transformable.h>
 
 #include <iostream>
 
@@ -25,19 +26,17 @@ public:
 	{
 		std::vector<Mesh::vertex> vertices = 
 		{
-			{ vec3(-1.0, -1.0, 0.0) },
-			{ vec3( 0.0,  1.0, 0.0) },
-			{ vec3( 1.0, -1.0, 0.0) },
+			{ vec3(-1.0, -1.0, 0) },
+			{ vec3( 0.0,  1.0, 0) },
+			{ vec3( 1.0, -1.0, 0) },
 		};
 
 		mMesh.loadVertices(vertices);
 
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
-		getWindow().vsync(false);	
-		mScale = 1.0f;	
+		getWindow().vsync(false);		
 		t = sec{0};
-		mColor = vec4(1,1,1,1);
 	}
 
 	void update(sec dt)
@@ -46,11 +45,11 @@ public:
 
 		mFPSCounter.update(dt);
 
- 		mScale = cos(rad{t.count()});
- 		mColor *= 0.9998f;
+ 		float sint = sin(rad{t.count()});
 
- 		std::cout << mScale << std::endl;
-
+		mTransform.setPosition(sint,0,0);
+		mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
+		mTransform.setScale(sint,sint,sint);
 	}
 
 	void inputs()
@@ -66,11 +65,8 @@ public:
 	{
 		mShaderProgram.use();
 
-		mShaderProgram.detectUniform("scale");
-		mShaderProgram.setUniform("scale", mScale);
-
-		mShaderProgram.detectUniform("color");
-		mShaderProgram.setUniform("color", mColor);
+		mShaderProgram.detectUniform("transform");
+		mShaderProgram.setUniform("transform", mTransform.getMatrix());
 
 		mTexture.bind();
 		mMesh.draw();
@@ -82,15 +78,14 @@ private:
 	Texture mTexture;		
 	Mesh mMesh;
 	FPSCounter mFPSCounter;
+	Transformable mTransform;
 
-	float mScale;
-	vec4 mColor;
 	sec t;
 };
 
 
 int main(int argc, char **argv)
 {
-	MyGame(Window(1080, 768, "MyGame")).start();
+	MyGame(Window(1900, 1200, "MyGame")).start();
 	return EXIT_SUCCESS;
 }

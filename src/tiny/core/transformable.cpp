@@ -13,42 +13,34 @@ Transformable::~Transformable()
 }
 
 
-Transformable &Transformable::scale(const vec3 &factors)
+void Transformable::setScale(const vec3 &scale)
 {
-	scale(factors.x, factors.y, factors.z);
-	return (*this);
+	mScale = scale;
 }
 
-Transformable &Transformable::scale(float sx, float sy, float sz)
+void Transformable::setScale(float sx, float sy, float sz)
 {
-	mScale.x *= sx;
-	mScale.y *= sy;
-	mScale.z *= sz;
-	return (*this);
+	mScale = vec3(sx, sy, sz);
 }
 
-Transformable &Transformable::rotate(const quat &rotation)
+void Transformable::setRotation(const quat &rotation)
 {
-	mRotation = (rotation * mRotation).normalized();
-	return (*this);
+	mRotation = rotation;
 }
 
-Transformable &Transformable::rotate(const vec3 axis, const rad &angle)
+void Transformable::setRotation(const vec3 axis, const rad &angle)
 {
-	mRotation = (quat(axis, angle) * mRotation).normalized();
-	return (*this);
+	mRotation = quat(axis, angle);
 }
 
-Transformable &Transformable::translate(const vec3 &displacement)
+void Transformable::setPosition(float dx, float dy, float dz)
 {
-	mPosition += displacement;
-	return (*this);
+	mPosition = vec3(dx, dy, dz);
 }
 
-Transformable &Transformable::translate(float dx, float dy, float dz)
+void Transformable::setPosition(const vec3 &displacement)
 {
-	mPosition += vec3(dx, dy, dz);
-	return (*this);
+	mPosition = displacement;
 }
 
 mat4 Transformable::getMatrix() const

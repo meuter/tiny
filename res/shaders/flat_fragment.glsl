@@ -1,8 +1,8 @@
 #version 120
 
-uniform vec4 color;
+varying vec4 position0;
 
 void main()
 {
-	gl_FragColor = color;
+	gl_FragColor = position0;
 }

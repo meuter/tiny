@@ -2,9 +2,13 @@
 
 attribute vec3 position;
 
-uniform float scale;
+uniform mat4 transform;
+
+varying vec4 position0;
 
 void main()
 {
-	gl_Position = vec4(scale * position, 1.0f);
+	position0 = vec4(clamp(position,0.0f,1.0f), 1.0f);
+	gl_Position = transform * vec4(position, 1.0f);
+
 }
