@@ -35,6 +35,8 @@ namespace tiny { namespace rendering {
 		void setUniform(const std::string &uniform, const core::vec4 &value);
 		void setUniform(const std::string &uniform, const core::mat4 &value);
 
+		GLint getAttributeLocation(const std::string &attribute) const;
+
 		void use();		
 
 	protected:

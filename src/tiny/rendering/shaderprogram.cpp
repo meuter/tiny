@@ -99,6 +99,16 @@ void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &val
 	glUniformMatrix4fv(mUniformLocations[uniform], 1, GL_TRUE, &value(0,0));
 }
 
+GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const
+{
+	GLint result = glGetAttribLocation(mProgramHandle, attribute.c_str());
+
+	if (result == -1)
+		throw std::runtime_error("could not get attribute location for attribyte '" + attribute + "'");
+
+	return result;
+}
+
 void ShaderProgram::checkProgramError(GLenum linkingStage)
 {
 	GLint success;

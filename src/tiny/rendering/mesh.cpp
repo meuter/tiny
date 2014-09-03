@@ -66,13 +66,15 @@ void Mesh::unload()
 
 void Mesh::draw(const ShaderProgram &shaderProgram)
 {
-	glBindVertexArray(mVertexArrayHandle);
-	glEnableVertexAttribArray(0);
+	GLint positionAttributeLocation = shaderProgram.getAttributeLocation("position");
 
-	glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, 0,0);
+	glBindVertexArray(mVertexArrayHandle);
+	glEnableVertexAttribArray(positionAttributeLocation);
+
+	glVertexAttribPointer(positionAttributeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
 	glDrawArrays(GL_TRIANGLES, 0, mNumberOfVertices);
 
-	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(positionAttributeLocation);
 	glBindVertexArray(0);
 }
 
