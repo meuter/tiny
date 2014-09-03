@@ -42,11 +42,10 @@ public:
 	{
 		mFPSCounter.update(dt);
 
- 		float sint = sin(rad{t.count()});
-
-		mTransform.setPosition(sint,0,0);
-		mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
-		mTransform.setScale(sint,sint,sint);
+ 	// 	float sint = sin(rad{t.count()});
+		// mTransform.setPosition(sint,0,0);
+		// mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
+		// mTransform.setScale(sint,sint,sint);
 	}
 
 	void inputs()
@@ -66,7 +65,7 @@ public:
 		mShaderProgram.setUniform("transform", mTransform.getMatrix());
 
 		mTexture.bind();
-		mMesh.draw();
+		mMesh.draw(mShaderProgram);
 		mFPSCounter.newFrame();
 	}
 

@@ -7,6 +7,8 @@
 
 namespace tiny { namespace rendering {
 
+	class ShaderProgram;
+
 	class Mesh
 	{
 	public:
@@ -27,12 +29,12 @@ namespace tiny { namespace rendering {
 
 		void loadVertices(const std::vector<vertex> &vertices);
 		void unload();
-		void draw();
+		void draw(const ShaderProgram &shaderProgram);
 
 	private:	
 		size_t mNumberOfVertices;
 		GLuint mVertexArrayHandle;
-		GLuint mPositionBufferHandle;
+		GLuint mVertexBufferHandle;
 		bool mLoaded;
 	};
 
