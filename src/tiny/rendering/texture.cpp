@@ -21,7 +21,7 @@ Texture::Texture()
 	if (mTextureHandle == 0)
 		throw std::runtime_error("could not generate new texture");
 
-	bind();
+	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -51,7 +51,7 @@ Texture &Texture::operator=(Texture &&other)
 
 void Texture::loadData(unsigned char *data, int width, int height) 
 {
-	bind();
+	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
 
@@ -67,8 +67,12 @@ void Texture::loadFile(const std::string &filename)
 	stbi_image_free(pixels);
 }
 
-void Texture::bind() 
+void Texture::bind(GLuint textureUnit) 
 {
+	if (textureUnit >= 32)
+		throw std::runtime_error("only 32 texture units are available");
+
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, mTextureHandle);
 }
 
