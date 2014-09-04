@@ -26,7 +26,7 @@ namespace tiny { namespace rendering {
 		};
 
 		Mesh();
-		Mesh(const std::vector<vertex> &vertices);
+		Mesh(const std::vector<vertex> &vertices, const std::vector<int> &indices);
 		Mesh(const Mesh &other) = delete;
 		Mesh(Mesh &&mesh);
 		virtual ~Mesh();
@@ -34,14 +34,15 @@ namespace tiny { namespace rendering {
 		Mesh &operator=(const Mesh &mesh) = delete;
 		Mesh &operator=(Mesh &&other);
 
-		void loadVertices(const std::vector<vertex> &vertices);
+		void load(const std::vector<vertex> &vertices, const std::vector<int> &indices);
 		void unload();
 		void draw();
 
 	private:	
-		size_t mNumberOfVertices;
+		size_t mSize;
 		GLuint mVertexArrayHandle;
 		GLuint mVertexBufferHandle;
+		GLuint mIndexBufferHandle;
 		bool mLoaded;
 	};
 

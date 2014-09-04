@@ -31,7 +31,11 @@ public:
 			{ vec3( 1.0, -1.0, 0), vec2(1.0f, 0.0f) },
 		};
 
-		mMesh.loadVertices(vertices);
+		std::vector<int> indices = {
+			0,1,2,
+		};
+
+		mMesh.load(vertices, indices);
 
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
