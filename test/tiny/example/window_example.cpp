@@ -65,7 +65,7 @@ public:
 		mShaderProgram.setUniform("transform", mTransform.getMatrix());
 
 		mTexture.bind();
-		mMesh.draw(mShaderProgram);
+		mMesh.draw();
 		mFPSCounter.newFrame();
 	}
 

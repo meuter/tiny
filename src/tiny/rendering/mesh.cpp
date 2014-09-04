@@ -50,7 +50,11 @@ void Mesh::loadVertices(const std::vector<vertex> &vertices)
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 
-	glBindVertexArray(0);
+	glEnableVertexAttribArray(AttributeLocation::POSITION);
+	glEnableVertexAttribArray(AttributeLocation::TEXTURE_COORD);
+
+	glVertexAttribPointer(AttributeLocation::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
+	glVertexAttribPointer(AttributeLocation::TEXTURE_COORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));
 
 	mLoaded = true;
 }
@@ -64,22 +68,10 @@ void Mesh::unload()
 	}
 }
 
-void Mesh::draw(const ShaderProgram &shaderProgram)
+void Mesh::draw()
 {
-	GLint positionAttributeLocation = shaderProgram.getAttributeLocation("position");
-	GLint textureCoordAttributeLocation = shaderProgram.getAttributeLocation("textureCoord");
-
 	glBindVertexArray(mVertexArrayHandle);
-	glEnableVertexAttribArray(positionAttributeLocation);
-	glEnableVertexAttribArray(textureCoordAttributeLocation);
-
-	glVertexAttribPointer(positionAttributeLocation, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
-	glVertexAttribPointer(textureCoordAttributeLocation, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));
 	glDrawArrays(GL_TRIANGLES, 0, mNumberOfVertices);
-
-	glDisableVertexAttribArray(positionAttributeLocation);
-	glDisableVertexAttribArray(textureCoordAttributeLocation);
-	glBindVertexArray(0);
 }
 
 }}

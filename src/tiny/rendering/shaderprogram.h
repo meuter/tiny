@@ -40,6 +40,7 @@ namespace tiny { namespace rendering {
 		void use();		
 
 	protected:
+		void bindAttributeLocations();
 		void checkProgramError(GLenum linkingStage);
 		void destroy();
 

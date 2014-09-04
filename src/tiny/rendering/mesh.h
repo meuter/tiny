@@ -13,6 +13,12 @@ namespace tiny { namespace rendering {
 	{
 	public:
 
+		enum AttributeLocation : GLuint
+		{
+			POSITION,
+			TEXTURE_COORD,
+		};
+
 		struct vertex
 		{
 			core::vec3 position;
@@ -30,7 +36,7 @@ namespace tiny { namespace rendering {
 
 		void loadVertices(const std::vector<vertex> &vertices);
 		void unload();
-		void draw(const ShaderProgram &shaderProgram);
+		void draw();
 
 	private:	
 		size_t mNumberOfVertices;

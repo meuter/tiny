@@ -1,5 +1,6 @@
 #include "shaderprogram.h"
 #include "texture.h"
+#include "mesh.h"
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
@@ -52,6 +53,8 @@ void ShaderProgram::addShader(Shader &&shader)
 
 void ShaderProgram::link()
 {
+	bindAttributeLocations();
+
 	glLinkProgram(mProgramHandle);
 	checkProgramError(GL_LINK_STATUS);
 
@@ -97,6 +100,12 @@ void ShaderProgram::setUniform(const std::string &uniform, const core::vec4 &val
 void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &value)
 {
 	glUniformMatrix4fv(mUniformLocations[uniform], 1, GL_TRUE, &value(0,0));
+}
+
+void ShaderProgram::bindAttributeLocations()
+{
+	glBindAttribLocation(mProgramHandle, Mesh::POSITION, "position");
+	glBindAttribLocation(mProgramHandle, Mesh::TEXTURE_COORD, "textureCoord");
 }
 
 GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const
