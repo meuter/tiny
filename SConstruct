@@ -21,6 +21,7 @@ env.Library("tiny", Split("""
 	src/tiny/core/inputs.cpp
 	src/tiny/core/engine.cpp
 	src/tiny/core/window.cpp
+	src/tiny/utils/strutils.cpp
 	src/tiny/rendering/shader.cpp
 	src/tiny/rendering/shaderprogram.cpp
 	src/tiny/rendering/mesh.cpp
@@ -47,8 +48,7 @@ test.Program("test/tiny/all", Split("""
 	test/tiny/math/quaternion_tests.cpp
 	test/tiny/math/trigo_tests.cpp
 	test/tiny/rendering/shader_tests.cpp
-	test/tiny/utils/split_tests.cpp
-	test/tiny/utils/upper_tests.cpp
+	test/tiny/utils/strutils_tests.cpp
 	test/gtest/gmock-gtest-all.cc
 	test/gtest/gmock_main.cc
 """))

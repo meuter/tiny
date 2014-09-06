@@ -2,8 +2,7 @@
 #include "shaderprogram.h"
 #include "tiny_obj_loader.h"
 #include <stdexcept>
-#include "../utils/split.h"
-#include "../utils/upper.h"
+#include "../utils/strutils.h"
 
 #include <iostream>
 
