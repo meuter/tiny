@@ -24,27 +24,25 @@ Mesh Mesh::fromFile(const std::string &filename)
 	if (shapes.size() != 1)
 		throw std::runtime_error("did not find one shape in file");
 
-	auto &shape = shapes[0];
+	auto &mesh = shapes[0].mesh;
 
-	std::cout << "found shape " << shape.name << std::endl;
-
-	if (shape.mesh.indices.size() % 3 != 0)
+	if (mesh.indices.size() % 3 != 0)
 		throw std::runtime_error("invalid indices");
 
-	if (shape.mesh.positions.size() % 3 != 0)
+	if (mesh.positions.size() % 3 != 0)
 		throw std::runtime_error("invalid positions");
 
-	if (shape.mesh.texcoords.size() % 2 != 0)
+	if (mesh.texcoords.size() % 2 != 0)
 		throw std::runtime_error("invalid texture coordinates");
 
-	for (size_t i = 0; i < shape.mesh.positions.size()/3; i++)
+	for (size_t i = 0; i < mesh.positions.size()/3; i++)
 	{
-		core::vec3 position = core::vec3(shape.mesh.positions[i], shape.mesh.positions[i+1], shape.mesh.positions[i+2]);
+		core::vec3 position = core::vec3(mesh.positions[3*i+0], mesh.positions[3*i+1], mesh.positions[3*i+1]);
 		core::vec2 texcoord = core::vec2(0.5f, 0.5f);
 		vertices.push_back(vertex{position, texcoord});
 	}
 
-	result.load(vertices, shape.mesh.indices);
+	result.load(vertices, mesh.indices);
 
 	return result;
 }

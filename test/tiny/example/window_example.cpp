@@ -22,7 +22,7 @@ public:
 	{		
 	}
 
-	void init()
+	void loadTriangle()
 	{
 		std::vector<Mesh::vertex> vertices = 
 		{
@@ -35,8 +35,13 @@ public:
 			0,1,2,
 		};
 
-		// mMesh = Mesh::fromFile("res/models/cube.obj");
 		mMesh.load(vertices, indices);
+	}
+
+	void init()
+	{
+		mMesh = Mesh::fromFile("res/models/cube.obj");
+		// loadTriangle();
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
 		getWindow().vsync(false);		
@@ -46,12 +51,11 @@ public:
 	{
 		mFPSCounter.update(dt);
 
-		mTransform.setPosition(0,0,5);
-
- 		float sint = sin(rad{t.count()});
-		mTransform.setPosition(sint,0,0);
-		mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
-		mTransform.setScale(sint,sint,sint);
+ 	// 	float sint = sin(rad{t.count()});
+		// mTransform.setPosition(sint,0,0);
+		// mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
+		// mTransform.setScale(sint,sint,sint);
+		mTransform.setScale(0.5f, 0.5f, 0.5f);
 	}
 
 	void inputs()
