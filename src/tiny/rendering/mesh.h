@@ -19,17 +19,17 @@ namespace tiny { namespace rendering {
 		enum AttributeLocation : GLuint
 		{
 			POSITION,
-			TEXTURE_COORD,
+			TEXCOORD,
 		};
 
 		struct vertex
 		{
 			core::vec3 position;
-			core::vec2 textureCoord;
+			core::vec2 texcoord;
 		};
 
 		Mesh();
-		Mesh(const std::vector<vertex> &vertices, const std::vector<int> &indices);
+		Mesh(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices);
 		Mesh(const Mesh &other) = delete;
 		Mesh(Mesh &&mesh);
 		virtual ~Mesh();
@@ -37,7 +37,7 @@ namespace tiny { namespace rendering {
 		Mesh &operator=(const Mesh &mesh) = delete;
 		Mesh &operator=(Mesh &&other);
 
-		void load(const std::vector<vertex> &vertices, const std::vector<int> &indices);
+		void load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices);
 		void unload();
 		void draw();
 

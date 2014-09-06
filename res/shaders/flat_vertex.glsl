@@ -1,15 +1,15 @@
 #version 120
 
 attribute vec3 position;
-attribute vec2 textureCoord;
+attribute vec2 texcoord;
 
 uniform mat4 transform;
 
-varying vec2 textureCoord0;
+varying vec2 texcoord0;
 
 void main()
 {
-	textureCoord0 = textureCoord;
+	texcoord0 = texcoord;
 	gl_Position = transform * vec4(position, 1.0f);
 
 }

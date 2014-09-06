@@ -31,14 +31,12 @@ public:
 			{ vec3( 1.0, -1.0, 0), vec2(1.0f, 0.0f) },
 		};
 
-		std::vector<int> indices = {
+		std::vector<unsigned int> indices = {
 			0,1,2,
 		};
 
+		// mMesh = Mesh::fromFile("res/models/cube.obj");
 		mMesh.load(vertices, indices);
-		
-		mCube = Mesh::fromFile("res/models/cube.obj");
-
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
 		getWindow().vsync(false);		
@@ -47,6 +45,8 @@ public:
 	void update(sec t, sec dt)
 	{
 		mFPSCounter.update(dt);
+
+		mTransform.setPosition(0,0,5);
 
  		float sint = sin(rad{t.count()});
 		mTransform.setPosition(sint,0,0);
@@ -78,7 +78,7 @@ public:
 private:	
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
-	Mesh mMesh, mCube;
+	Mesh mMesh;
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
 };

@@ -11,6 +11,7 @@ namespace tiny { namespace rendering {
 Mesh Mesh::fromFile(const std::string &filename)
 {
 	Mesh result;
+	std::vector<vertex> vertices;
 
 	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
 		throw std::runtime_error("onlye obj files are supperted");
@@ -20,25 +21,30 @@ Mesh Mesh::fromFile(const std::string &filename)
 	if (!error.empty())
 		throw std::runtime_error(error);
 
-	for (auto &shape: shapes)
+	if (shapes.size() != 1)
+		throw std::runtime_error("did not find one shape in file");
+
+	auto &shape = shapes[0];
+
+	std::cout << "found shape " << shape.name << std::endl;
+
+	if (shape.mesh.indices.size() % 3 != 0)
+		throw std::runtime_error("invalid indices");
+
+	if (shape.mesh.positions.size() % 3 != 0)
+		throw std::runtime_error("invalid positions");
+
+	if (shape.mesh.texcoords.size() % 2 != 0)
+		throw std::runtime_error("invalid texture coordinates");
+
+	for (size_t i = 0; i < shape.mesh.positions.size()/3; i++)
 	{
-		if (shape.mesh.indices.size() % 3 != 0)
-			throw std::runtime_error("invalid indices");
-
-		if (shape.mesh.positions.size() % 3 != 0)
-			throw std::runtime_error("invalid positions");
-
-		if (shape.mesh.texcoords.size() % 2 != 0)
-			throw std::runtime_error("invalid texture coordinates");
-
-		for (size_t i = 0; i < shape.mesh.positions.size()/3; i++)
-		{
-			core::vec3 pos(shape.mesh.positions[i], shape.mesh.positions[i+1], shape.mesh.positions[i+2]);
-
-			std::cout << pos << std::endl;
-		}
-
+		core::vec3 position = core::vec3(shape.mesh.positions[i], shape.mesh.positions[i+1], shape.mesh.positions[i+2]);
+		core::vec2 texcoord = core::vec2(0.5f, 0.5f);
+		vertices.push_back(vertex{position, texcoord});
 	}
+
+	result.load(vertices, shape.mesh.indices);
 
 	return result;
 }
@@ -47,7 +53,7 @@ Mesh::Mesh() : mLoaded(false)
 {
 }
 
-Mesh::Mesh(const std::vector<vertex> &vertices, const std::vector<int> &indices)
+Mesh::Mesh(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices)
 {
 	load(vertices, indices);
 }
@@ -78,7 +84,7 @@ Mesh &Mesh::operator=(Mesh &&other)
 	return (*this);
 }
 
-void Mesh::load(const std::vector<vertex> &vertices, const std::vector<int> &indices) 
+void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices) 
 {
 	mSize = indices.size();
 
@@ -90,8 +96,8 @@ void Mesh::load(const std::vector<vertex> &vertices, const std::vector<int> &ind
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(AttributeLocation::POSITION);
 	glVertexAttribPointer(AttributeLocation::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
-	glEnableVertexAttribArray(AttributeLocation::TEXTURE_COORD);
-	glVertexAttribPointer(AttributeLocation::TEXTURE_COORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));				
+	glEnableVertexAttribArray(AttributeLocation::TEXCOORD);
+	glVertexAttribPointer(AttributeLocation::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));				
 
 	glGenBuffers(1, &mIndexBufferHandle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferHandle);
@@ -113,7 +119,6 @@ void Mesh::draw()
 {
 	glBindVertexArray(mVertexArrayHandle);
 	glDrawElements(GL_TRIANGLES, mSize, GL_UNSIGNED_INT, 0);
-	// glDrawArrays(GL_TRIANGLES, 0, mNumberOfVertices);
 }
 
 }}
