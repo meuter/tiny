@@ -25,17 +25,21 @@ public:
 		mMesh          = Mesh::fromFile("res/models/cube.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
-		getWindow().vsync(false);		
+		mPerspective   = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
+		getWindow().vsync(false);				
 	}
 
-	void update(sec t, sec dt)
+	mat4 projection(rad fieldOfView, float aspectRatio, float zNear, float zFar)
 	{
-		mFPSCounter.update(dt);
+		float zRange = zFar - zNear;  
+		float tanHalfFov = tan(fieldOfView/2.0);
 
- 		float sint = sin(rad{t.count()});
-		mTransform.setPosition(sint,0,0);
-		mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
-		mTransform.setScale(0.7f * sint, 0.7f * sint, 0.7f * sint);			
+		return mat4{
+			1.0f/(tanHalfFov*aspectRatio), 0.0f,            0.0f,                 0.0f,
+			0.0f,                          1.0f/tanHalfFov, 0.0f,                 0.0f,
+			0.0f,                          0.0f,            (-zNear-zFar)/zRange, 2.0f*zFar*zNear/zRange,
+			0.0f,                          0.0f,            1.0f,                 0.0f
+		};
 	}
 
 	void inputs()
@@ -47,12 +51,20 @@ public:
 			stop();
 	}
 
+	void update(sec t, sec dt)
+	{
+		mFPSCounter.update(dt);
+
+ 		float sint = sin(rad{t.count()});
+		mTransform.setPosition(sint,0,5);
+		mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
+	}
+
 	void render()
 	{
 		mShaderProgram.use();
-
 		mShaderProgram.detectUniform("transform");
-		mShaderProgram.setUniform("transform", mTransform.getMatrix());
+		mShaderProgram.setUniform("transform", mPerspective * mTransform.getMatrix());
 
 		mTexture.bind();
 		mMesh.draw();
@@ -65,6 +77,8 @@ private:
 	Mesh mMesh;
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
+	mat4 mPerspective;
+
 };
 
 

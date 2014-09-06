@@ -21,7 +21,7 @@ namespace tiny { namespace core {
 
 		inline int   width()  const { return mHeight; }
 		inline int   height() const { return mWidth; }
-		inline float apsect() const { return (float)mHeight/(float)mWidth; }		
+		inline float aspect() const { return (float)mWidth/(float)mHeight; }		
 
 		void vsync(bool onoff);
 		void clear();
