@@ -25,6 +25,7 @@ env.Library("tiny", Split("""
 	src/tiny/rendering/shaderprogram.cpp
 	src/tiny/rendering/mesh.cpp
 	src/tiny/rendering/texture.cpp
+	src/tiny/rendering/tiny_obj_loader.cc
 """))
 
 example = env.Clone()
@@ -46,6 +47,8 @@ test.Program("test/tiny/all", Split("""
 	test/tiny/math/quaternion_tests.cpp
 	test/tiny/math/trigo_tests.cpp
 	test/tiny/rendering/shader_tests.cpp
+	test/tiny/utils/split_tests.cpp
+	test/tiny/utils/upper_tests.cpp
 	test/gtest/gmock-gtest-all.cc
 	test/gtest/gmock_main.cc
 """))

@@ -21,3 +21,6 @@ src/tiny/rendering/texture.o
 src/tiny/core/engine.o
 src/tiny/core/window.o
 src/tiny/rendering/mesh.o
+src/tiny/rendering/tiny_obj_loader.o
+test/tiny/utils/split_tests.o
+test/tiny/utils/upper_tests.o

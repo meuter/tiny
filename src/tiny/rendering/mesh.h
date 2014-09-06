@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <tiny/core/types.h>
 #include <vector>
+#include <string>
 
 namespace tiny { namespace rendering {
 
@@ -12,6 +13,8 @@ namespace tiny { namespace rendering {
 	class Mesh
 	{
 	public:
+
+		static Mesh fromFile(const std::string &filname);
 
 		enum AttributeLocation : GLuint
 		{

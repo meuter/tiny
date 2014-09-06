@@ -36,6 +36,8 @@ public:
 		};
 
 		mMesh.load(vertices, indices);
+		
+		mCube = Mesh::fromFile("res/models/cube.obj");
 
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
@@ -76,7 +78,7 @@ public:
 private:	
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
-	Mesh mMesh;
+	Mesh mMesh, mCube;
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
 };

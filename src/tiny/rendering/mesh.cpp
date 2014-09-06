@@ -1,8 +1,48 @@
 #include "mesh.h"
 #include "shaderprogram.h"
+#include "tiny_obj_loader.h"
 #include <stdexcept>
+#include "../utils/split.h"
+#include "../utils/upper.h"
+
+#include <iostream>
 
 namespace tiny { namespace rendering {
+
+Mesh Mesh::fromFile(const std::string &filename)
+{
+	Mesh result;
+
+	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
+		throw std::runtime_error("onlye obj files are supperted");
+
+	std::vector<tinyobj::shape_t> shapes;
+	std::string error = tinyobj::LoadObj(shapes, filename.c_str());
+	if (!error.empty())
+		throw std::runtime_error(error);
+
+	for (auto &shape: shapes)
+	{
+		if (shape.mesh.indices.size() % 3 != 0)
+			throw std::runtime_error("invalid indices");
+
+		if (shape.mesh.positions.size() % 3 != 0)
+			throw std::runtime_error("invalid positions");
+
+		if (shape.mesh.texcoords.size() % 2 != 0)
+			throw std::runtime_error("invalid texture coordinates");
+
+		for (size_t i = 0; i < shape.mesh.positions.size()/3; i++)
+		{
+			core::vec3 pos(shape.mesh.positions[i], shape.mesh.positions[i+1], shape.mesh.positions[i+2]);
+
+			std::cout << pos << std::endl;
+		}
+
+	}
+
+	return result;
+}
 
 Mesh::Mesh() : mLoaded(false)
 {
