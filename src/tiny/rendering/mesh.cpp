@@ -32,8 +32,6 @@ Mesh Mesh::fromFile(const std::string &filename)
 			auto position = core::vec3(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));		
 			auto texcoord = core::vec2(0.5f, 0.5f);
 			vertices.push_back(vertex{position, texcoord});
-
-			std::cout << position << std::endl;
 		}
 		else if (tokens[0] == "f")
 		{
@@ -89,7 +87,6 @@ Mesh &Mesh::operator=(Mesh &&other)
 void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices) 
 {
 	mSize = indices.size();
-	std::cout << "mSize = " << mSize/3 << std::endl;
 
 	glGenVertexArrays(1, &mVertexArrayHandle);
 	glBindVertexArray(mVertexArrayHandle);

@@ -22,9 +22,9 @@ public:
 
 	void init()
 	{
-		mMesh = Mesh::fromFile("res/models/cube.obj");
+		mMesh          = Mesh::fromFile("res/models/cube.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
-		mTexture = Texture::fromFile("res/textures/bricks.jpg");
+		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
 		getWindow().vsync(false);		
 	}
 
