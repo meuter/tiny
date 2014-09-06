@@ -26,7 +26,6 @@ env.Library("tiny", Split("""
 	src/tiny/rendering/shaderprogram.cpp
 	src/tiny/rendering/mesh.cpp
 	src/tiny/rendering/texture.cpp
-	src/tiny/rendering/tiny_obj_loader.cc
 """))
 
 example = env.Clone()

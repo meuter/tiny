@@ -18,30 +18,11 @@ class MyGame : public Game
 {
 public:
 
-	MyGame(Window &&window) : Game(std::move(window))
-	{		
-	}
-
-	void loadTriangle()
-	{
-		std::vector<Mesh::vertex> vertices = 
-		{
-			{ vec3(-1.0, -1.0, 0), vec2(0.0f, 0.0f) },
-			{ vec3( 0.0,  1.0, 0), vec2(0.5f, 1.0f) },
-			{ vec3( 1.0, -1.0, 0), vec2(1.0f, 0.0f) },
-		};
-
-		std::vector<unsigned int> indices = {
-			0,1,2,
-		};
-
-		mMesh.load(vertices, indices);
-	}
+	MyGame(Window &&window) : Game(std::move(window)) {	}
 
 	void init()
 	{
 		mMesh = Mesh::fromFile("res/models/cube.obj");
-		// loadTriangle();
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture = Texture::fromFile("res/textures/bricks.jpg");
 		getWindow().vsync(false);		
@@ -51,11 +32,10 @@ public:
 	{
 		mFPSCounter.update(dt);
 
- 	// 	float sint = sin(rad{t.count()});
-		// mTransform.setPosition(sint,0,0);
-		// mTransform.setRotation(vec3(0,0,1), toRadian(sint*180.0f));
-		// mTransform.setScale(sint,sint,sint);
-		mTransform.setScale(0.5f, 0.5f, 0.5f);
+ 		float sint = sin(rad{t.count()});
+		mTransform.setPosition(sint,0,0);
+		mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
+		mTransform.setScale(0.7f * sint, 0.7f * sint, 0.7f * sint);			
 	}
 
 	void inputs()

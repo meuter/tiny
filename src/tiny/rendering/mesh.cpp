@@ -1,10 +1,9 @@
 #include "mesh.h"
 #include "shaderprogram.h"
-#include "tiny_obj_loader.h"
 #include <stdexcept>
-#include "../utils/strutils.h"
-
+#include <fstream>
 #include <iostream>
+#include "../utils/strutils.h"
 
 namespace tiny { namespace rendering {
 
@@ -12,37 +11,42 @@ Mesh Mesh::fromFile(const std::string &filename)
 {
 	Mesh result;
 	std::vector<vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::ifstream file;
+	std::string line;
 
 	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
 		throw std::runtime_error("onlye obj files are supperted");
 
-	std::vector<tinyobj::shape_t> shapes;
-	std::string error = tinyobj::LoadObj(shapes, filename.c_str());
-	if (!error.empty())
-		throw std::runtime_error(error);
+	file.open(filename);
 
-	if (shapes.size() != 1)
-		throw std::runtime_error("did not find one shape in file");
+	if (!file)
+		throw std::runtime_error("could not open '" + filename + "'");
 
-	auto &mesh = shapes[0].mesh;
-
-	if (mesh.indices.size() % 3 != 0)
-		throw std::runtime_error("invalid indices");
-
-	if (mesh.positions.size() % 3 != 0)
-		throw std::runtime_error("invalid positions");
-
-	if (mesh.texcoords.size() % 2 != 0)
-		throw std::runtime_error("invalid texture coordinates");
-
-	for (size_t i = 0; i < mesh.positions.size()/3; i++)
+	while (getline(file, line))
 	{
-		core::vec3 position = core::vec3(mesh.positions[3*i+0], mesh.positions[3*i+1], mesh.positions[3*i+1]);
-		core::vec2 texcoord = core::vec2(0.5f, 0.5f);
-		vertices.push_back(vertex{position, texcoord});
+		auto tokens = utils::split(line);
+
+		if (tokens[0] == "v")
+		{
+			auto position = core::vec3(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));		
+			auto texcoord = core::vec2(0.5f, 0.5f);
+			vertices.push_back(vertex{position, texcoord});
+
+			std::cout << position << std::endl;
+		}
+		else if (tokens[0] == "f")
+		{
+			if (tokens.size() != 4)
+				std::runtime_error("only triangles are supported");
+
+			indices.push_back(std::stoi(tokens[1])-1);
+			indices.push_back(std::stoi(tokens[2])-1);
+			indices.push_back(std::stoi(tokens[3])-1);
+		}
 	}
 
-	result.load(vertices, mesh.indices);
+	result.load(vertices, indices);
 
 	return result;
 }
@@ -85,13 +89,14 @@ Mesh &Mesh::operator=(Mesh &&other)
 void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices) 
 {
 	mSize = indices.size();
+	std::cout << "mSize = " << mSize/3 << std::endl;
 
 	glGenVertexArrays(1, &mVertexArrayHandle);
 	glBindVertexArray(mVertexArrayHandle);
 
 	glGenBuffers(1, &mVertexBufferHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices[0]), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), &vertices[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(AttributeLocation::POSITION);
 	glVertexAttribPointer(AttributeLocation::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
 	glEnableVertexAttribArray(AttributeLocation::TEXCOORD);
@@ -99,7 +104,7 @@ void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned 
 
 	glGenBuffers(1, &mIndexBufferHandle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferHandle);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices) * sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
 	
 	mLoaded = true;
 }
@@ -110,6 +115,7 @@ void Mesh::unload()
 	{
 		glDeleteBuffers(1, &mVertexBufferHandle);
 		glDeleteVertexArrays(1, &mVertexArrayHandle);
+		glDeleteVertexArrays(1, &mIndexBufferHandle);
 	}
 }
 
