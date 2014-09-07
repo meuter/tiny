@@ -22,7 +22,7 @@ public:
 
 	void init()
 	{
-		mMesh          = Mesh::fromFile("res/models/cube.obj");
+		mMesh          = Mesh::fromFile("res/models/box.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
 		mPerspective   = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);

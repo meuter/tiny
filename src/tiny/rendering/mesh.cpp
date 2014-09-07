@@ -12,8 +12,26 @@ Mesh Mesh::fromFile(const std::string &filename)
 	Mesh result;
 	std::vector<vertex> vertices;
 	std::vector<unsigned int> indices;
+	std::vector<core::vec3> positions;
+	std::vector<core::vec2> texcoords;
 	std::ifstream file;
 	std::string line;
+
+	auto createVertex = [&](const std::string &faceToken)
+	{
+		auto splitted = utils::split(faceToken, '/');
+		vertex newVertex;
+
+		if (splitted.size() == 1)
+			newVertex = vertex{positions[std::stoi(splitted[0])-1], core::vec2{0.0f, 0.0f} };
+		else if (splitted.size() == 2)
+			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1] };
+		else
+			throw std::runtime_error("do not know how to parse '"+faceToken+"'");
+
+		indices.push_back(vertices.size());
+		vertices.push_back(newVertex);
+	};
 
 	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
 		throw std::runtime_error("onlye obj files are supperted");
@@ -29,18 +47,20 @@ Mesh Mesh::fromFile(const std::string &filename)
 
 		if (tokens[0] == "v")
 		{
-			auto position = core::vec3(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));		
-			auto texcoord = core::vec2(0.5f, 0.5f);
-			vertices.push_back(vertex{position, texcoord});
+			positions.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));
+		}
+		if (tokens[0] == "vt")
+		{
+			texcoords.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]));	
 		}
 		else if (tokens[0] == "f")
 		{
 			if (tokens.size() != 4)
 				std::runtime_error("only triangles are supported");
-
-			indices.push_back(std::stoi(tokens[1])-1);
-			indices.push_back(std::stoi(tokens[2])-1);
-			indices.push_back(std::stoi(tokens[3])-1);
+			
+			createVertex(tokens[1]);
+			createVertex(tokens[2]);
+			createVertex(tokens[3]);
 		}
 	}
 
