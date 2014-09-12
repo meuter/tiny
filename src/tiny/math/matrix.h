@@ -159,7 +159,7 @@ namespace tiny { namespace math {
             return (*this);
         }
 
-        matrix operator-()
+        matrix operator-() const
         {
             return -1 * (*this);
         }
@@ -270,6 +270,12 @@ namespace tiny { namespace math {
     auto length(const vec &l) -> decltype(l.length())
     {
         return l.length();
+    }
+
+    template<typename vec>
+    auto normalize(const vec &v) -> decltype(v.normalized())
+    {
+        return v.normalized();
     }
 
     template<typename vec, typename scalar>

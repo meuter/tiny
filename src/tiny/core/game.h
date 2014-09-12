@@ -19,7 +19,6 @@ namespace tiny { namespace core {
 		Game &operator=(Game &&other) = default;
 
 		virtual void init()                {}
-		virtual void inputs()              {}
 		virtual void update(sec t, sec dt) {}
 		virtual void render()              {}
 

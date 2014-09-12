@@ -6,6 +6,7 @@
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
 #include <tiny/core/transformable.h>
+#include <tiny/core/camera.h>
 
 #include <iostream>
 
@@ -25,7 +26,17 @@ public:
 		mMesh          = Mesh::fromFile("res/models/box.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
-		mPerspective   = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
+		mProjection    = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
+
+		std::cout << "Matrix = \n" << mCamera.getMatrix() << std::endl;
+
+		std::cout << "Up     = " << mCamera.up() << std::endl;
+		std::cout << "Fwd    = " << mCamera.forward() << std::endl;
+		std::cout << "Left   = " << mCamera.left() << std::endl;
+		std::cout << "Right  = " << mCamera.right() << std::endl;
+
+		mCamera.move(mCamera.forward(), -5);
+
 		getWindow().vsync(false);				
 	}
 
@@ -42,29 +53,50 @@ public:
 		};
 	}
 
-	void inputs()
+	void update(sec t, sec dt)
 	{
 		if (getInputs().isWindowCloseRequested())
 			stop();
 
 		if (getInputs().isKeyHeld(Key::KEY_LEFT_CMD) && getInputs().isKeyPressed(Key::KEY_Z))
 			stop();
-	}
 
-	void update(sec t, sec dt)
-	{
 		mFPSCounter.update(dt);
 
- 		float sint = sin(rad{t.count()});
-		mTransform.setPosition(sint,0,5);
-		mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
+ 	// 	float sint = sin(rad{t.count()});
+		mTransform.setPosition(0,0,0);
+		// mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
+
+		float moveAmount = dt.count() * 10;
+		rad rotationAmount = rad{dt.count()* 1.0};
+
+		if (getInputs().isKeyHeld(Key::KEY_W))
+			mCamera.move(mCamera.forward(), moveAmount);
+		if (getInputs().isKeyHeld(Key::KEY_S))
+			mCamera.move(mCamera.forward(), -moveAmount);
+		if (getInputs().isKeyHeld(Key::KEY_A))
+			mCamera.move(mCamera.left(), moveAmount);
+		if (getInputs().isKeyHeld(Key::KEY_D))
+			mCamera.move(mCamera.right(), moveAmount);
+
+		if (getInputs().isKeyHeld(Key::KEY_UP))
+			mCamera.pitch(rotationAmount);
+		if (getInputs().isKeyHeld(Key::KEY_DOWN))
+			mCamera.pitch(-rotationAmount);
+		if (getInputs().isKeyHeld(Key::KEY_LEFT))
+			mCamera.yaw(-rotationAmount);
+		if (getInputs().isKeyHeld(Key::KEY_RIGHT))
+			mCamera.yaw(rotationAmount);
+
 	}
 
 	void render()
 	{
+		auto view = mCamera.getMatrix();
+
 		mShaderProgram.use();
 		mShaderProgram.detectUniform("transform");
-		mShaderProgram.setUniform("transform", mPerspective * mTransform.getMatrix());
+		mShaderProgram.setUniform("transform", mProjection * view * mTransform.getMatrix());
 
 		mTexture.bind();
 		mMesh.draw();
@@ -75,9 +107,10 @@ private:
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
+	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
-	mat4 mPerspective;
+	mat4 mProjection;
 
 };
 

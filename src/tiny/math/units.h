@@ -28,6 +28,7 @@
         unit& operator-=(const T &r) { mValue -= r; return *this; }             \
         unit& operator*=(const T &r) { mValue *= r; return *this; }             \
         unit& operator/=(const T &r) { mValue /= r; return *this; }             \
+        unit operator-() const { return unit{static_cast<T>(-1) * mValue}; }   \
     private:                                                                    \
         T mValue;                                                               \
     }

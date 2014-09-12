@@ -56,7 +56,6 @@ void Engine::run()
 		while (unprocessedTime >= dt)
 		{
 			mGame.getInputs().refresh();
-			mGame.inputs();
 			mGame.update(t, dt);
 			unprocessedTime -= dt;			
 			t += dt;
