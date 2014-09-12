@@ -55,7 +55,7 @@ namespace tiny { namespace core {
 
 		mat4 getRotationMatrix() const 
 		{
-			auto mRight = left(); // Should be right...
+			auto mRight = right(); 
 
 			return mat4 
 			{

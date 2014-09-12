@@ -24,17 +24,10 @@ public:
 	void init()
 	{
 		mMesh          = Mesh::fromFile("res/models/box.obj");
+		mMesh2         = Mesh::fromFile("res/models/box.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
 		mProjection    = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
-
-		std::cout << "Matrix = \n" << mCamera.getMatrix() << std::endl;
-
-		std::cout << "Up     = " << mCamera.up() << std::endl;
-		std::cout << "Fwd    = " << mCamera.forward() << std::endl;
-		std::cout << "Left   = " << mCamera.left() << std::endl;
-		std::cout << "Right  = " << mCamera.right() << std::endl;
-
 		mCamera.move(mCamera.forward(), -5);
 
 		getWindow().vsync(false);				
@@ -63,10 +56,6 @@ public:
 
 		mFPSCounter.update(dt);
 
- 	// 	float sint = sin(rad{t.count()});
-		mTransform.setPosition(0,0,0);
-		// mTransform.setRotation(vec3(0,1,0), toRadian(sint*180.0f));
-
 		float moveAmount = dt.count() * 10;
 		rad rotationAmount = rad{dt.count()* 1.0};
 
@@ -87,7 +76,6 @@ public:
 			mCamera.yaw(-rotationAmount);
 		if (getInputs().isKeyHeld(Key::KEY_RIGHT))
 			mCamera.yaw(rotationAmount);
-
 	}
 
 	void render()
@@ -106,7 +94,7 @@ public:
 private:	
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
-	Mesh mMesh;
+	Mesh mMesh, mMesh2;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
