@@ -34,7 +34,7 @@ Window::Window(int width, int height, std::string title)
 
 	glEnable(GL_DEPTH_TEST);
 	
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 }

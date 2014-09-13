@@ -36,15 +36,22 @@ namespace tiny { namespace math {
 		quat operator*(const quat &r) const 
 		{
 			return quat(w*r.x + x*r.w + y*r.z - z*r.y,
-							  w*r.y + y*r.w + z*r.x - x*r.z,
-						      w*r.z + z*r.w + x*r.y - y*r.x,
-						      w*r.w - x*r.x - y*r.y - z*r.z);
+						w*r.y + y*r.w + z*r.x - x*r.z,
+						w*r.z + z*r.w + x*r.y - y*r.x,
+					    w*r.w - x*r.x - y*r.y - z*r.z);
 		}
 
 		vec3 rotate(const vec3 &v) const
 		{
 			return ((*this) * quat(v.x, v.y, v.z, 0) * conjugate()).xyz();
 		}
+
+		inline vec3 right()    const { return rotate(vec3( 1, 0, 0)); }
+		inline vec3 left()     const { return rotate(vec3(-1, 0, 0)); }
+		inline vec3 up()       const { return rotate(vec3( 0, 1, 0)); }
+		inline vec3 down()     const { return rotate(vec3( 0,-1, 0)); }
+		inline vec3 forward()  const { return rotate(vec3( 0, 0, 1)); }
+		inline vec3 backward() const { return rotate(vec3( 0, 0,-1)); }
 
 		mat4 getMatrix() const 
 		{

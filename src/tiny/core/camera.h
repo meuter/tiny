@@ -8,44 +8,46 @@ namespace tiny { namespace core {
 	class Camera
 	{
 	public:	
-		Camera(const vec3 &position = vec3(0,0,0), const vec3 &forward = vec3(0,0,-1), const vec3 &up = vec3(0,1,0)) 
-			: mPosition(position), mForward(normalize(forward)), mUp(normalize(up))	{}
+		Camera(const vec3 &position = vec3(0,0,0), const quat &rotation = quat(0,0,0,1)) 
+			: mPosition(position), mRotation(rotation)	{}
 
 		virtual ~Camera() {}
 
-		inline vec3 up()       const { return mUp; }
-		inline vec3 forward()  const { return mForward; }
-		inline vec3 left()     const { return normalize(cross(mUp, mForward)); }
-		inline vec3 right()    const { return normalize(cross(mForward, mUp)); }
+		inline vec3 right()    const { return mRotation.right(); }
+		inline vec3 left()     const { return mRotation.left(); }
+		inline vec3 up()       const { return mRotation.up(); }
+		inline vec3 down()     const { return mRotation.down(); }
+		inline vec3 forward()  const { return mRotation.forward(); }
+		inline vec3 backward() const { return mRotation.backward(); }
 
-
-		Camera &move(const vec3 &direction, float amount)
+		void move(const vec3 &direction, float amount)
 		{
 			mPosition += amount * direction;
-			return (*this);
 		}
 
-		Camera &rotate(vec3 axis, rad angle)
+		void rotate(const quat &rotation)
 		{
-			auto rotation = quat(axis, angle);
-			mForward = normalize(rotation.rotate(mForward));
-			// mUp      = normalize(rotation.rotate(mUp));
-			return (*this);
+			mRotation = normalize(rotation * mRotation);
 		}
 
-		Camera &roll(rad angle)
+		void rotate(const vec3 &axis, rad angle)
 		{
-			return rotate(mForward, angle);			
+			rotate(quat(axis, angle));
 		}
 
-		Camera &yaw(rad angle)
+		void roll(rad angle)
 		{
-			return rotate(mUp, -angle);
+			rotate(mRotation.forward(), angle);
 		}
 
-		Camera &pitch(rad angle)
+		void yaw(rad angle)
 		{
-			return rotate(left(), angle);
+		 	rotate(mRotation.up(), angle);
+		}
+
+		void pitch(rad angle)
+		{
+			rotate(mRotation.right(), angle);
 		}
 
 		mat4 getMatrix() const 
@@ -55,7 +57,9 @@ namespace tiny { namespace core {
 
 		mat4 getRotationMatrix() const 
 		{
-			auto mRight = right(); 
+			auto mRight   = mRotation.right(); 
+			auto mUp      = mRotation.up();
+			auto mForward = mRotation.forward();
 
 			return mat4 
 			{
@@ -78,7 +82,8 @@ namespace tiny { namespace core {
 		}
 
 	private:
-		vec3 mPosition, mForward, mUp;
+		vec3 mPosition;
+		quat mRotation;
 	};
 
 }}
