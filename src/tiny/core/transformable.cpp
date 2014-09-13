@@ -46,7 +46,17 @@ mat4 Transformable::getScalingMatrix() const
 
 mat4 Transformable::getRotationMatrix() const
 {
-	return mRotation.getMatrix();
+	auto r = right(); 
+	auto u = up();
+	auto f = forward();
+
+	return mat4 
+	{
+		r.x,  r.y,  r.z,  0.0f,
+		u.x,  u.y,  u.z,  0.0f,
+		f.x,  f.y,  f.z,  0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
 }
 
 

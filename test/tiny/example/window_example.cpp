@@ -118,7 +118,7 @@ public:
 
 	void render()
 	{
-		auto view = mCamera.getMatrix();
+		auto view = mCamera.getViewMatrix();
 
 		mShaderProgram.use();
 		mShaderProgram.detectUniform("transform");

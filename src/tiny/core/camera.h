@@ -12,35 +12,21 @@ namespace tiny { namespace core {
 		Camera() {}
 		virtual ~Camera() {}
 
-		mat4 getMatrix() const 
-		{
-			return getRotationMatrix() * getTranslationMatrix();
-		}
+		inline void roll(rad angle)  { rotate(forward(), angle); }
+		inline void yaw(rad angle)   { rotate(up(), angle); }
+		inline void pitch(rad angle) { rotate(right(), angle); }
 
-		mat4 getRotationMatrix() const 
+		mat4 getViewMatrix() const 
 		{
-			auto mRight   = right(); 
-			auto mUp      = up();
-			auto mForward = forward();
-
-			return mat4 
-			{
-				mRight.x,    mRight.y,    mRight.z,      0.0f,
-				mUp.x,       mUp.y,       mUp.z,         0.0f,
-				mForward.x,  mForward.y,  mForward.z,    0.0f,
-				0.0f,        0.0f,        0.0f,          1.0f
-			};
-		}
-
-		mat4 getTranslationMatrix() const
-		{
-			return mat4 
+			mat4 reverseTranslation = 
 			{
 				1.0f, 0.0f, 0.0f, -mPosition.x,
 				0.0f, 1.0f, 0.0f, -mPosition.y,
 				0.0f, 0.0f, 1.0f, -mPosition.z,
 				0.0f, 0.0f, 0.0f, 1.0f,
 			};
+
+			return getRotationMatrix() * reverseTranslation;
 		}
 	};
 

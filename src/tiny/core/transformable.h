@@ -21,10 +21,6 @@ namespace tiny { namespace core {
 		inline void rotate(const vec3 axis, const rad &angle)    { mRotation = normalize(quat(axis, angle) * mRotation); }
 		inline void rotateTo(const vec3 axis, const rad &angle)  { mRotation = quat(axis, angle); }
 
-		inline void roll(rad angle)                              { rotate(forward(), angle); }
-		inline void yaw(rad angle)                               { rotate(up(), angle); }
-		inline void pitch(rad angle)                             { rotate(right(), angle); }
-
 		inline void scale(const vec3 &factors)                   { scale(factors.x, factors.y, factors.z); }
 		inline void scale(float fx, float fy, float fz)          { mScale.x *= fx; mScale.y *= fy; mScale.z *= fz; }
 		inline void scaleTo(const vec3 &scale)                   { mScale = scale; }

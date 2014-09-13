@@ -45,16 +45,6 @@ namespace tiny { namespace math {
 		{
 			return ((*this) * quat(v.x, v.y, v.z, 0) * conjugate()).xyz();
 		}
-
-		mat4 getMatrix() const 
-		{
-			return mat4 {
-				1.0f - 2.0f * (y*y + z*z), 2.0f * (x*y - w*z),        2.0f * (x*z + w*y),        0.0f,
-				2.0f * (x*y + w*z),        1.0f - 2.0f * (x*x + z*z), 2.0f * (y*z - w*x),        0.0f,
-				2.0f * (x*z - w*y),        2.0f * (y*z + w*x),        1.0f - 2.0f * (x*x + y*y), 0.0f,
-				0.0f,                      0.0f,                      0.0f,                      1.0f,
-			};
-		}
 	};
 
 }}

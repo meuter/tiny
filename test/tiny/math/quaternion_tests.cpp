@@ -37,17 +37,3 @@ TEST(quaternion, can_be_used_to_rotate_3d_vectors)
 	EXPECT_EQ(-xAxis, quat(yAxis, toRadian(-90)).rotate(zAxis));
 }
 
-TEST(quaternion, can_be_transformed_in_a_4x4_rotation_matrix)
-{
-	quat q(float3(1,0,0), toRadian(90));
-
-	float4x4 m = q.getMatrix();
-	float4x4 expected{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f,
-	};
-
-	EXPECT_EQ(expected, m);
-}
