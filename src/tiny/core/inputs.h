@@ -33,6 +33,9 @@ namespace tiny { namespace core {
 		ivec2 getMousePosition() const { return mMousePosition; }
 		ivec2 getMouseWheel()    const { return mMouseWheel; }
 
+		void setMousePosition(ivec2 position) const;
+		void showMouseCursor(bool visible) const;
+
 	private:	
 		bool mWindowCloseRequested;
 		std::vector<bool> mKeyPressed, mKeyReleased, mKeyHeld;

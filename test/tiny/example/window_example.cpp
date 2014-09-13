@@ -28,6 +28,9 @@ public:
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
 		mProjection    = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
+		mMouseLocked   = false;
+		mWindowCenter  = getWindow().center();
+
 		mCamera.move(mCamera.forward(), -5);
 
 		getWindow().vsync(false);				
@@ -46,36 +49,77 @@ public:
 		};
 	}
 
+	bool shouldStop()
+	{
+		Inputs &inputs = getInputs();
+
+		if (inputs.isWindowCloseRequested())
+			return true;
+
+		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
+			return true;
+
+		return false;
+	}
+
+	void move(sec dt)
+	{
+		Inputs &inputs = getInputs();
+		float amount = dt.count() * 10;
+
+		if (inputs.isKeyHeld(Key::KEY_UP))
+			mCamera.move(mCamera.forward(), amount);
+		if (inputs.isKeyHeld(Key::KEY_DOWN))
+			mCamera.move(mCamera.forward(), -amount);
+		if (inputs.isKeyHeld(Key::KEY_LEFT))
+			mCamera.move(mCamera.left(), amount);
+		if (inputs.isKeyHeld(Key::KEY_RIGHT))
+			mCamera.move(mCamera.right(), amount);
+	}
+
+	void look(sec dt)
+	{
+		Inputs &inputs = getInputs();
+
+		const float sensitivity = 0.005f;
+
+		if (inputs.isKeyPressed(Key::KEY_ESCAPE))
+		{
+			inputs.showMouseCursor(true);
+			mMouseLocked = false;
+		}
+
+		if (mMouseLocked)
+		{
+			ivec2 dpos = inputs.getMousePosition() - getWindow().center();
+
+			if (dpos.x != 0)
+				mCamera.yaw(rad{-dpos.x * sensitivity});
+
+			if (dpos.y != 0)
+				mCamera.pitch(rad{dpos.y * sensitivity});
+
+			if (dpos.x != 0 || dpos.y != 0)
+				inputs.setMousePosition(getWindow().center());
+		}
+
+		if (inputs.isMousePressed(MouseButton::LEFT))
+		{
+			inputs.showMouseCursor(false);
+			inputs.setMousePosition(getWindow().center());
+			mMouseLocked = true;
+		}
+	}
+
 	void update(sec t, sec dt)
 	{
-		if (getInputs().isWindowCloseRequested())
-			stop();
-
-		if (getInputs().isKeyHeld(Key::KEY_LEFT_CMD) && getInputs().isKeyPressed(Key::KEY_Z))
+		if (shouldStop())
 			stop();
 
 		mFPSCounter.update(dt);
 
-		float moveAmount = dt.count() * 10;
-		rad rotationAmount = rad{dt.count()* 1.0};
-
-		if (getInputs().isKeyHeld(Key::KEY_W))
-			mCamera.move(mCamera.forward(), moveAmount);
-		if (getInputs().isKeyHeld(Key::KEY_S))
-			mCamera.move(mCamera.forward(), -moveAmount);
-		if (getInputs().isKeyHeld(Key::KEY_A))
-			mCamera.move(mCamera.left(), moveAmount);
-		if (getInputs().isKeyHeld(Key::KEY_D))
-			mCamera.move(mCamera.right(), moveAmount);
-
-		if (getInputs().isKeyHeld(Key::KEY_UP))
-			mCamera.pitch(rotationAmount);
-		if (getInputs().isKeyHeld(Key::KEY_DOWN))
-			mCamera.pitch(-rotationAmount);
-		if (getInputs().isKeyHeld(Key::KEY_LEFT))
-			mCamera.yaw(-rotationAmount);
-		if (getInputs().isKeyHeld(Key::KEY_RIGHT))
-			mCamera.yaw(rotationAmount);
+		move(dt);
+		look(dt);
 	}
 
 	void render()
@@ -99,7 +143,8 @@ private:
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
 	mat4 mProjection;
-
+	bool mMouseLocked;
+	ivec2 mWindowCenter;
 };
 
 

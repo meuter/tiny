@@ -62,4 +62,15 @@ void Inputs::refresh()
 	}
 }
 
+void Inputs::showMouseCursor(bool visible) const
+{
+	SDL_ShowCursor(visible);
+}
+
+void Inputs::setMousePosition(ivec2 position) const 
+{
+	SDL_WarpMouseInWindow(NULL, position.x, position.y);
+}
+
+
 }}

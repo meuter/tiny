@@ -2,6 +2,7 @@
 #define __TINY_GC_WINDOW_H__
 
 #include <string>
+#include "types.h"
 
 struct SDL_Window;
 
@@ -22,6 +23,7 @@ namespace tiny { namespace core {
 		inline int   width()  const { return mHeight; }
 		inline int   height() const { return mWidth; }
 		inline float aspect() const { return (float)mWidth/(float)mHeight; }		
+		inline ivec2 center() const { return ivec2(mWidth/2, mHeight/2); }
 
 		void vsync(bool onoff);
 		void clear();

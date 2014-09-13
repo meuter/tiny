@@ -86,7 +86,6 @@ void Window::swap()
 	SDL_GL_SwapWindow(mSDLWindow);
 }
 
-
 void Window::destroy()
 {
 	if (mSDLWindow != NULL)
