@@ -46,13 +46,6 @@ namespace tiny { namespace math {
 			return ((*this) * quat(v.x, v.y, v.z, 0) * conjugate()).xyz();
 		}
 
-		inline vec3 right()    const { return rotate(vec3( 1, 0, 0)); }
-		inline vec3 left()     const { return rotate(vec3(-1, 0, 0)); }
-		inline vec3 up()       const { return rotate(vec3( 0, 1, 0)); }
-		inline vec3 down()     const { return rotate(vec3( 0,-1, 0)); }
-		inline vec3 forward()  const { return rotate(vec3( 0, 0, 1)); }
-		inline vec3 backward() const { return rotate(vec3( 0, 0,-1)); }
-
 		mat4 getMatrix() const 
 		{
 			return mat4 {

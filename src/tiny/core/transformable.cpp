@@ -2,6 +2,11 @@
 
 namespace tiny { namespace core {
 
+const vec3 Transformable::X_AXIS(1,0,0);
+const vec3 Transformable::Y_AXIS(0,1,0);
+const vec3 Transformable::Z_AXIS(0,0,1);
+
+
 Transformable::Transformable() : mScale(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) 
 {
 
@@ -10,37 +15,6 @@ Transformable::Transformable() : mScale(1,1,1), mPosition(0,0,0), mRotation(0,0,
 Transformable::~Transformable()
 {
 
-}
-
-
-void Transformable::setScale(const vec3 &scale)
-{
-	mScale = scale;
-}
-
-void Transformable::setScale(float sx, float sy, float sz)
-{
-	mScale = vec3(sx, sy, sz);
-}
-
-void Transformable::setRotation(const quat &rotation)
-{
-	mRotation = rotation;
-}
-
-void Transformable::setRotation(const vec3 axis, const rad &angle)
-{
-	mRotation = quat(axis, angle);
-}
-
-void Transformable::setPosition(float dx, float dy, float dz)
-{
-	mPosition = vec3(dx, dy, dz);
-}
-
-void Transformable::setPosition(const vec3 &displacement)
-{
-	mPosition = displacement;
 }
 
 mat4 Transformable::getMatrix() const

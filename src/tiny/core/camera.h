@@ -2,53 +2,15 @@
 #define __TINY_CORE_CAMERA_H__
 
 #include "types.h"
+#include "transformable.h"
 
 namespace tiny { namespace core {
 
-	class Camera
+	class Camera : public Transformable
 	{
 	public:	
-		Camera(const vec3 &position = vec3(0,0,0), const quat &rotation = quat(0,0,0,1)) 
-			: mPosition(position), mRotation(rotation)	{}
-
+		Camera() {}
 		virtual ~Camera() {}
-
-		inline vec3 right()    const { return mRotation.right(); }
-		inline vec3 left()     const { return mRotation.left(); }
-		inline vec3 up()       const { return mRotation.up(); }
-		inline vec3 down()     const { return mRotation.down(); }
-		inline vec3 forward()  const { return mRotation.forward(); }
-		inline vec3 backward() const { return mRotation.backward(); }
-
-		void move(const vec3 &direction, float amount)
-		{
-			mPosition += amount * direction;
-		}
-
-		void rotate(const quat &rotation)
-		{
-			mRotation = normalize(rotation * mRotation);
-		}
-
-		void rotate(const vec3 &axis, rad angle)
-		{
-			rotate(quat(axis, angle));
-		}
-
-		void roll(rad angle)
-		{
-			rotate(mRotation.forward(), angle);
-		}
-
-		void yaw(rad angle)
-		{
-		 	rotate(mRotation.up(), angle);
-		}
-
-		void pitch(rad angle)
-		{
-			rotate(mRotation.right(), angle);
-		}
 
 		mat4 getMatrix() const 
 		{
@@ -57,9 +19,9 @@ namespace tiny { namespace core {
 
 		mat4 getRotationMatrix() const 
 		{
-			auto mRight   = mRotation.right(); 
-			auto mUp      = mRotation.up();
-			auto mForward = mRotation.forward();
+			auto mRight   = right(); 
+			auto mUp      = up();
+			auto mForward = forward();
 
 			return mat4 
 			{
@@ -80,10 +42,6 @@ namespace tiny { namespace core {
 				0.0f, 0.0f, 0.0f, 1.0f,
 			};
 		}
-
-	private:
-		vec3 mPosition;
-		quat mRotation;
 	};
 
 }}
