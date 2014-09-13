@@ -27,13 +27,12 @@ public:
 		mMesh2         = Mesh::fromFile("res/models/box.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
-		mProjection    = projection(toRadian(70), getWindow().aspect(), 0.01f, 1000.0f);
+		mProjection    = projection(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked   = false;
-		mWindowCenter  = getWindow().center();
+		mWindowCenter  = window().center();
 
 		mCamera.move(mCamera.forward(), -5);
-
-		getWindow().vsync(false);				
+ 		window().vsync(false);				
 	}
 
 	mat4 projection(rad fieldOfView, float aspectRatio, float zNear, float zFar)
@@ -51,12 +50,10 @@ public:
 
 	bool shouldStop()
 	{
-		Inputs &inputs = getInputs();
-
-		if (inputs.isWindowCloseRequested())
+		if (inputs().isWindowCloseRequested())
 			return true;
 
-		if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
+		if (inputs().isKeyHeld(Key::KEY_LEFT_CMD) && inputs().isKeyPressed(Key::KEY_Z))
 			return true;
 
 		return false;
@@ -64,49 +61,46 @@ public:
 
 	void move(sec dt)
 	{
-		Inputs &inputs = getInputs();
 		float amount = dt.count() * 10;
 
-		if (inputs.isKeyHeld(Key::KEY_UP))
+		if (inputs().isKeyHeld(Key::KEY_UP))
 			mCamera.move(mCamera.forward(), amount);
-		if (inputs.isKeyHeld(Key::KEY_DOWN))
+		if (inputs().isKeyHeld(Key::KEY_DOWN))
 			mCamera.move(mCamera.forward(), -amount);
-		if (inputs.isKeyHeld(Key::KEY_LEFT))
+		if (inputs().isKeyHeld(Key::KEY_LEFT))
 			mCamera.move(mCamera.left(), amount);
-		if (inputs.isKeyHeld(Key::KEY_RIGHT))
+		if (inputs().isKeyHeld(Key::KEY_RIGHT))
 			mCamera.move(mCamera.right(), amount);
 	}
 
 	void look(sec dt)
 	{
-		Inputs &inputs = getInputs();
-
 		const float sensitivity = 0.005f;
 
-		if (inputs.isKeyPressed(Key::KEY_ESCAPE))
+		if (inputs().isKeyPressed(Key::KEY_ESCAPE))
 		{
-			inputs.showMouseCursor(true);
+			inputs().showMouseCursor(true);
 			mMouseLocked = false;
 		}
 
 		if (mMouseLocked)
 		{
-			ivec2 dpos = inputs.getMousePosition() - getWindow().center();
+	 	auto dpos = inputs().getMousePosition() - window().center();
 
 			if (dpos.x != 0)
-				mCamera.yaw(rad{-dpos.x * sensitivity});
+				mCamera.yaw(rad{dpos.x * sensitivity});
 
 			if (dpos.y != 0)
 				mCamera.pitch(rad{dpos.y * sensitivity});
 
 			if (dpos.x != 0 || dpos.y != 0)
-				inputs.setMousePosition(getWindow().center());
+				inputs().setMousePosition(window().center());
 		}
 
-		if (inputs.isMousePressed(MouseButton::LEFT))
+		if (inputs().isMousePressed(MouseButton::LEFT))
 		{
-			inputs.showMouseCursor(false);
-			inputs.setMousePosition(getWindow().center());
+			inputs().showMouseCursor(false);
+			inputs().setMousePosition(window().center());
 			mMouseLocked = true;
 		}
 	}

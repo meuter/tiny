@@ -55,15 +55,15 @@ void Engine::run()
 			
 		while (unprocessedTime >= dt)
 		{
-			mGame.getInputs().refresh();
+			mGame.inputs().refresh();
 			mGame.update(t, dt);
 			unprocessedTime -= dt;			
 			t += dt;
 		}
 
-		mGame.getWindow().clear();
+		mGame.window().clear();
 		mGame.render();				
-		mGame.getWindow().swap();
+		mGame.window().swap();
 	}
 }
 

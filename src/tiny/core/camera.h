@@ -29,7 +29,7 @@ namespace tiny { namespace core {
 		{
 			auto rotation = quat(axis, angle);
 			mForward = normalize(rotation.rotate(mForward));
-			mUp      = normalize(rotation.rotate(mUp));
+			// mUp      = normalize(rotation.rotate(mUp));
 			return (*this);
 		}
 
@@ -40,7 +40,7 @@ namespace tiny { namespace core {
 
 		Camera &yaw(rad angle)
 		{
-			return rotate(mUp, angle);
+			return rotate(mUp, -angle);
 		}
 
 		Camera &pitch(rad angle)
