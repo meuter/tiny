@@ -14,35 +14,6 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
-
-class BasicShaderProgram : public ShaderProgram
-{
-public:
-	BasicShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs")) {}
-
-	void setMVP(const mat4 &MVP)
-	{
-		setUniform("MVP", MVP);
-	}
-};
-
-class PhongShaderProgram : public ShaderProgram
-{
-public:
-	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
-
-	void setMVP(const mat4 &MVP)
-	{
-		setUniform("MVP", MVP);
-	}
-
-	void setAmbientLight(const vec3 &ambientLight)
-	{
-		setUniform("ambient", ambientLight);
-	}
-};
-
-
 class MyGame : public Game
 {
 public:
@@ -54,6 +25,7 @@ public:
 		mMesh          = Mesh::fromFile("res/models/box.obj");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
 		mCamera        = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
+		mShaderProgram = ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs");
 		mMouseLocked   = false;
 
 		mCamera.move(mCamera.forward(), -5);
@@ -135,8 +107,8 @@ public:
 	void render()
 	{
 		mShaderProgram.use();
-		mShaderProgram.setMVP(mCamera.getViewProjection() * mTransform.getModel());
-		mShaderProgram.setAmbientLight(vec3(0.2f,0.2f,0.2f));
+		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
+		mShaderProgram.setUniform("ambient", vec3(0.2f,0.2f,0.2f));
 
 		mTexture.bind();
 		mMesh.draw();
@@ -144,7 +116,7 @@ public:
 	}
 
 private:	
-	PhongShaderProgram mShaderProgram;
+	ShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
 	Camera mCamera; 
