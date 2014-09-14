@@ -24,28 +24,13 @@ public:
 	void init()
 	{
 		mMesh          = Mesh::fromFile("res/models/box.obj");
-		mMesh2         = Mesh::fromFile("res/models/box.obj");
 		mShaderProgram = ShaderProgram::fromFiles("res/shaders/flat_vertex.glsl", "res/shaders/flat_fragment.glsl");
 		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
-		mProjection    = projection(toRadian(70), window().aspect(), 0.01f, 1000.0f);
+		mCamera        = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked   = false;
-		mWindowCenter  = window().center();
 
 		mCamera.move(mCamera.forward(), -5);
  		window().vsync(false);				
-	}
-
-	mat4 projection(rad fieldOfView, float aspectRatio, float zNear, float zFar)
-	{
-		float zRange = zFar - zNear;  
-		float tanHalfFov = tan(fieldOfView/2.0);
-
-		return mat4{
-			1.0f/(tanHalfFov*aspectRatio), 0.0f,            0.0f,                 0.0f,
-			0.0f,                          1.0f/tanHalfFov, 0.0f,                 0.0f,
-			0.0f,                          0.0f,            (-zNear-zFar)/zRange, 2.0f*zFar*zNear/zRange,
-			0.0f,                          0.0f,            1.0f,                 0.0f
-		};
 	}
 
 	bool shouldStop()
@@ -85,7 +70,7 @@ public:
 
 		if (mMouseLocked)
 		{
-	 	auto dpos = inputs().getMousePosition() - window().center();
+	 		auto dpos = inputs().getMousePosition() - window().center();
 
 			if (dpos.x != 0)
 				mCamera.yaw(rad{dpos.x * sensitivity});
@@ -118,11 +103,9 @@ public:
 
 	void render()
 	{
-		auto view = mCamera.getViewMatrix();
-
 		mShaderProgram.use();
 		mShaderProgram.detectUniform("transform");
-		mShaderProgram.setUniform("transform", mProjection * view * mTransform.getMatrix());
+		mShaderProgram.setUniform("transform", mCamera.getViewProjection() * mTransform.getModel());
 
 		mTexture.bind();
 		mMesh.draw();
@@ -132,13 +115,11 @@ public:
 private:	
 	ShaderProgram mShaderProgram;
 	Texture mTexture;		
-	Mesh mMesh, mMesh2;
+	Mesh mMesh;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
-	mat4 mProjection;
 	bool mMouseLocked;
-	ivec2 mWindowCenter;
 };
 
 

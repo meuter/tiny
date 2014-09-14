@@ -26,14 +26,14 @@ namespace tiny { namespace core {
 		inline void scaleTo(const vec3 &scale)                   { mScale = scale; }
 		inline void scaleTo(float sx, float sy, float sz)        { mScale = vec3(sx, sy, sz); }
 
-		inline vec3 right()    const { return mRotation.rotate(X_AXIS); }
+		inline vec3 right()    const { return mRotation.rotate( X_AXIS); }
 		inline vec3 left()     const { return mRotation.rotate(-X_AXIS); }
-		inline vec3 up()       const { return mRotation.rotate(Y_AXIS); }
+		inline vec3 up()       const { return mRotation.rotate( Y_AXIS); }
 		inline vec3 down()     const { return mRotation.rotate(-Y_AXIS); }
-		inline vec3 forward()  const { return mRotation.rotate(Z_AXIS); }
+		inline vec3 forward()  const { return mRotation.rotate( Z_AXIS); }
 		inline vec3 backward() const { return mRotation.rotate(-Z_AXIS); }
 
-		mat4 getMatrix()            const;
+		mat4 getModel()             const;
 		mat4 getTranslationMatrix() const;
 		mat4 getScalingMatrix()     const;
 		mat4 getRotationMatrix()    const;

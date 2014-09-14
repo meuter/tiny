@@ -17,7 +17,7 @@ Transformable::~Transformable()
 
 }
 
-mat4 Transformable::getMatrix() const
+mat4 Transformable::getModel() const
 {
 	return getTranslationMatrix() * getRotationMatrix() * getScalingMatrix();
 }
