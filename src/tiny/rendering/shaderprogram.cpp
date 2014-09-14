@@ -25,7 +25,7 @@ ShaderProgram::ShaderProgram() : mProgramHandle(glCreateProgram())
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram &&other) 
-	: mProgramHandle(other.mProgramHandle), mShaders(std::move(other.mShaders)), mUniformLocations(std::move(other.mUniformLocations))
+	: mProgramHandle(other.mProgramHandle), mShaders(std::move(other.mShaders))
 {
 	other.mProgramHandle = 0;
 }
@@ -40,7 +40,6 @@ ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
 	destroy();
 	mProgramHandle    = other.mProgramHandle;
 	mShaders          = std::move(other.mShaders);
-	mUniformLocations = std::move(other.mUniformLocations);
 	other.mProgramHandle = 0;
 	return (*this);
 }
@@ -67,45 +66,45 @@ void ShaderProgram::use()
 	glUseProgram(mProgramHandle);
 }
 
-void ShaderProgram::detectUniform(const std::string &uniform)
-{
-	GLint location = glGetUniformLocation(mProgramHandle, uniform.c_str());
-
-	if (location == -1)
-		throw std::runtime_error("could not get uniform location for '" + uniform + "'");
-
-	mUniformLocations[uniform] = location;
-}
-
 void ShaderProgram::setUniform(const std::string &uniform, float value)
 {
-	glUniform1f(mUniformLocations[uniform], value);
+	glUniform1f(getUniformLocation(uniform), value);
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const core::vec2 &value)
 {
-	glUniform2f(mUniformLocations[uniform], value.x, value.y);
+	glUniform2f(getUniformLocation(uniform), value.x, value.y);
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const core::vec3 &value)
 {
-	glUniform3f(mUniformLocations[uniform], value.x, value.y, value.z);
+	glUniform3f(getUniformLocation(uniform), value.x, value.y, value.z);
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const core::vec4 &value)
 {
-	glUniform4f(mUniformLocations[uniform], value.x, value.y, value.z, value.w);
+	glUniform4f(getUniformLocation(uniform), value.x, value.y, value.z, value.w);
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &value)
 {
-	glUniformMatrix4fv(mUniformLocations[uniform], 1, GL_TRUE, &value(0,0));
+	glUniformMatrix4fv(getUniformLocation(uniform), 1, GL_TRUE, &value(0,0));
 }
 
 void ShaderProgram::bindAttributeLocations()
 {
 	glBindAttribLocation(mProgramHandle, Mesh::POSITION, "position");
 	glBindAttribLocation(mProgramHandle, Mesh::TEXCOORD, "texcoord");
+}
+
+GLint ShaderProgram::getUniformLocation(const std::string &uniform)
+{
+	GLint location = glGetUniformLocation(mProgramHandle, uniform.c_str());
+
+	if (location == -1)
+		throw std::runtime_error("could not get uniform location for '" + uniform + "'");
+
+	return location;
 }
 
 GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const

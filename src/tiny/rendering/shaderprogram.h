@@ -29,6 +29,7 @@ namespace tiny { namespace rendering {
 		void link();
 
 		void detectUniform(const std::string &uniform);
+		GLint getUniformLocation(const std::string &uniform);
 		void setUniform(const std::string &uniform, float value);
 		void setUniform(const std::string &uniform, const core::vec2 &value);
 		void setUniform(const std::string &uniform, const core::vec3 &value);
@@ -47,7 +48,6 @@ namespace tiny { namespace rendering {
 	private:
 		GLuint mProgramHandle;
 		std::vector<Shader> mShaders;
-		std::map<std::string, GLint> mUniformLocations;
 	};
 
 }}

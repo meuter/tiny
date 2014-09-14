@@ -18,10 +18,7 @@ using namespace tiny::math;
 class BasicShaderProgram : public ShaderProgram
 {
 public:
-	BasicShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs"))
-	{
-		detectUniform("MVP");		
-	}
+	BasicShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs")) {}
 
 	void setMVP(const mat4 &MVP)
 	{
@@ -32,11 +29,7 @@ public:
 class PhongShaderProgram : public ShaderProgram
 {
 public:
-	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs"))
-	{
-		detectUniform("MVP");		
-		detectUniform("ambient");
-	}
+	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
 
 	void setMVP(const mat4 &MVP)
 	{
