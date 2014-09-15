@@ -17,7 +17,7 @@ Mesh Mesh::fromFile(const std::string &filename)
 	std::ifstream file;
 	std::string line;
 
-	auto createVertex = [&](const std::string &faceToken)
+	auto addVertex = [&](const std::string &faceToken) -> int
 	{
 		auto splitted = utils::split(faceToken, '/');
 		vertex newVertex;
@@ -33,6 +33,31 @@ Mesh Mesh::fromFile(const std::string &filename)
 
 		indices.push_back(vertices.size());
 		vertices.push_back(newVertex);
+
+		return vertices.size()-1;
+	};
+
+	auto computeNormal = [](vertex &v1, vertex &v2, vertex &v3) -> core::vec3
+	{
+		auto d1 = normalize(v2.position-v1.position);
+		auto d2 = normalize(v3.position-v1.position);
+
+		return normalize(cross(d1,d2));
+	};
+
+	auto addFace = [&](const std::string &token1, const std::string &token2, const std::string &token3)
+	{
+		auto i1 = addVertex(token1);
+		auto i2 = addVertex(token2);
+		auto i3 = addVertex(token3);
+
+		if (normals.size() == 0)
+		{
+			auto normal = computeNormal(vertices[i1], vertices[i2], vertices[i3]);
+			vertices[i1].normal = normal;
+			vertices[i2].normal = normal;
+			vertices[i3].normal = normal;
+		}
 	};
 
 	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
@@ -64,9 +89,7 @@ Mesh Mesh::fromFile(const std::string &filename)
 			if (tokens.size() != 4)
 				std::runtime_error("only triangles are supported");
 			
-			createVertex(tokens[1]);
-			createVertex(tokens[2]);
-			createVertex(tokens[3]);
+			addFace(tokens[1], tokens[2], tokens[3]);
 		}
 	}
 
@@ -113,6 +136,11 @@ Mesh &Mesh::operator=(Mesh &&other)
 void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices) 
 {
 	mSize = indices.size();
+
+	for (int i = 0; i < indices.size(); ++i)
+	{
+		std::cout << i << " " << indices[i] << std::endl;
+	}
 
 	glGenVertexArrays(1, &mVertexArrayHandle);
 	glBindVertexArray(mVertexArrayHandle);
