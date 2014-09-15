@@ -14,6 +14,40 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
+struct LightSource
+{
+	vec3 color;
+	float intensity;
+};
+
+struct DirectionalLight
+{
+	LightSource source;
+	vec3 direction;
+};
+
+
+class PhongShaderProgram : public ShaderProgram
+{
+public:
+	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
+
+	using ShaderProgram::setUniform;
+
+	void setUniform(const std::string &uniform, const LightSource &lightSource)
+	{
+		setUniform(uniform + ".color",     lightSource.color);
+		setUniform(uniform + ".intensity", lightSource.intensity);
+	}
+
+	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
+	{
+		setUniform(uniform + ".source",    directionalLight.source);
+		setUniform(uniform + ".direction", directionalLight.direction);
+	}
+};
+
+
 class MyGame : public Game
 {
 public:
@@ -22,13 +56,15 @@ public:
 
 	void init()
 	{
-		mMesh          = Mesh::fromFile("res/models/box.obj");
-		mTexture       = Texture::fromFile("res/textures/bricks.jpg");
-		mCamera        = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
-		mShaderProgram = ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs");
-		mMouseLocked   = false;
+		mMesh             = Mesh::fromFile("res/models/box_normals.obj");
+		mTexture          = Texture::fromFile("res/textures/bricks.jpg");
+		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
+		mMouseLocked      = false;
+		mDirectionalLight = DirectionalLight{ LightSource{ vec3(1,1,1), 1.0f }, vec3(0,-1,0) };
 
-		mCamera.move(mCamera.forward(), -5);
+		mCamera.moveTo(0,-5,5);
+		// mCamera.rotate(mCamera.up(), toRadian(180));
+		mCamera.lookAt(0,0,0);
  		window().vsync(false);				
 	}
 
@@ -50,11 +86,15 @@ public:
 		if (inputs().isKeyHeld(Key::KEY_UP))
 			mCamera.move(mCamera.forward(), amount);
 		if (inputs().isKeyHeld(Key::KEY_DOWN))
-			mCamera.move(mCamera.forward(), -amount);
+			mCamera.move(mCamera.backward(), amount);
 		if (inputs().isKeyHeld(Key::KEY_LEFT))
 			mCamera.move(mCamera.left(), amount);
 		if (inputs().isKeyHeld(Key::KEY_RIGHT))
 			mCamera.move(mCamera.right(), amount);
+		if (inputs().isKeyHeld(Key::KEY_PAGEUP))
+			mCamera.move(mCamera.up(), amount);
+		if (inputs().isKeyHeld(Key::KEY_PAGEDOWN))
+			mCamera.move(mCamera.down(), amount);
 	}
 
 	void look(sec dt)
@@ -96,9 +136,9 @@ public:
 
 		mFPSCounter.update(dt);
 
- 		float sint = sin(rad{t.count()});
-		mTransform.moveTo(sint,0,5);
-		mTransform.rotateTo(vec3(0,1,0), toRadian(sint*180.0f));
+ 	// 	float sint = sin(rad{t.count()});
+		// mTransform.moveTo(sint,0,5);
+		// mTransform.rotateTo(vec3(0,1,0), toRadian(sint*180.0f));
 
 		move(dt);
 		look(dt);
@@ -107,8 +147,10 @@ public:
 	void render()
 	{
 		mShaderProgram.use();
-		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
+		mShaderProgram.setUniform("MVP",     mCamera.getViewProjection() * mTransform.getModel());
+		mShaderProgram.setUniform("M",      mTransform.getModel());
 		mShaderProgram.setUniform("ambient", vec3(0.2f,0.2f,0.2f));
+		mShaderProgram.setUniform("directionalLight", mDirectionalLight);
 
 		mTexture.bind();
 		mMesh.draw();
@@ -116,12 +158,13 @@ public:
 	}
 
 private:	
-	ShaderProgram mShaderProgram;
+	PhongShaderProgram mShaderProgram;
 	Texture mTexture;		
 	Mesh mMesh;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
+	DirectionalLight mDirectionalLight;
 	bool mMouseLocked;
 };
 

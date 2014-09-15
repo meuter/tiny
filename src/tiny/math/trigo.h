@@ -32,7 +32,7 @@ namespace tiny {  namespace math {
     {
         return std::cos(toRadian(angle));
     }
-
+    
     inline double sin(const radian &angle)
     {
         return std::sin(angle);
@@ -52,7 +52,6 @@ namespace tiny {  namespace math {
     {
         return std::tan(toRadian(angle));
     }
-
 
     inline double cotan(const radian &angle)
     {

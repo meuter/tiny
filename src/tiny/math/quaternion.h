@@ -17,6 +17,7 @@ namespace tiny { namespace math {
 		using vec4 = vector<S,4>;
 		using vec3 = vector<S,3>;
 		using mat4 = matrix<S,4,4>;
+		using mat3 = matrix<S,4,4>;
 		using quat = quaternion<S>;
 
 		quaternion() {}

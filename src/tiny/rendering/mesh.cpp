@@ -27,7 +27,7 @@ Mesh Mesh::fromFile(const std::string &filename)
 		else if (splitted.size() == 2)
 			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1], core::vec3(0,0,0) };
 		else if (splitted.size() == 3)
-			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1], texcoords[std::stoi(splitted[2])-1] };
+			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1], normals[std::stoi(splitted[2])-1] };
 		else
 			throw std::runtime_error("do not know how to parse '"+faceToken+"'");
 
@@ -56,7 +56,7 @@ Mesh Mesh::fromFile(const std::string &filename)
 			texcoords.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]));	
 		}
 		if (tokens[0] == "vn")
-		{
+		{	
 			normals.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));
 		}
 		else if (tokens[0] == "f")
