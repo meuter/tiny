@@ -3,8 +3,7 @@
 
 #include "types.h"
 #include "transformable.h"
-
-#include <iostream>
+#include <algorithm>
 
 namespace tiny { namespace core {
 
@@ -39,64 +38,13 @@ namespace tiny { namespace core {
 			lookAt(vec3(x,y,z));
 		}
 
-		inline void lookAt(vec3 target) 
+		inline void lookAt(const vec3 target) 
 		{
 			vec3 newForward = normalize(target - mPosition);
 			vec3 newRight   = normalize(cross(up(), newForward));
 			vec3 newUp      = normalize(cross(newForward, newRight));
 
-			mat4 m =
-			{
-				newRight.x,   newRight.y,   newRight.z,   0.0f,
-				newUp.x,      newUp.y,      newUp.z,      0.0f,
-				newForward.x, newForward.y, newForward.z, 0.0f,
-				0.0f,         0.0f,         0.0f,         1.0f
-			};
-
-			float trace = m(0,0) + m(1,1) + m(2,2);
-
-			if (trace > 0) 
-			{ 
-				float S = sqrt(trace+1.0) * 2;
-				mRotation = quat(
-					(m(2,1) - m(1,2)) / S,
-					(m(0,2) - m(2,0)) / S,
-					(m(1,0) - m(0,1)) / S,
-					0.25 * S
-				);
-			}
-			else if (m(0,0) > m(1,1) && m(0,0) > m(2,2)) 
-			{ 
-				float S = sqrt(1.0 + m(0,0) - m(1,1) - m(2,2)) * 2;
-				mRotation = quat(
-					0.25 * S,
-					(m(0,1) + m(1,0)) / S,
-					(m(0,2) + m(2,0)) / S,
-					(m(2,1) - m(1,2)) / S
-				);
-			}
-			else if (m(1,1) > m(2,2)) 
-			{ 
-				float S = sqrt(1.0 + m(1,1) - m(0,0) - m(2,2)) * 2;
-				mRotation = quat(
-					(m(0,1) + m(1,0)) / S,
-					0.25 * S,
-					(m(1,2) + m(2,1)) / S,
-					(m(0,2) - m(2,0)) / S
-				);
-			}
-			else 
-			{ 
-				float S = sqrt(1.0 + m(2,2) - m(0,0) - m(1,1)) * 2;
-				mRotation = quat(
-					(m(0,2) + m(2,0)) / S,
-					(m(1,2) + m(2,1)) / S,
-					0.25 * S,
-					(m(1,0) - m(0,1)) / S
-				);
-			}
-
-			mRotation = normalize(mRotation);
+			mRotation = quat(newForward, newUp);
 		}
 
 		mat4 getView() const 
