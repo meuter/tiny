@@ -14,15 +14,18 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
-struct LightSource
+struct BaseLight
 {
+	BaseLight() : color(0,0,0), intensity(0) {}
+	BaseLight(const vec3 &color, const float &intensity) : color(color), intensity(intensity) {}
 	vec3 color;
 	float intensity;
 };
 
-struct DirectionalLight
+struct DirectionalLight : public BaseLight
 {
-	LightSource source;
+	DirectionalLight() : BaseLight(), direction(0,0,0) {}
+	DirectionalLight(const vec3 &color, const float &intensity, const vec3 &direction) : BaseLight(color, intensity), direction(direction) {}
 	vec3 direction;
 };
 
@@ -34,7 +37,7 @@ public:
 
 	using ShaderProgram::setUniform;
 
-	void setUniform(const std::string &uniform, const LightSource &lightSource)
+	void setUniform(const std::string &uniform, const BaseLight &lightSource)
 	{
 		setUniform(uniform + ".color",     lightSource.color);
 		setUniform(uniform + ".intensity", lightSource.intensity);
@@ -42,7 +45,7 @@ public:
 
 	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 	{
-		setUniform(uniform + ".source",    directionalLight.source);
+		setUniform(uniform + ".base",    dynamic_cast<const BaseLight&>(directionalLight));
 		setUniform(uniform + ".direction", directionalLight.direction);
 	}
 };
@@ -60,9 +63,12 @@ public:
 		mTexture          = Texture::fromFile("res/textures/bricks.jpg");
 		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked      = false;
-		mDirectionalLight = DirectionalLight{ LightSource{ vec3(1,1,1), 1.0f }, vec3(0,-1,0) };
+		mDirectionalLight = DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0));
 
-		mCamera.moveTo(0,-5,5);
+		mSpecularIntensity = 2;
+		mSpecularExponent = 32;
+
+		mCamera.moveTo(0,0,5);
 		mCamera.lookAt(0,0,0);
 		
  		window().vsync(false);				
@@ -136,9 +142,12 @@ public:
 
 		mFPSCounter.update(dt);
 
- 	// 	float sint = sin(rad{t.count()});
-		// mTransform.moveTo(sint,0,5);
-		// mTransform.rotateTo(vec3(0,1,0), toRadian(sint*180.0f));
+		if (!inputs().isKeyHeld(Key::KEY_SPACE))
+		{
+ 			float sint = sin(rad{t.count()});
+			mTransform.moveTo(sint,0,0);
+			mTransform.rotateTo(vec3(0,1,0), toRadian(sint*180.0f));
+		}
 
 		move(dt);
 		look(dt);
@@ -147,10 +156,13 @@ public:
 	void render()
 	{
 		mShaderProgram.use();
-		mShaderProgram.setUniform("MVP",     mCamera.getViewProjection() * mTransform.getModel());
-		mShaderProgram.setUniform("M",      mTransform.getModel());
+		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
+		mShaderProgram.setUniform("M", mTransform.getModel());
 		mShaderProgram.setUniform("ambient", vec3(0.2f,0.2f,0.2f));
 		mShaderProgram.setUniform("directionalLight", mDirectionalLight);
+		mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
+		mShaderProgram.setUniform("specularExponent", mSpecularExponent);
+		mShaderProgram.setUniform("eyePos", mCamera.position());
 
 		mTexture.bind();
 		mMesh.draw();
@@ -159,7 +171,8 @@ public:
 
 private:	
 	PhongShaderProgram mShaderProgram;
-	Texture mTexture;		
+	Texture mTexture;	
+	float mSpecularIntensity, mSpecularExponent;	
 	Mesh mMesh;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;

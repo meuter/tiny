@@ -33,6 +33,8 @@ namespace tiny { namespace core {
 		inline vec3 forward()  const { return mRotation.rotate( Z_AXIS); }
 		inline vec3 backward() const { return mRotation.rotate(-Z_AXIS); }
 
+		inline vec3 position() const { return mPosition; }
+
 		mat4 getModel()             const;
 		mat4 getTranslationMatrix() const;
 		mat4 getScalingMatrix()     const;
