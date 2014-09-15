@@ -63,8 +63,8 @@ public:
 		mDirectionalLight = DirectionalLight{ LightSource{ vec3(1,1,1), 1.0f }, vec3(0,-1,0) };
 
 		mCamera.moveTo(0,-5,5);
-		// mCamera.rotate(mCamera.up(), toRadian(180));
 		mCamera.lookAt(0,0,0);
+		
  		window().vsync(false);				
 	}
 
