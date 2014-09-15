@@ -20,12 +20,14 @@ namespace tiny { namespace rendering {
 		{
 			POSITION,
 			TEXCOORD,
+			NORMAL,
 		};
 
 		struct vertex
 		{
 			core::vec3 position;
 			core::vec2 texcoord;
+			core::vec3 normal;
 		};
 
 		Mesh();

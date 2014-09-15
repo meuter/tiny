@@ -2,6 +2,7 @@
 
 attribute vec3 position;
 attribute vec2 texcoord;
+attribute vec3 normal;
 
 uniform mat4 MVP;
 

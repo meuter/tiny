@@ -95,6 +95,7 @@ void ShaderProgram::bindAttributeLocations()
 {
 	glBindAttribLocation(mProgramHandle, Mesh::POSITION, "position");
 	glBindAttribLocation(mProgramHandle, Mesh::TEXCOORD, "texcoord");
+	glBindAttribLocation(mProgramHandle, Mesh::NORMAL,   "normal");
 }
 
 GLint ShaderProgram::getUniformLocation(const std::string &uniform) const
