@@ -28,14 +28,13 @@ namespace tiny { namespace rendering {
 		void addShader(Shader &&shader);
 		void link();
 
-		void detectUniform(const std::string &uniform);
-		GLint getUniformLocation(const std::string &uniform);
 		void setUniform(const std::string &uniform, float value);
 		void setUniform(const std::string &uniform, const core::vec2 &value);
 		void setUniform(const std::string &uniform, const core::vec3 &value);
 		void setUniform(const std::string &uniform, const core::vec4 &value);
 		void setUniform(const std::string &uniform, const core::mat4 &value);
 
+		GLint getUniformLocation(const std::string &uniform) const;
 		GLint getAttributeLocation(const std::string &attribute) const;
 
 		void use();		
