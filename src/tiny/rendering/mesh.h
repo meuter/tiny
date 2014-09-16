@@ -9,65 +9,9 @@
 #include "tiny_obj_loader.h"
 #include "Material.h"
 #include "gl/buffer.h"
+#include "gl/vertexarray.h"
 
 namespace tiny { namespace rendering {
-
-	class VertexArray
-	{
-	public:	
-		VertexArray()
-		{
-			glGenVertexArraysAPPLE(1, &mHandle);
-			if (mHandle == 0)
-				throw std::runtime_error("could not create vertex array");
-		}
-
-		VertexArray(const VertexArray &other) = delete;
-
-		VertexArray(VertexArray &&other) : mHandle(other.mHandle)
-		{
-			other.release();
-		}
-
-		VertexArray &operator=(const VertexArray &other) = delete;
-
-		VertexArray &operator=(VertexArray &&other) 
-		{
-			free();
-			mHandle = other.mHandle;
-			other.release();
-			return (*this);
-		}
-
-		virtual ~VertexArray()
-		{
-			free();
-		}
-
-		void release()
-		{
-			mHandle = 0;
-		}
-
-		void free()
-		{
-			glDeleteVertexArrays(1, &mHandle);
-			mHandle = 0;
-		}
-
-		void bind() const
-		{
-			glBindVertexArrayAPPLE(mHandle);
-		}
-
-		void unbind() const
-		{
-			glBindVertexArrayAPPLE(0);	
-		}
-
-	private:
-		GLuint mHandle;
-	};
 
 	class Mesh : public core::Transformable
 	{
@@ -100,7 +44,7 @@ namespace tiny { namespace rendering {
 		
 	private:	
 		size_t mSize;
-		VertexArray mVertexArray;
+		gl::VertexArray mVertexArray;
 		gl::Buffer mPositions;
 		gl::Buffer mTexcoords;
 		gl::Buffer mNormals;

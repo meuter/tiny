@@ -27,3 +27,4 @@ test/tiny/utils/upper_tests.o
 test/tiny/utils/*.o
 src/tiny/utils/*.o
 src/tiny/rendering/gl/buffer.o
+src/tiny/rendering/gl/vertexarray.o
