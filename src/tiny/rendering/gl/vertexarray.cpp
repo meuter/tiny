@@ -34,8 +34,11 @@ void VertexArray::release()
 
 void VertexArray::destroy()
 {
-	glDeleteVertexArrays(1, &mHandle);
-	mHandle = 0;
+	if (mHandle)
+	{
+		glDeleteVertexArrays(1, &mHandle);
+		mHandle = 0;
+	}
 }
 
 void VertexArray::bind() const

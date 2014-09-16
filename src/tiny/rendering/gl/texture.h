@@ -3,36 +3,35 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <boost/noncopyable.hpp>
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace rendering { namespace gl {
 
-	class Texture
+	class Texture : boost::noncopyable
 	{
 	public:	
 		static Texture fromFile(const std::string &filename);
 
 		Texture();
-		Texture(const Texture &other) = delete;
 		Texture(Texture &&other);
+
 		virtual ~Texture();
 
-		Texture &operator=(const Texture &other) = delete;
 		Texture &operator=(Texture &&other);
 
-		inline GLuint getHandle() const { return mTextureHandle; }
-
-		void loadData(unsigned char *data, int width, int height);
+		void load(unsigned char *data, int width, int height);
 		void loadFile(const std::string &filename);
 		void bind(GLuint textureUnit = 0) const;
 
 	protected:
 		void flip(unsigned *pixels, unsigned width, unsigned height);
 		void destroy();
+		void release();
 
 	private:
-		GLuint mTextureHandle;
+		GLuint mHandle;
 	};
 
-}}
+}}}
 
 #endif

@@ -5,9 +5,10 @@
 #include <fstream>
 #include <map>
 #include <vector>
-#include "../core/types.h"
-#include "../utils/strutils.h"
-#include "texture.h"
+#include <tiny/core/types.h>
+#include <tiny/utils/strutils.h>
+
+#include "gl/texture.h"
 #include "tiny_obj_loader.h"
 
 namespace tiny { namespace rendering {
@@ -49,7 +50,7 @@ namespace tiny { namespace rendering {
 		Material &operator=(const Material &other) = delete;
 		Material &operator=(Material &&other) = default;
 
-		inline const Texture &texture() const { return mTexture; }
+		inline const gl::Texture &texture() const { return mTexture; }
 
 		inline const core::vec3 &ambient() const { return mAmbient; }
 		inline const core::vec3 &diffuse() const { return mDiffuse; }
@@ -61,23 +62,23 @@ namespace tiny { namespace rendering {
 			mSpecular = core::vec3(material.specular);
 
 			if (!material.ambient_texname.empty())
-				mAmbientMap = Texture::fromFile(material.ambient_texname);
+				mAmbientMap = gl::Texture::fromFile(material.ambient_texname);
 
 			if (!material.specular_texname.empty())
-				mSpecularMap = Texture::fromFile(material.specular_texname);
+				mSpecularMap = gl::Texture::fromFile(material.specular_texname);
 
 			if (!material.normal_texname.empty())
-				mNormalMap = Texture::fromFile(material.normal_texname);
+				mNormalMap = gl::Texture::fromFile(material.normal_texname);
 	
 			if (!material.diffuse_texname.empty())
-				mTexture = Texture::fromFile(material.diffuse_texname);
+				mTexture = gl::Texture::fromFile(material.diffuse_texname);
 
 		}
 
 
 	private:
 		core::vec3 mAmbient, mDiffuse, mSpecular;
-		Texture mAmbientMap, mSpecularMap, mNormalMap, mTexture;
+		gl::Texture mAmbientMap, mSpecularMap, mNormalMap, mTexture;
 
 	};
 }}

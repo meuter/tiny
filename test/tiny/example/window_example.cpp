@@ -1,6 +1,5 @@
 #include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/shader.h>
-#include <tiny/rendering/texture.h>
 #include <tiny/rendering/mesh.h>
 #include <tiny/rendering/material.h>
 

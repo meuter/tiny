@@ -1,5 +1,5 @@
 #include "shaderprogram.h"
-#include "texture.h"
+#include "gl/texture.h"
 #include "mesh.h"
 #include <stdexcept>
 #include <fstream>
@@ -18,16 +18,15 @@ ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, 
 	return result;
 }
 
-ShaderProgram::ShaderProgram() : mProgramHandle(glCreateProgram())
+ShaderProgram::ShaderProgram() : mHandle(glCreateProgram())
 {
-	if (mProgramHandle == 0)
-		throw std::runtime_error("could not create program");
+	if (mHandle == 0)
+		throw std::runtime_error("could not create shader program");
 }
 
-ShaderProgram::ShaderProgram(ShaderProgram &&other) 
-	: mProgramHandle(other.mProgramHandle), mShaders(std::move(other.mShaders))
+ShaderProgram::ShaderProgram(ShaderProgram &&other) : mHandle(other.mHandle), mShaders(std::move(other.mShaders))
 {
-	other.mProgramHandle = 0;
+	other.release();
 }
 
 ShaderProgram::~ShaderProgram()
@@ -38,15 +37,15 @@ ShaderProgram::~ShaderProgram()
 ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
 {
 	destroy();
-	mProgramHandle    = other.mProgramHandle;
-	mShaders          = std::move(other.mShaders);
-	other.mProgramHandle = 0;
+	mHandle  = other.mHandle;
+	mShaders = std::move(other.mShaders);
+	other.release();
 	return (*this);
 }
 
 void ShaderProgram::addShader(Shader &&shader)
 {	
-	glAttachShader(mProgramHandle, shader.getHandle());
+	glAttachShader(mHandle, shader.handle());
 	mShaders.push_back(std::move(shader));
 }
 
@@ -54,16 +53,16 @@ void ShaderProgram::link()
 {
 	bindAttributeLocations();
 
-	glLinkProgram(mProgramHandle);
+	glLinkProgram(mHandle);
 	checkProgramError(GL_LINK_STATUS);
 
-	glValidateProgram(mProgramHandle);
+	glValidateProgram(mHandle);
 	checkProgramError(GL_VALIDATE_STATUS);
 }
 
 void ShaderProgram::use()
 {
-	glUseProgram(mProgramHandle);
+	glUseProgram(mHandle);
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, float value)
@@ -93,14 +92,14 @@ void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &val
 
 void ShaderProgram::bindAttributeLocations()
 {
-	glBindAttribLocation(mProgramHandle, Mesh::POSITION, "position");
-	glBindAttribLocation(mProgramHandle, Mesh::TEXCOORD, "texcoord");
-	glBindAttribLocation(mProgramHandle, Mesh::NORMAL,   "normal");
+	glBindAttribLocation(mHandle, Mesh::POSITION, "position");
+	glBindAttribLocation(mHandle, Mesh::TEXCOORD, "texcoord");
+	glBindAttribLocation(mHandle, Mesh::NORMAL,   "normal");
 }
 
 GLint ShaderProgram::getUniformLocation(const std::string &uniform) const
 {
-	GLint location = glGetUniformLocation(mProgramHandle, uniform.c_str());
+	GLint location = glGetUniformLocation(mHandle, uniform.c_str());
 
 	if (location == -1)
 		throw std::runtime_error("could not get uniform location for '" + uniform + "'");
@@ -110,7 +109,7 @@ GLint ShaderProgram::getUniformLocation(const std::string &uniform) const
 
 GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const
 {
-	GLint result = glGetAttribLocation(mProgramHandle, attribute.c_str());
+	GLint result = glGetAttribLocation(mHandle, attribute.c_str());
 
 	if (result == -1)
 		throw std::runtime_error("could not get attribute location for attribute '" + attribute + "'");
@@ -122,25 +121,30 @@ void ShaderProgram::checkProgramError(GLenum linkingStage)
 {
 	GLint success;
 
-	glGetProgramiv(mProgramHandle, linkingStage, &success);
+	glGetProgramiv(mHandle, linkingStage, &success);
 
 	if (!success)
 	{
 		char errorMessage[1024];
-		glGetProgramInfoLog(mProgramHandle, sizeof(errorMessage), NULL, errorMessage);
+		glGetProgramInfoLog(mHandle, sizeof(errorMessage), NULL, errorMessage);
 
 		throw std::runtime_error("shader program error:\n" + std::string(errorMessage));
 	}
 
 }
 
+void ShaderProgram::release()
+{
+	mHandle = 0;
+}
+
 void ShaderProgram::destroy()
 {
-	if (mProgramHandle != 0)
+	if (mHandle != 0)
 	{
 		for (Shader &shader : mShaders)
-			glDetachShader(mProgramHandle, shader.getHandle());
-		glDeleteProgram(mProgramHandle);
+			glDetachShader(mHandle, shader.handle());
+		glDeleteProgram(mHandle);
 	}
 }
 

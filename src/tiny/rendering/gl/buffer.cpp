@@ -16,8 +16,7 @@ Buffer::Buffer(Buffer &&other) : mHandle(other.mHandle), mSize(other.mSize)
 
 Buffer::~Buffer()
 {
-	if (mHandle)
-		destroy();
+	destroy();
 }
 
 Buffer &Buffer::operator=(Buffer &&other)
@@ -36,9 +35,12 @@ void Buffer::release()
 
 void Buffer::destroy()
 {
-	glDeleteBuffers(1, &mHandle);
-	mHandle = 0;
-	mSize = 0;
+	if (mHandle)
+	{
+		glDeleteBuffers(1, &mHandle);
+		mHandle = 0;
+		mSize = 0;
+	}
 }
 
 }}}

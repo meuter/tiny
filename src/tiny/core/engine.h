@@ -3,20 +3,19 @@
 
 #include <functional>
 #include "types.h"
+#include <boost/noncopyable.hpp>
 
 namespace tiny { namespace core {
 
 	class Game;
 
-	class Engine
+	class Engine : public boost::noncopyable
 	{
 	public:
 		Engine(Game &game);
 		Engine(Engine &&engine) = default;
-		Engine(const Engine &other) = delete;
 		virtual ~Engine();
 
-		Engine &operator=(const Engine &other) = delete;
 		Engine &operator=(Engine &&other) = default;
 
 		void start();

@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <vector>
+
 #include "buffer.h"
 
 namespace tiny { namespace rendering { namespace gl {
