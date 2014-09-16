@@ -25,39 +25,11 @@ Mesh Mesh::fromFile(const std::string &filename)
 	auto &mesh = shapes[0].mesh;
 	unsigned int nVertices = mesh.positions.size()/3;
 
-	if (mesh.normals.size() / 3 != nVertices)
-	{
-		std::cout << "Computing Normals..." << std::endl;
+	while (mesh.normals.size()/3 < nVertices)
+		mesh.normals.emplace_back(0);	
 
-		for (int f = 0; f < mesh.indices.size()/3; ++f)
-		{
-			int i1 = mesh.indices[3*f+0];
-			int i2 = mesh.indices[3*f+1];
-			int i3 = mesh.indices[3*f+2];
-
-			core::vec3 p1(mesh.positions[3*i1+0], mesh.positions[3*i1+1], mesh.positions[3*i1+2]);
-			core::vec3 p2(mesh.positions[3*i2+0], mesh.positions[3*i2+1], mesh.positions[3*i2+2]);
-			core::vec3 p3(mesh.positions[3*i3+0], mesh.positions[3*i3+1], mesh.positions[3*i3+2]);
-
-			auto d1 = normalize(p1-p2);
-			auto d2 = normalize(p1-p3);
-			auto normal = cross(d1,d2);
-
-			mesh.normals.push_back(normal.x);
-			mesh.normals.push_back(normal.y);
-			mesh.normals.push_back(normal.z);
-		}
-
-		std::cout << "|normals| = " << mesh.normals.size() << std::endl;
-
-	}
-	std::cout << "|vertices| = " << mesh.positions.size()/3 << std::endl;
-
-	if (mesh.texcoords.size() / 2 != nVertices)
-	{
-		while (mesh.texcoords.size()/2 < nVertices)
-			mesh.texcoords.emplace_back(0);	
-	}
+	while (mesh.texcoords.size()/2 < nVertices)
+		mesh.texcoords.emplace_back(0);	
 
 	result.load(mesh);
 
