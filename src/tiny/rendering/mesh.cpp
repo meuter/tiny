@@ -39,23 +39,14 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 	return result;
 }
 
-Mesh::Mesh()
-{
-}
-
-Mesh::~Mesh()
-{
-}
-
-
 void Mesh::load(const tinyobj::mesh_t &mesh) 
 {
 	mVertexArray.bind();
 	{
-		mPositions.loadVertexAttribute(AttributeLocation::POSITION, mesh.positions, 3);
-		mTexcoords.loadVertexAttribute(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
-		mNormals.loadVertexAttribute(AttributeLocation::NORMAL, mesh.normals, 3);
-		mIndices.loadIndices(mesh.indices);
+		mPositions.load(AttributeLocation::POSITION, mesh.positions, 3);
+		mTexcoords.load(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
+		mNormals.load(AttributeLocation::NORMAL, mesh.normals, 3);
+		mIndices.load(mesh.indices);
 	}
 	mVertexArray.unbind();
 }

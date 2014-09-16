@@ -14,17 +14,17 @@ VertexArray::VertexArray(VertexArray &&other) : mHandle(other.mHandle)
 	other.release();
 }
 
+VertexArray::~VertexArray()
+{
+	destroy();
+}
+
 VertexArray &VertexArray::operator=(VertexArray &&other) 
 {
-	free();
+	destroy();
 	mHandle = other.mHandle;
 	other.release();
 	return (*this);
-}
-
-VertexArray::~VertexArray()
-{
-	free();
 }
 
 void VertexArray::release()
@@ -32,7 +32,7 @@ void VertexArray::release()
 	mHandle = 0;
 }
 
-void VertexArray::free()
+void VertexArray::destroy()
 {
 	glDeleteVertexArrays(1, &mHandle);
 	mHandle = 0;

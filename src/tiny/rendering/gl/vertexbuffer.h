@@ -3,33 +3,26 @@
 
 #include <GL/glew.h>
 #include <vector>
+#include "buffer.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
-	class VertexBuffer
+	class VertexBuffer : public Buffer
 	{
 	public:	
-		VertexBuffer();
-		VertexBuffer(const VertexBuffer &other) = delete;
-		VertexBuffer(VertexBuffer &&other);
+		VertexBuffer() = default;
+		VertexBuffer(VertexBuffer &&other) = default;
 
-		virtual ~VertexBuffer();
+		virtual ~VertexBuffer() = default;
 
-		VertexBuffer &operator=(const VertexBuffer &other) = delete;
-		VertexBuffer &operator=(VertexBuffer &&other);
+		VertexBuffer &operator=(VertexBuffer &&other) = default;
 
-		void loadIndices(const std::vector<unsigned int> &indices);
-		void loadVertexAttribute(GLuint location, const std::vector<float> &vertexData, size_t nPerVertex);
-
-		inline size_t size() const { return mSize; }
-
-	protected:
-		void release();
-		void free();
-
-	private:	
-		GLuint mHandle;
-		size_t mSize;
+		void load(GLuint location, const std::vector<float> &vertexData, size_t nPerVertex)
+		{
+			Buffer::load(GL_ARRAY_BUFFER, vertexData);
+			glEnableVertexAttribArray(location);
+			glVertexAttribPointer(location, nPerVertex, GL_FLOAT, GL_FALSE, nPerVertex * sizeof(vertexData[0]), (GLvoid *)0);
+		}
 	};
 
 

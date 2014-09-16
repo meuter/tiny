@@ -3,19 +3,18 @@
 
 #include <GL/glew.h>
 #include <stdexcept>
+#include <boost/noncopyable.hpp>
 
 namespace tiny { namespace rendering { namespace gl {
 
-	class VertexArray
+	class VertexArray : boost::noncopyable
 	{
 	public:	
 		VertexArray();
-		VertexArray(const VertexArray &other) = delete;
 		VertexArray(VertexArray &&other);
 
 		virtual ~VertexArray();
 
-		VertexArray &operator=(const VertexArray &other) = delete;
 		VertexArray &operator=(VertexArray &&other);
 
 		void bind() const;
@@ -23,7 +22,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 	protected:
 		void release();
-		void free();
+		void destroy();
 
 	private:
 		GLuint mHandle;

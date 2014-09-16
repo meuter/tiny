@@ -8,8 +8,9 @@
 #include "../core/transformable.h"
 #include "tiny_obj_loader.h"
 #include "material.h"
-#include "gl/vertexbuffer.h"
 #include "gl/vertexarray.h"
+#include "gl/vertexbuffer.h"
+#include "gl/indexbuffer.h"
 
 namespace tiny { namespace rendering {
 
@@ -26,11 +27,11 @@ namespace tiny { namespace rendering {
 			NORMAL,
 		};
 
-		Mesh();
+		Mesh() = default;
 		Mesh(const Mesh &other) = delete;
 		Mesh(Mesh &&mesh) = default;
 		
-		virtual ~Mesh();
+		virtual ~Mesh() = default;
 
 		Mesh &operator=(const Mesh &mesh) = delete;
 		Mesh &operator=(Mesh &&other) = default;
@@ -48,7 +49,7 @@ namespace tiny { namespace rendering {
 		gl::VertexBuffer mPositions;
 		gl::VertexBuffer mTexcoords;
 		gl::VertexBuffer mNormals;
-		gl::VertexBuffer mIndices;
+		gl::IndexBuffer mIndices;
 	};
 
 }}
