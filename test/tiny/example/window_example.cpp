@@ -37,6 +37,7 @@ public:
 	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
 
 	using ShaderProgram::setUniform;
+	using ShaderProgram::use;
 
 	void setUniform(const std::string &uniform, const BaseLight &lightSource)
 	{
@@ -49,6 +50,36 @@ public:
 		setUniform(uniform + ".base",    dynamic_cast<const BaseLight&>(directionalLight));
 		setUniform(uniform + ".direction", directionalLight.direction);
 	}
+
+	void setDirectionalLight(const DirectionalLight directional)
+	{
+		mDirectional = directional;
+	}
+
+	void setSpecularLight(float intensity, float exponent)
+	{
+		mSpecularIntensity = intensity;
+		mSpecularExponent = exponent;
+	}
+
+	void draw(const Camera &camera, const Transformable &transform, const Mesh &mesh, const Material &material)
+	{
+		use();
+		setUniform("MVP", camera.getViewProjection() * transform.getModel());
+		setUniform("M", transform.getModel());
+		setUniform("diffuse", material.diffuse());
+		setUniform("ambient", material.ambient());
+		setUniform("directionalLight", mDirectional);
+		setUniform("specularIntensity", mSpecularIntensity);
+		setUniform("specularExponent", mSpecularExponent);
+		setUniform("eyePos", camera.position());
+
+		material.texture().bind();
+		mesh.draw();
+	}
+private:
+	DirectionalLight mDirectional;
+	float mSpecularIntensity, mSpecularExponent;
 };
 
 
@@ -60,16 +91,15 @@ public:
 
 	void init()
 	{
-		mMesh             = Mesh::fromFile("res/models/sphere_smooth.obj");
-		mMaterial         = Material::fromFile("res/models/sphere_smooth.mtl");
+		mMesh             = Mesh::fromFile("res/models/ground.obj");
+		mMaterial         = Material::fromFile("res/models/ground.mtl");
 		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked      = false;
-		mDirectionalLight = DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0));
 
-		mSpecularIntensity = 2;
-		mSpecularExponent = 32;
+		mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
+		mShaderProgram.setSpecularLight(2,32);
 
-		mCamera.moveTo(0,0,5);
+		mCamera.moveTo(0,4,5);
 		mCamera.lookAt(0,0,0);
 		
  		window().vsync(false);				
@@ -143,43 +173,23 @@ public:
 
 		mFPSCounter.update(dt);
 
-		if (!inputs().isKeyHeld(Key::KEY_SPACE))
-		{
- 			float sint = sin(rad{t.count()});
-			mTransform.moveTo(sint,0,0);
-			mTransform.rotateTo(vec3(0,1,0), toRadian(sint*180.0f));
-		}
-
 		move(dt);
 		look(dt);
 	}
 
 	void render()
 	{
-		mShaderProgram.use();
-		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
-		mShaderProgram.setUniform("M", mTransform.getModel());
-		mShaderProgram.setUniform("diffuse", mMaterial.diffuse());
-		mShaderProgram.setUniform("ambient", mMaterial.ambient());
-		mShaderProgram.setUniform("directionalLight", mDirectionalLight);
-		mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
-		mShaderProgram.setUniform("specularExponent", mSpecularExponent);
-		mShaderProgram.setUniform("eyePos", mCamera.position());
-
-		mMaterial.texture().bind();
-		mMesh.draw();
+		mShaderProgram.draw(mCamera, mTransform, mMesh, mMaterial);
 		mFPSCounter.newFrame();
 	}
 
 private:	
 	PhongShaderProgram mShaderProgram;
 	Material mMaterial;
-	float mSpecularIntensity, mSpecularExponent;	
 	Mesh mMesh;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	Transformable mTransform;
-	DirectionalLight mDirectionalLight;
 	bool mMouseLocked;
 };
 

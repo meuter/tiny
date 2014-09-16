@@ -23,7 +23,7 @@ namespace tiny { namespace rendering {
 
 		void loadData(unsigned char *data, int width, int height);
 		void loadFile(const std::string &filename);
-		void bind(GLuint textureUnit = 0);
+		void bind(GLuint textureUnit = 0) const;
 
 	protected:
 		void flip(unsigned *pixels, unsigned width, unsigned height);

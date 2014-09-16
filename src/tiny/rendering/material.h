@@ -49,10 +49,10 @@ namespace tiny { namespace rendering {
 		Material &operator=(const Material &other) = delete;
 		Material &operator=(Material &&other) = default;
 
-		inline Texture &texture() { return mTexture; }
+		inline const Texture &texture() const { return mTexture; }
 
-		inline core::vec3 &ambient() { return mAmbient; }
-		inline core::vec3 &diffuse() { return mDiffuse; }
+		inline const core::vec3 &ambient() const { return mAmbient; }
+		inline const core::vec3 &diffuse() const { return mDiffuse; }
 
 		void load(const tinyobj::material_t &material)
 		{

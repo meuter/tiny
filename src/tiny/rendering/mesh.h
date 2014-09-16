@@ -9,8 +9,6 @@
 
 namespace tiny { namespace rendering {
 
-	class ShaderProgram;
-
 	class Mesh
 	{
 	public:
@@ -34,7 +32,7 @@ namespace tiny { namespace rendering {
 
 		void load(const tinyobj::mesh_t &mesh);
 		void unload();
-		void draw();
+		void draw() const;
 
 	private:	
 		size_t mSize;

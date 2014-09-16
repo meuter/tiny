@@ -22,6 +22,9 @@ Mesh Mesh::fromFile(const std::string &filename)
 	if (shapes.size() != 1)
 		throw std::runtime_error("more than one mesh found in '"+filename+"'");
 
+	if (materials.size() != 1)
+		throw std::runtime_error("more than one material found in '"+filename+"'");
+
 	auto &mesh = shapes[0].mesh;
 	unsigned int nVertices = mesh.positions.size()/3;
 
@@ -113,7 +116,7 @@ void Mesh::unload()
 	}
 }
 
-void Mesh::draw()
+void Mesh::draw() const
 {
 	glBindVertexArray(mVertexArrayHandle);
 	glDrawElements(GL_TRIANGLES, mSize, GL_UNSIGNED_INT, 0);
