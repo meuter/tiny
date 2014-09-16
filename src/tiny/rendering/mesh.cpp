@@ -77,8 +77,15 @@ void Mesh::load(const tinyobj::mesh_t &mesh)
 {
 	mSize = mesh.indices.size();
 
-	glGenVertexArrays(1, &mVertexArrayHandle);
-	glBindVertexArray(mVertexArrayHandle);
+
+	mVertexArrayHandle = 0;
+	glGenVertexArraysAPPLE(1, &mVertexArrayHandle);
+	if (mVertexArrayHandle == 0)
+		throw std::runtime_error("VAO not working!");
+	glBindVertexArrayAPPLE(mVertexArrayHandle);
+
+	std::cout << "mVertexArrayHandle=" << mVertexArrayHandle << std::endl;
+
 
 	auto loadVertexAttribute = [&](GLuint handle, GLuint location, const std::vector<float> bufferData)
 	{
@@ -118,7 +125,7 @@ void Mesh::unload()
 
 void Mesh::draw() const
 {
-	glBindVertexArray(mVertexArrayHandle);
+	glBindVertexArrayAPPLE(mVertexArrayHandle);
 	glDrawElements(GL_TRIANGLES, mSize, GL_UNSIGNED_INT, 0);
 }
 

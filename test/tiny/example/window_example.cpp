@@ -62,19 +62,19 @@ public:
 		mSpecularExponent = exponent;
 	}
 
-	void draw(const Camera &camera, const Transformable &transform, const Mesh &mesh, const Material &material)
+	void draw(const Camera &camera, const Mesh &mesh)
 	{
 		use();
-		setUniform("MVP", camera.getViewProjection() * transform.getModel());
-		setUniform("M", transform.getModel());
-		setUniform("diffuse", material.diffuse());
-		setUniform("ambient", material.ambient());
+		setUniform("MVP", camera.getViewProjection() * mesh.getModel());
+		setUniform("M", mesh.getModel());
+		setUniform("diffuse", mesh.material().diffuse());
+		setUniform("ambient", mesh.material().ambient());
 		setUniform("directionalLight", mDirectional);
 		setUniform("specularIntensity", mSpecularIntensity);
 		setUniform("specularExponent", mSpecularExponent);
 		setUniform("eyePos", camera.position());
 
-		material.texture().bind();
+		mesh.material().texture().bind();
 		mesh.draw();
 	}
 private:
@@ -91,19 +91,52 @@ public:
 
 	void init()
 	{
-		mMesh             = Mesh::fromFile("res/models/ground.obj");
-		mMaterial         = Material::fromFile("res/models/ground.mtl");
-		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
-		mMouseLocked      = false;
+		mBox                = Mesh::fromFile("res/models/box.obj");
+		mBox.mMaterial      = Material::fromFile("res/models/box.mtl");
+
+		mSphere             = Mesh::fromFile("res/models/sphere_smooth.obj");
+		mSphere.mMaterial   = Material::fromFile("res/models/sphere_smooth.obj");
+
+		// mGround             = Mesh::fromFile("res/models/ground.obj");
+		// mGround.mMaterial   = Material::fromFile("res/models/ground.mtl");
+
+		mCamera             = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
+		mMouseLocked        = false;
 
 		mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
 		mShaderProgram.setSpecularLight(2,32);
 
-		mCamera.moveTo(0,4,5);
-		mCamera.lookAt(0,0,0);
+		mGround.moveTo(0,-2,0);
+		mBox.moveTo(0,4,0);
+
+		mCamera.moveTo(0,2,5);
+		mCamera.lookAt(mBox.position());
 		
  		window().vsync(false);				
 	}
+
+
+	void update(sec t, sec dt)
+	{
+		if (shouldStop())
+			stop();
+
+		mFPSCounter.update(dt);
+
+		move(dt);
+		look(dt);
+	}
+
+	void render()
+	{
+		mShaderProgram.draw(mCamera, mGround);
+		mShaderProgram.draw(mCamera, mBox);
+		mShaderProgram.draw(mCamera, mSphere);
+		mFPSCounter.newFrame();
+	}
+
+
+
 
 	bool shouldStop()
 	{
@@ -166,30 +199,11 @@ public:
 		}
 	}
 
-	void update(sec t, sec dt)
-	{
-		if (shouldStop())
-			stop();
-
-		mFPSCounter.update(dt);
-
-		move(dt);
-		look(dt);
-	}
-
-	void render()
-	{
-		mShaderProgram.draw(mCamera, mTransform, mMesh, mMaterial);
-		mFPSCounter.newFrame();
-	}
-
 private:	
 	PhongShaderProgram mShaderProgram;
-	Material mMaterial;
-	Mesh mMesh;
+	Mesh mGround, mBox, mSphere;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
-	Transformable mTransform;
 	bool mMouseLocked;
 };
 

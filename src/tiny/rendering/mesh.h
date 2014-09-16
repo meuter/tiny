@@ -5,11 +5,13 @@
 #include <tiny/core/types.h>
 #include <vector>
 #include <string>
+#include "../core/transformable.h"
 #include "tiny_obj_loader.h"
+#include "Material.h"
 
 namespace tiny { namespace rendering {
 
-	class Mesh
+	class Mesh : public core::Transformable
 	{
 	public:
 
@@ -33,6 +35,11 @@ namespace tiny { namespace rendering {
 		void load(const tinyobj::mesh_t &mesh);
 		void unload();
 		void draw() const;
+
+		const Material &material() const { return mMaterial; }
+
+
+		Material mMaterial;
 
 	private:	
 		size_t mSize;
