@@ -97,8 +97,8 @@ public:
 		mSphere             = Mesh::fromFile("res/models/sphere_smooth.obj");
 		mSphere.mMaterial   = Material::fromFile("res/models/sphere_smooth.obj");
 
-		// mGround             = Mesh::fromFile("res/models/ground.obj");
-		// mGround.mMaterial   = Material::fromFile("res/models/ground.mtl");
+		mGround             = Mesh::fromFile("res/models/ground.obj");
+		mGround.mMaterial   = Material::fromFile("res/models/ground.mtl");
 
 		mCamera             = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked        = false;

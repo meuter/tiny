@@ -32,8 +32,6 @@ Window::Window(int width, int height, std::string title)
 
 	glClearColor(0,0,0,1);
 
-	glEnable(GL_DEPTH_TEST);
-	
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
