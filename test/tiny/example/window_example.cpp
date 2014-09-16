@@ -60,13 +60,11 @@ public:
 
 	void init()
 	{
-		mMesh             = Mesh::fromFile("res/models/sphere_flat.obj");
-		mMaterial         = Material::fromFile("res/models/sphere_flat.mtl");
+		mMesh             = Mesh::fromFile("res/models/sphere_smooth.obj");
+		mMaterial         = Material::fromFile("res/models/sphere_smooth.mtl");
 		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked      = false;
 		mDirectionalLight = DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0));
-
-		mShaderProgram = ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs");
 
 		mSpecularIntensity = 2;
 		mSpecularExponent = 32;
@@ -160,13 +158,13 @@ public:
 	{
 		mShaderProgram.use();
 		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
+		mShaderProgram.setUniform("M", mTransform.getModel());
 		mShaderProgram.setUniform("diffuse", mMaterial.diffuse());
-		// mShaderProgram.setUniform("M", mTransform.getModel());
-		// mShaderProgram.setUniform("ambient", mMaterial.ambient());
-		// mShaderProgram.setUniform("directionalLight", mDirectionalLight);
-		// mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
-		// mShaderProgram.setUniform("specularExponent", mSpecularExponent);
-		// mShaderProgram.setUniform("eyePos", mCamera.position());
+		mShaderProgram.setUniform("ambient", mMaterial.ambient());
+		mShaderProgram.setUniform("directionalLight", mDirectionalLight);
+		mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
+		mShaderProgram.setUniform("specularExponent", mSpecularExponent);
+		mShaderProgram.setUniform("eyePos", mCamera.position());
 
 		mMaterial.texture().bind();
 		mMesh.draw();
@@ -174,7 +172,7 @@ public:
 	}
 
 private:	
-	ShaderProgram mShaderProgram;
+	PhongShaderProgram mShaderProgram;
 	Material mMaterial;
 	float mSpecularIntensity, mSpecularExponent;	
 	Mesh mMesh;

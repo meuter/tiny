@@ -14,6 +14,7 @@ struct DirectionalLight
 
 uniform sampler2D texture;
 uniform vec3 ambient;
+uniform vec3 diffuse;
 uniform DirectionalLight directionalLight;
 uniform float specularIntensity;
 uniform float specularExponent;
@@ -53,14 +54,11 @@ vec4 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal)
 
 void main()
 {
-	vec4 totalLight   = vec4(ambient, 1);
-	vec4 color        = vec4(1,1,1,1);
-	vec4 textureColor = texture2D(texture, texcoord0);
+	vec4 light = vec4(ambient, 1);
+	vec4 color = vec4(diffuse, 1);
+	vec4 texel = texture2D(texture, texcoord0);
 
-	if (textureColor != vec4(0,0,0,0))
-		color *= textureColor;
+	light += calcDirectionalLight(directionalLight, normal0);
 
-	totalLight += calcDirectionalLight(directionalLight, normal0);
-
-	gl_FragColor = color * totalLight;
+	gl_FragColor = color * texel * light;
 }
