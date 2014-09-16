@@ -39,93 +39,30 @@ Mesh Mesh::fromFile(const std::string &filename)
 	return result;
 }
 
-Mesh::Mesh() : mLoaded(false)
+Mesh::Mesh() : mSize(0)
 {
-}
-
-Mesh::Mesh(Mesh &&other)
-	: mSize(other.mSize), mVertexArrayHandle(other.mVertexArrayHandle),
-	  mPositionsBufferHandle(other.mPositionsBufferHandle), 
-	  mTexcoordsBufferHandle(other.mTexcoordsBufferHandle), 
-	  mNormalsBufferHandle(other.mNormalsBufferHandle), 
-	  mLoaded(other.mLoaded)
-{
-	other.mLoaded = false;
 }
 
 Mesh::~Mesh()
 {
-	unload();
 }
 
-Mesh &Mesh::operator=(Mesh &&other)
-{
-	unload();
-	mSize = other.mSize;
-	mVertexArrayHandle = other.mVertexArrayHandle;
-	mPositionsBufferHandle = other.mPositionsBufferHandle;
-	mTexcoordsBufferHandle = other.mTexcoordsBufferHandle;
-	mNormalsBufferHandle = other.mNormalsBufferHandle;
-	mLoaded = other.mLoaded;
-
-	other.mLoaded = false;
-
-	return (*this);
-}
 
 void Mesh::load(const tinyobj::mesh_t &mesh) 
 {
 	mSize = mesh.indices.size();
 
-
-	mVertexArrayHandle = 0;
-	glGenVertexArraysAPPLE(1, &mVertexArrayHandle);
-	if (mVertexArrayHandle == 0)
-		throw std::runtime_error("VAO not working!");
-	glBindVertexArrayAPPLE(mVertexArrayHandle);
-
-	std::cout << "mVertexArrayHandle=" << mVertexArrayHandle << std::endl;
-
-
-	auto loadVertexAttribute = [&](GLuint handle, GLuint location, const std::vector<float> bufferData)
-	{
-		size_t nVertices = mesh.positions.size() / 3;
-		size_t nDataPerVertex = bufferData.size()/nVertices;
-
-		glGenBuffers(1, &handle);
-		glBindBuffer(GL_ARRAY_BUFFER, handle);
-		glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(float), &bufferData[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(location);
-		glVertexAttribPointer(location, nDataPerVertex, GL_FLOAT, GL_FALSE, nDataPerVertex * sizeof(float), (GLvoid *)0);
-
-	};
-
-	loadVertexAttribute(mPositionsBufferHandle, AttributeLocation::POSITION, mesh.positions);
-	loadVertexAttribute(mTexcoordsBufferHandle, AttributeLocation::TEXCOORD, mesh.texcoords);
-	loadVertexAttribute(mNormalsBufferHandle,   AttributeLocation::NORMAL,   mesh.normals);
-
-	glGenBuffers(1, &mIndexBufferHandle);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferHandle);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(mesh.indices[0]), &mesh.indices[0], GL_STATIC_DRAW);
-	
-	mLoaded = true;
-}
-
-void Mesh::unload()
-{
-	if (mLoaded)
-	{
-		glDeleteBuffers(1, &mIndexBufferHandle);
-		glDeleteBuffers(1, &mNormalsBufferHandle);
-		glDeleteBuffers(1, &mTexcoordsBufferHandle);
-		glDeleteBuffers(1, &mPositionsBufferHandle);
-		glDeleteVertexArrays(1, &mVertexArrayHandle);
-	}
+	mVertexArray.bind();
+	mPositions = gl::Buffer::CreateVBO(AttributeLocation::POSITION, mesh.positions, 3);
+	mTexcoords = gl::Buffer::CreateVBO(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
+	mNormals   = gl::Buffer::CreateVBO(AttributeLocation::NORMAL, mesh.normals, 3);
+	mIndices   = gl::Buffer::CreateIBO(mesh.indices);
+	mVertexArray.unbind();
 }
 
 void Mesh::draw() const
 {
-	glBindVertexArrayAPPLE(mVertexArrayHandle);
+	mVertexArray.bind();
 	glDrawElements(GL_TRIANGLES, mSize, GL_UNSIGNED_INT, 0);
 }
 

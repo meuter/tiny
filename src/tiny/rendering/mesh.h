@@ -8,62 +8,40 @@
 #include "../core/transformable.h"
 #include "tiny_obj_loader.h"
 #include "Material.h"
+#include "gl/buffer.h"
 
 namespace tiny { namespace rendering {
 
-
-	class VertexAttributeBuffer
+	class VertexArray
 	{
 	public:	
-		VertexAttributeBuffer() : mHandle(0), mLocation(0) 
+		VertexArray()
 		{
-
-		}
-		
-		VertexAttributeBuffer(GLuint location) : mHandle(0), mLocation(location)
-		{
-			glGenBuffers(1, &mHandle);
+			glGenVertexArraysAPPLE(1, &mHandle);
 			if (mHandle == 0)
-				throw std::runtime_error("could not create vertex buffer object");
+				throw std::runtime_error("could not create vertex array");
 		}
 
-		VertexAttributeBuffer(VertexAttributeBuffer &&other) : mHandle(other.mHandle), mLocation(other.mHandle)
+		VertexArray(const VertexArray &other) = delete;
+
+		VertexArray(VertexArray &&other) : mHandle(other.mHandle)
 		{
 			other.release();
 		}
 
-		VertexAttributeBuffer(const VertexAttributeBuffer &other) = delete;
+		VertexArray &operator=(const VertexArray &other) = delete;
 
-		virtual ~VertexAttributeBuffer()
+		VertexArray &operator=(VertexArray &&other) 
 		{
-			if (mHandle)
-				unload();
-		}
-
-		VertexAttributeBuffer &operator=(const VertexAttributeBuffer &other) = delete;
-
-		VertexAttributeBuffer &operator=(VertexAttributeBuffer &&other) 
-		{
-			unload();
+			free();
 			mHandle = other.mHandle;
-			mLocation = other.mLocation;
 			other.release();
-
 			return (*this);
 		}
 
-		void bind()
+		virtual ~VertexArray()
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, mHandle);
-		}
-
-		void load(std::vector<float> &data, size_t nPerVertex) 
-		{	
-			glBindBuffer(GL_ARRAY_BUFFER, mHandle);
-			glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(data[0]), &data[0], GL_STATIC_DRAW);
-			glEnableVertexAttribArray(mLocation);
-			glVertexAttribPointer(mLocation, nPerVertex, GL_FLOAT, GL_FALSE, nPerVertex * sizeof(data[0]), (GLvoid *)0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			free();
 		}
 
 		void release()
@@ -71,15 +49,24 @@ namespace tiny { namespace rendering {
 			mHandle = 0;
 		}
 
-		void unload()
+		void free()
 		{
-			glDeleteBuffers(1, &mHandle);
+			glDeleteVertexArrays(1, &mHandle);
+			mHandle = 0;
 		}
 
+		void bind() const
+		{
+			glBindVertexArrayAPPLE(mHandle);
+		}
+
+		void unbind() const
+		{
+			glBindVertexArrayAPPLE(0);	
+		}
 
 	private:
 		GLuint mHandle;
-		GLuint mLocation;
 	};
 
 	class Mesh : public core::Transformable
@@ -97,11 +84,11 @@ namespace tiny { namespace rendering {
 
 		Mesh();
 		Mesh(const Mesh &other) = delete;
-		Mesh(Mesh &&mesh);
+		Mesh(Mesh &&mesh) = default;
 		virtual ~Mesh();
 
 		Mesh &operator=(const Mesh &mesh) = delete;
-		Mesh &operator=(Mesh &&other);
+		Mesh &operator=(Mesh &&other) = default;
 
 		void load(const tinyobj::mesh_t &mesh);
 		void unload();
@@ -109,17 +96,15 @@ namespace tiny { namespace rendering {
 
 		const Material &material() const { return mMaterial; }
 
-
 		Material mMaterial;
-
+		
 	private:	
 		size_t mSize;
-		GLuint mVertexArrayHandle;
-		GLuint mPositionsBufferHandle;
-		GLuint mTexcoordsBufferHandle;		
-		GLuint mNormalsBufferHandle;
-		GLuint mIndexBufferHandle;
-		bool mLoaded;
+		VertexArray mVertexArray;
+		gl::Buffer mPositions;
+		gl::Buffer mTexcoords;
+		gl::Buffer mNormals;
+		gl::Buffer mIndices;
 	};
 
 }}

@@ -26,3 +26,4 @@ test/tiny/utils/split_tests.o
 test/tiny/utils/upper_tests.o
 test/tiny/utils/*.o
 src/tiny/utils/*.o
+src/tiny/rendering/gl/buffer.o
