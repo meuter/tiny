@@ -2,6 +2,7 @@
 #include <tiny/rendering/shader.h>
 #include <tiny/rendering/texture.h>
 #include <tiny/rendering/mesh.h>
+#include <tiny/rendering/material.h>
 
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
@@ -59,11 +60,13 @@ public:
 
 	void init()
 	{
-		mMesh             = Mesh::fromFile("res/models/box_full.obj");
-		mTexture          = Texture::fromFile("res/textures/bricks.jpg");
+		mMesh             = Mesh::fromFile("res/models/sphere_flat.obj");
+		mMaterial         = Material::fromFile("res/models/sphere_flat.mtl");
 		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked      = false;
 		mDirectionalLight = DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0));
+
+		mShaderProgram = ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs");
 
 		mSpecularIntensity = 2;
 		mSpecularExponent = 32;
@@ -157,21 +160,22 @@ public:
 	{
 		mShaderProgram.use();
 		mShaderProgram.setUniform("MVP", mCamera.getViewProjection() * mTransform.getModel());
-		mShaderProgram.setUniform("M", mTransform.getModel());
-		mShaderProgram.setUniform("ambient", vec3(0.2f,0.2f,0.2f));
-		mShaderProgram.setUniform("directionalLight", mDirectionalLight);
-		mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
-		mShaderProgram.setUniform("specularExponent", mSpecularExponent);
-		mShaderProgram.setUniform("eyePos", mCamera.position());
+		mShaderProgram.setUniform("diffuse", mMaterial.diffuse());
+		// mShaderProgram.setUniform("M", mTransform.getModel());
+		// mShaderProgram.setUniform("ambient", mMaterial.ambient());
+		// mShaderProgram.setUniform("directionalLight", mDirectionalLight);
+		// mShaderProgram.setUniform("specularIntensity", mSpecularIntensity);
+		// mShaderProgram.setUniform("specularExponent", mSpecularExponent);
+		// mShaderProgram.setUniform("eyePos", mCamera.position());
 
-		mTexture.bind();
+		mMaterial.texture().bind();
 		mMesh.draw();
 		mFPSCounter.newFrame();
 	}
 
 private:	
-	PhongShaderProgram mShaderProgram;
-	Texture mTexture;	
+	ShaderProgram mShaderProgram;
+	Material mMaterial;
 	float mSpecularIntensity, mSpecularExponent;	
 	Mesh mMesh;
 	Camera mCamera; 

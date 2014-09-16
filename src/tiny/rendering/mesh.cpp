@@ -98,7 +98,7 @@ void Mesh::load(const tinyobj::mesh_t &mesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferHandle);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(mesh.indices[0]), &mesh.indices[0], GL_STATIC_DRAW);
 	
-	// mLoaded = true;
+	mLoaded = true;
 }
 
 void Mesh::unload()

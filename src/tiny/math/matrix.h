@@ -26,6 +26,7 @@ namespace tiny { namespace math {
         struct default_layout<scalar,1,2>
         {
             default_layout(const scalar &x, const scalar &y) : x{x}, y{y} {}
+            default_layout(const scalar data[2]) : x{data[0]}, y{data[1]} {}
             default_layout() {}
             scalar x, y;
         };
@@ -36,6 +37,7 @@ namespace tiny { namespace math {
             default_layout(const scalar &x, const scalar &y, const scalar &z) : x{x}, y{y}, z{z} {}
             default_layout(const default_layout<scalar,1,2> v, const scalar &z = scalar()) : x{v.x}, y{v.y}, z{z} {}
             default_layout(const scalar &x, const default_layout<scalar,1,2> v) : x{x}, y{v.x}, z{v.y} {}
+            default_layout(const scalar data[3]) : x{data[0]}, y{data[1]}, z{data[2]} {}
             default_layout() {}
             scalar x, y, z;
         };
@@ -46,6 +48,7 @@ namespace tiny { namespace math {
             default_layout(const scalar &x, const scalar &y, const scalar &z, const scalar &w) : x{x}, y{y}, z{z}, w{w} {}
             default_layout(const scalar &x, const default_layout<scalar,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
             default_layout(const default_layout<scalar,1,3> v, const scalar &w = scalar()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
+            default_layout(const scalar data[4]) : x{data[0]}, y{data[1]}, z{data[2]}, w{data[3]} {}
             default_layout() {}
             scalar x, y, z, w;
         };
