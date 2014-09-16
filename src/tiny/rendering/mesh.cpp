@@ -10,90 +10,56 @@ namespace tiny { namespace rendering {
 Mesh Mesh::fromFile(const std::string &filename)
 {
 	Mesh result;
-	std::vector<vertex> vertices;
-	std::vector<unsigned int> indices;
-	std::vector<core::vec3> positions, normals;
-	std::vector<core::vec2> texcoords;
-	std::ifstream file;
-	std::string line;
 
-	auto addVertex = [&](const std::string &faceToken) -> int
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+
+	std::string error = tinyobj::LoadObj(shapes, materials, filename.c_str());
+
+	if (!error.empty())
+		throw std::runtime_error("could not load '"+filename+"':" + error);
+
+	if (shapes.size() != 1)
+		throw std::runtime_error("more than one mesh found in '"+filename+"'");
+
+	auto &mesh = shapes[0].mesh;
+	unsigned int nVertices = mesh.positions.size()/3;
+
+	if (mesh.normals.size() / 3 != nVertices)
 	{
-		auto splitted = utils::split(faceToken, '/');
-		vertex newVertex;
+		std::cout << "Computing Normals..." << std::endl;
 
-		if (splitted.size() == 1)
-			newVertex = vertex{positions[std::stoi(splitted[0])-1], core::vec2(0,0), core::vec3(0,0,0) };
-		else if (splitted.size() == 2)
-			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1], core::vec3(0,0,0) };
-		else if (splitted.size() == 3)
-			newVertex = vertex{positions[std::stoi(splitted[0])-1], texcoords[std::stoi(splitted[1])-1], normals[std::stoi(splitted[2])-1] };
-		else
-			throw std::runtime_error("do not know how to parse '"+faceToken+"'");
+		for (int f = 0; f < mesh.indices.size()/3; ++f)
+		{
+			int i1 = mesh.indices[3*f+0];
+			int i2 = mesh.indices[3*f+1];
+			int i3 = mesh.indices[3*f+2];
 
-		indices.push_back(vertices.size());
-		vertices.push_back(newVertex);
+			core::vec3 p1(mesh.positions[3*i1+0], mesh.positions[3*i1+1], mesh.positions[3*i1+2]);
+			core::vec3 p2(mesh.positions[3*i2+0], mesh.positions[3*i2+1], mesh.positions[3*i2+2]);
+			core::vec3 p3(mesh.positions[3*i3+0], mesh.positions[3*i3+1], mesh.positions[3*i3+2]);
 
-		return vertices.size()-1;
-	};
+			auto d1 = normalize(p1-p2);
+			auto d2 = normalize(p1-p3);
+			auto normal = cross(d1,d2);
 
-	auto computeNormal = [](vertex &v1, vertex &v2, vertex &v3) -> core::vec3
+			mesh.normals.push_back(normal.x);
+			mesh.normals.push_back(normal.y);
+			mesh.normals.push_back(normal.z);
+		}
+
+		std::cout << "|normals| = " << mesh.normals.size() << std::endl;
+
+	}
+	std::cout << "|vertices| = " << mesh.positions.size()/3 << std::endl;
+
+	if (mesh.texcoords.size() / 2 != nVertices)
 	{
-		auto d1 = normalize(v2.position-v1.position);
-		auto d2 = normalize(v3.position-v1.position);
-
-		return normalize(cross(d1,d2));
-	};
-
-	auto addFace = [&](const std::string &token1, const std::string &token2, const std::string &token3)
-	{
-		auto i1 = addVertex(token1);
-		auto i2 = addVertex(token2);
-		auto i3 = addVertex(token3);
-
-		if (normals.size() == 0)
-		{
-			auto normal = computeNormal(vertices[i1], vertices[i2], vertices[i3]);
-			vertices[i1].normal = normal;
-			vertices[i2].normal = normal;
-			vertices[i3].normal = normal;
-		}
-	};
-
-	if (utils::toupper(utils::split(filename, '.').back()) != "OBJ")
-		throw std::runtime_error("onlye obj files are supperted");
-
-	file.open(filename);
-
-	if (!file)
-		throw std::runtime_error("could not open '" + filename + "'");
-
-	while (getline(file, line))
-	{
-		auto tokens = utils::split(line);
-
-		if (tokens[0] == "v")
-		{
-			positions.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));
-		}
-		if (tokens[0] == "vt")
-		{
-			texcoords.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]));	
-		}
-		if (tokens[0] == "vn")
-		{	
-			normals.emplace_back(std::stof(tokens[1]), std::stof(tokens[2]), std::stof(tokens[3]));
-		}
-		else if (tokens[0] == "f")
-		{
-			if (tokens.size() != 4)
-				std::runtime_error("only triangles are supported");
-			
-			addFace(tokens[1], tokens[2], tokens[3]);
-		}
+		while (mesh.texcoords.size()/2 < nVertices)
+			mesh.texcoords.emplace_back(0);	
 	}
 
-	result.load(vertices, indices);
+	result.load(mesh);
 
 	return result;
 }
@@ -102,15 +68,12 @@ Mesh::Mesh() : mLoaded(false)
 {
 }
 
-Mesh::Mesh(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices)
-{
-	load(vertices, indices);
-}
-
-
 Mesh::Mesh(Mesh &&other)
 	: mSize(other.mSize), mVertexArrayHandle(other.mVertexArrayHandle),
-	  mVertexBufferHandle(other.mVertexBufferHandle), mLoaded(other.mLoaded)
+	  mPositionsBufferHandle(other.mPositionsBufferHandle), 
+	  mTexcoordsBufferHandle(other.mTexcoordsBufferHandle), 
+	  mNormalsBufferHandle(other.mNormalsBufferHandle), 
+	  mLoaded(other.mLoaded)
 {
 	other.mLoaded = false;
 }
@@ -125,7 +88,9 @@ Mesh &Mesh::operator=(Mesh &&other)
 	unload();
 	mSize = other.mSize;
 	mVertexArrayHandle = other.mVertexArrayHandle;
-	mVertexBufferHandle = other.mVertexBufferHandle;
+	mPositionsBufferHandle = other.mPositionsBufferHandle;
+	mTexcoordsBufferHandle = other.mTexcoordsBufferHandle;
+	mNormalsBufferHandle = other.mNormalsBufferHandle;
 	mLoaded = other.mLoaded;
 
 	other.mLoaded = false;
@@ -133,43 +98,46 @@ Mesh &Mesh::operator=(Mesh &&other)
 	return (*this);
 }
 
-void Mesh::load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices) 
+void Mesh::load(const tinyobj::mesh_t &mesh) 
 {
-	mSize = indices.size();
-
-	for (int i = 0; i < indices.size(); ++i)
-	{
-		std::cout << i << " " << indices[i] << std::endl;
-	}
+	mSize = mesh.indices.size();
 
 	glGenVertexArrays(1, &mVertexArrayHandle);
 	glBindVertexArray(mVertexArrayHandle);
 
-	glGenBuffers(1, &mVertexBufferHandle);
-	glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), &vertices[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(AttributeLocation::POSITION);
-	glVertexAttribPointer(AttributeLocation::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)0);
-	glEnableVertexAttribArray(AttributeLocation::TEXCOORD);
-	glVertexAttribPointer(AttributeLocation::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)sizeof(core::vec3));				
-	glEnableVertexAttribArray(AttributeLocation::NORMAL);
-	glVertexAttribPointer(AttributeLocation::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid *)(sizeof(core::vec3)+sizeof(core::vec2)) );				
+	auto loadVertexAttribute = [&](GLuint handle, GLuint location, const std::vector<float> bufferData)
+	{
+		size_t nVertices = mesh.positions.size() / 3;
+		size_t nDataPerVertex = bufferData.size()/nVertices;
 
+		glGenBuffers(1, &handle);
+		glBindBuffer(GL_ARRAY_BUFFER, handle);
+		glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(float), &bufferData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(location);
+		glVertexAttribPointer(location, nDataPerVertex, GL_FLOAT, GL_FALSE, nDataPerVertex * sizeof(float), (GLvoid *)0);
+
+	};
+
+	loadVertexAttribute(mPositionsBufferHandle, AttributeLocation::POSITION, mesh.positions);
+	loadVertexAttribute(mTexcoordsBufferHandle, AttributeLocation::TEXCOORD, mesh.texcoords);
+	loadVertexAttribute(mNormalsBufferHandle,   AttributeLocation::NORMAL,   mesh.normals);
 
 	glGenBuffers(1, &mIndexBufferHandle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBufferHandle);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(mesh.indices[0]), &mesh.indices[0], GL_STATIC_DRAW);
 	
-	mLoaded = true;
+	// mLoaded = true;
 }
 
 void Mesh::unload()
 {
 	if (mLoaded)
 	{
-		glDeleteBuffers(1, &mVertexBufferHandle);
+		glDeleteBuffers(1, &mIndexBufferHandle);
+		glDeleteBuffers(1, &mNormalsBufferHandle);
+		glDeleteBuffers(1, &mTexcoordsBufferHandle);
+		glDeleteBuffers(1, &mPositionsBufferHandle);
 		glDeleteVertexArrays(1, &mVertexArrayHandle);
-		glDeleteVertexArrays(1, &mIndexBufferHandle);
 	}
 }
 

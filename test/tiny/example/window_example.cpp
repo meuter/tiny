@@ -59,7 +59,7 @@ public:
 
 	void init()
 	{
-		mMesh             = Mesh::fromFile("res/models/box_normals.obj");
+		mMesh             = Mesh::fromFile("res/models/box_full.obj");
 		mTexture          = Texture::fromFile("res/textures/bricks.jpg");
 		mCamera           = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked      = false;

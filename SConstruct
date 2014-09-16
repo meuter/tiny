@@ -12,7 +12,7 @@ if not verbose:
 	env["ARCOMSTR"]     = " AR   $TARGET"
 	env["RANLIBCOMSTR"] = " RL   $TARGET"
 
-env.MergeFlags("-Wall -pedantic")
+env.MergeFlags("-Wall -pedantic -Wno-unused")
 env.MergeFlags("-Isrc/")
 env.MergeFlags("-I/usr/local/include/")
 env.MergeFlags("-ggdb -O0" if debug else "-O3")
@@ -26,6 +26,7 @@ env.Library("tiny", Split("""
 	src/tiny/rendering/shaderprogram.cpp
 	src/tiny/rendering/mesh.cpp
 	src/tiny/rendering/texture.cpp
+	src/tiny/rendering/tiny_obj_loader.cc
 """))
 
 example = env.Clone()

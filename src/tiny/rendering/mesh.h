@@ -5,6 +5,7 @@
 #include <tiny/core/types.h>
 #include <vector>
 #include <string>
+#include "tiny_obj_loader.h"
 
 namespace tiny { namespace rendering {
 
@@ -23,15 +24,7 @@ namespace tiny { namespace rendering {
 			NORMAL,
 		};
 
-		struct vertex
-		{
-			core::vec3 position;
-			core::vec2 texcoord;
-			core::vec3 normal;
-		};
-
 		Mesh();
-		Mesh(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices);
 		Mesh(const Mesh &other) = delete;
 		Mesh(Mesh &&mesh);
 		virtual ~Mesh();
@@ -39,14 +32,16 @@ namespace tiny { namespace rendering {
 		Mesh &operator=(const Mesh &mesh) = delete;
 		Mesh &operator=(Mesh &&other);
 
-		void load(const std::vector<vertex> &vertices, const std::vector<unsigned int> &indices);
+		void load(const tinyobj::mesh_t &mesh);
 		void unload();
 		void draw();
 
 	private:	
 		size_t mSize;
 		GLuint mVertexArrayHandle;
-		GLuint mVertexBufferHandle;
+		GLuint mPositionsBufferHandle;
+		GLuint mTexcoordsBufferHandle;		
+		GLuint mNormalsBufferHandle;
 		GLuint mIndexBufferHandle;
 		bool mLoaded;
 	};
