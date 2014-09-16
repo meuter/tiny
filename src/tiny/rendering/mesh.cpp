@@ -7,23 +7,23 @@
 
 namespace tiny { namespace rendering {
 
-Mesh Mesh::fromFile(const std::string &filename)
+Mesh Mesh::fromFile(const std::string &objFilename)
 {
 	Mesh result;
 
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 
-	std::string error = tinyobj::LoadObj(shapes, materials, filename.c_str());
+	std::string error = tinyobj::LoadObj(shapes, materials, objFilename.c_str());
 
 	if (!error.empty())
-		throw std::runtime_error("could not load '"+filename+"':" + error);
+		throw std::runtime_error("could not load '"+objFilename+"':" + error);
 
 	if (shapes.size() != 1)
-		throw std::runtime_error("more than one mesh found in '"+filename+"'");
+		throw std::runtime_error("more than one mesh found in '"+objFilename+"'");
 
 	if (materials.size() != 1)
-		throw std::runtime_error("more than one material found in '"+filename+"'");
+		throw std::runtime_error("more than one material found in '"+objFilename+"'");
 
 	auto &mesh = shapes[0].mesh;
 	unsigned int nVertices = mesh.positions.size()/3;
@@ -39,7 +39,7 @@ Mesh Mesh::fromFile(const std::string &filename)
 	return result;
 }
 
-Mesh::Mesh() : mSize(0)
+Mesh::Mesh()
 {
 }
 
@@ -50,20 +50,21 @@ Mesh::~Mesh()
 
 void Mesh::load(const tinyobj::mesh_t &mesh) 
 {
-	mSize = mesh.indices.size();
-
 	mVertexArray.bind();
-	mPositions = gl::Buffer::CreateVBO(AttributeLocation::POSITION, mesh.positions, 3);
-	mTexcoords = gl::Buffer::CreateVBO(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
-	mNormals   = gl::Buffer::CreateVBO(AttributeLocation::NORMAL, mesh.normals, 3);
-	mIndices   = gl::Buffer::CreateIBO(mesh.indices);
+	{
+		mPositions.loadVertexAttribute(AttributeLocation::POSITION, mesh.positions, 3);
+		mTexcoords.loadVertexAttribute(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
+		mNormals.loadVertexAttribute(AttributeLocation::NORMAL, mesh.normals, 3);
+		mIndices.loadIndices(mesh.indices);
+	}
 	mVertexArray.unbind();
 }
 
 void Mesh::draw() const
 {
 	mVertexArray.bind();
-	glDrawElements(GL_TRIANGLES, mSize, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+	mVertexArray.unbind();
 }
 
 }}

@@ -7,8 +7,8 @@
 #include <string>
 #include "../core/transformable.h"
 #include "tiny_obj_loader.h"
-#include "Material.h"
-#include "gl/buffer.h"
+#include "material.h"
+#include "gl/vertexbuffer.h"
 #include "gl/vertexarray.h"
 
 namespace tiny { namespace rendering {
@@ -17,7 +17,7 @@ namespace tiny { namespace rendering {
 	{
 	public:
 
-		static Mesh fromFile(const std::string &filname);
+		static Mesh fromFile(const std::string &objFilname);
 
 		enum AttributeLocation : GLuint
 		{
@@ -29,6 +29,7 @@ namespace tiny { namespace rendering {
 		Mesh();
 		Mesh(const Mesh &other) = delete;
 		Mesh(Mesh &&mesh) = default;
+		
 		virtual ~Mesh();
 
 		Mesh &operator=(const Mesh &mesh) = delete;
@@ -43,12 +44,11 @@ namespace tiny { namespace rendering {
 		Material mMaterial;
 		
 	private:	
-		size_t mSize;
 		gl::VertexArray mVertexArray;
-		gl::Buffer mPositions;
-		gl::Buffer mTexcoords;
-		gl::Buffer mNormals;
-		gl::Buffer mIndices;
+		gl::VertexBuffer mPositions;
+		gl::VertexBuffer mTexcoords;
+		gl::VertexBuffer mNormals;
+		gl::VertexBuffer mIndices;
 	};
 
 }}
