@@ -13,14 +13,16 @@ namespace tiny { namespace core {
 
 		static Camera withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar)
 		{
+			zFar *= -1;
+			zNear *= -1;
 			float zRange = zFar - zNear;  
 			float tanHalfFov = tan(fieldOfView/2.0);
 
 			return Camera({
-				1.0f/(tanHalfFov*aspectRatio), 0.0f,            0.0f,                 0.0f,
-				0.0f,                          1.0f/tanHalfFov, 0.0f,                 0.0f,
-				0.0f,                          0.0f,            (-zNear-zFar)/zRange, 2.0f*zFar*zNear/zRange,
-				0.0f,                          0.0f,            1.0f,                 0.0f
+				-1.0f/(tanHalfFov*aspectRatio), 0.0f,           0.0f,                 0.0f,
+				0.0f,                           1.0f/tanHalfFov, 0.0f,                 0.0f,
+				0.0f,                           0.0f,            -(-zNear-zFar)/zRange, 2.0f*zFar*zNear/zRange,
+				0.0f,                           0.0f,            1.0f,                 0.0f
 			});
 		}
 
@@ -28,10 +30,6 @@ namespace tiny { namespace core {
 		Camera(const mat4 &projection) : mProjection(projection) {}
 
 		virtual ~Camera() {}
-
-		inline void roll(rad angle)  { rotate(forward(), angle); }
-		inline void yaw(rad angle)   { rotate(up(),      angle); }
-		inline void pitch(rad angle) { rotate(right(),   angle); }
 
 		inline void lookAt(float x, float y, float z)
 		{
