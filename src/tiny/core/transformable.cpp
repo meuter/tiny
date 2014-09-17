@@ -7,7 +7,7 @@ const vec3 Transformable::Y_AXIS(0,1,0);
 const vec3 Transformable::Z_AXIS(0,0,1);
 
 
-Transformable::Transformable() : mScale(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) 
+Transformable::Transformable() : mScaling(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) 
 {
 
 }
@@ -37,10 +37,10 @@ mat4 Transformable::getScalingMatrix() const
 {
 	return mat4
 	{
-		mScale.x, 0.0f,     0.0f,     0.0f,
-		0.0f,     mScale.y, 0.0f,     0.0f,
-		0.0f,     0.0f,     mScale.z, 0.0f,
-		0.0f,     0.0f,     0.0f,     1.0f
+		mScaling.x, 0.0f,       0.0f,       0.0f,
+		0.0f,       mScaling.y, 0.0f,       0.0f,
+		0.0f,       0.0f,       mScaling.z, 0.0f,
+		0.0f,       0.0f,       0.0f,       1.0f
 	};
 }
 

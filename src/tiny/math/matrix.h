@@ -96,7 +96,7 @@ namespace tiny { namespace math {
 
         bool operator==(const matrix &r) const
         {
-            constexpr static const scalar EPSILON = std::numeric_limits<scalar>::epsilon() * static_cast<scalar>(2.0);
+            constexpr static const scalar EPSILON = std::numeric_limits<scalar>::epsilon() * static_cast<scalar>(4.0);
 
             for (size_t l = 0; l < lines(); ++l)
                 for (size_t c = 0; c < columns(); ++c)
@@ -190,9 +190,44 @@ namespace tiny { namespace math {
         }
     };
 
+    template<typename S, size_t N>
+    using vector = matrix<S,N,1>;
 
-    template<typename S, size_t L, size_t C>
-    std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
+    using byte = unsigned char;
+
+    using byte2 = vector<byte,2>;
+    using int2 = vector<int,2>;
+    using float2 = vector<float,2>;
+    using double2 = vector<double,2>;
+
+    using byte3 = vector<byte,3>;
+    using int3 = vector<int,3>;
+    using float3 = vector<float,3>;
+    using double3 = vector<double,3>;
+
+    using byte4 = vector<byte,4>;
+    using int4 = vector<int,4>;
+    using float4 = vector<float,4>;
+    using double4 = vector<double,4>;
+
+    using byte2x2 = matrix<byte,2,2>;
+    using int2x2 = matrix<int,2,2>;
+    using float2x2 = matrix<float,2,2>;
+    using double2x2 = matrix<double,2,2>;
+
+    using byte3x3 = matrix<byte,3,3>;
+    using int3x3 = matrix<int,3,3>;
+    using float3x3 = matrix<float,3,3>;
+    using double3x3 = matrix<double,3,3>;
+
+    using byte4x4 = matrix<byte,4,4>;
+    using int4x4 = matrix<int,4,4>;
+    using float4x4 = matrix<float,4,4>;
+    using double4x4 = matrix<double,4,4>;
+
+
+    template<typename scalar, size_t L, size_t C>
+    std::ostream &operator<<(std::ostream &out, const matrix<scalar,L,C> &m)
     {
         size_t l, c;
         for (l = 0; l < L; ++l)
@@ -204,9 +239,16 @@ namespace tiny { namespace math {
         return out;
     }
 
-
-    template<typename S, size_t N>
-    using vector = matrix<S,N,1>;
+    template<typename scalar, size_t N>
+    std::ostream &operator<<(std::ostream &out, const vector<scalar,N> &v)
+    {
+        size_t i;
+        out << "< ";
+        for (i = 0; i < N; ++i)
+            out << v(i) << " ";
+        out << ">";
+        return out;
+    }
 
     template<typename scalar, size_t N>
     scalar dot(const vector<scalar,N> &l, const vector<scalar,N> &r)
@@ -280,38 +322,6 @@ namespace tiny { namespace math {
         return start * math::cos(theta) + relative * math::sin(theta);
     }
 
-
-    using byte = unsigned char;
-
-    using byte2 = vector<byte,2>;
-    using int2 = vector<int,2>;
-    using float2 = vector<float,2>;
-    using double2 = vector<double,2>;
-
-    using byte3 = vector<byte,3>;
-    using int3 = vector<int,3>;
-    using float3 = vector<float,3>;
-    using double3 = vector<double,3>;
-
-    using byte4 = vector<byte,4>;
-    using int4 = vector<int,4>;
-    using float4 = vector<float,4>;
-    using double4 = vector<double,4>;
-
-    using byte2x2 = matrix<byte,2,2>;
-    using int2x2 = matrix<int,2,2>;
-    using float2x2 = matrix<float,2,2>;
-    using double2x2 = matrix<double,2,2>;
-
-    using byte3x3 = matrix<byte,3,3>;
-    using int3x3 = matrix<int,3,3>;
-    using float3x3 = matrix<float,3,3>;
-    using double3x3 = matrix<double,3,3>;
-
-    using byte4x4 = matrix<byte,4,4>;
-    using int4x4 = matrix<int,4,4>;
-    using float4x4 = matrix<float,4,4>;
-    using double4x4 = matrix<double,4,4>;
 }}
 
 #endif

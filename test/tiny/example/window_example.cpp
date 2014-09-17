@@ -45,6 +45,15 @@ public:
 		mesh.material().texture().bind(0);
 		mesh.draw();
 	}
+
+	void setDirectionalLight(const DirectionalLight directional)
+	{
+	}
+
+	void setSpecularLight(float intensity, float exponent)
+	{
+	}
+
 };
 
 
@@ -121,19 +130,18 @@ public:
 		{
 			vec3 xAxis(1,0,0);
 
-			Mesh ground, box, sphere;
+			// Mesh ground, box, sphere;
 
-			// box                = Mesh::fromFile("res/models/box.obj");
-			// box.mMaterial      = Material::fromFile("res/models/box.mtl");
-			// box.moveTo(0,4,0);
-			// mMeshes.push_back(std::move(box));
-
-			// ground             = Mesh::fromFile("res/models/ground.obj");
-			// ground.mMaterial   = Material::fromFile("res/models/ground.mtl");
+			// ground = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
 			// ground.moveTo(0,-2,0);
 			// mMeshes.push_back(std::move(ground));
 
+			// box = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
+			// box.moveTo(0,4,0);
+			// mMeshes.push_back(std::move(box));
+
 			// sphere = Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl");
+			// mMeshes.push_back(std::move(sphere));
 
 			Mesh box1 = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
 			box1.moveTo(0,0,-5);
@@ -149,8 +157,8 @@ public:
 		mCamera             = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked        = false;
 
-		// mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,0,-1)));
-		// mShaderProgram.setSpecularLight(2,32);
+		mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
+		mShaderProgram.setSpecularLight(2,32);
 
 		mCamera.moveTo(0,0,5);
 		std::cout << "V = " << std::endl << mCamera.getView() << std::endl;
@@ -225,7 +233,7 @@ public:
 	 		auto dpos = inputs().getMousePosition() - window().center();
 
 			if (dpos.x != 0)
-				mCamera.yaw(rad{-dpos.x * sensitivity});
+				mCamera.yaw(rad{dpos.x * sensitivity});
 
 			if (dpos.y != 0)
 				mCamera.pitch(rad{dpos.y * sensitivity});

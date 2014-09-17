@@ -21,7 +21,7 @@ TEST(int2, can_be_printed)
     std::stringstream str;
     str << v;
 
-    EXPECT_EQ("1 \n2 \n", str.str());
+    EXPECT_EQ("< 1 2 >", str.str());
 }
 
 TEST(int3x3, can_be_declared)

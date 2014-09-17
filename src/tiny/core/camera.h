@@ -52,7 +52,6 @@ namespace tiny { namespace core {
 		mat4 getView() const 
 		{
 			Transformable reverse;
-
 			reverse.moveTo(-mPosition);
 			reverse.rotateTo(mRotation.conjugate());
 			
