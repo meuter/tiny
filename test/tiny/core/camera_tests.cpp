@@ -153,34 +153,3 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_x
 
 	EXPECT_EQ(vec3(0,0,5), transformedP);	
 }
-
-TEST(Camera, has_a_projection_matrix_to_change_from_camera_space_to_screen_space)
-{
-	Camera camera = Camera::withPerspective(toRadian(70), 800/600, 0.01f, 1000.0f);
-
-	camera.moveTo(0,0,5);
-	camera.rotateTo(Transformable::Y_AXIS, toRadian(180));
-
-	vec4 pInWorldSpace(0,0,0,1);
-	vec4 qInWorldSpace(0,0,-1,1);
-
-	vec4 pInCameraSpace = camera.getViewMatrix() * pInWorldSpace;
-	vec4 qInCameraSpace = camera.getViewMatrix() * qInWorldSpace;
-
-	EXPECT_LT(pInCameraSpace.z, qInCameraSpace.z);
-
-	vec4 pInScreenSpace = camera.projection() * pInCameraSpace;
-	vec4 qInScreenSpace = camera.projection() * qInCameraSpace;
-
-	std::cout << "pInCameraSpace" << pInCameraSpace << std::endl;
-	std::cout << "pInScreenSpace" << pInScreenSpace << std::endl;
-	std::cout << std::endl;
-	std::cout << "qInCameraSpace" << qInCameraSpace << std::endl;
-	std::cout << "qInScreenSpace" << qInScreenSpace << std::endl;
-
-	EXPECT_LT(pInScreenSpace.z, qInScreenSpace.z);
-	EXPECT_GT(pInScreenSpace.z, 0);
-	EXPECT_GT(qInScreenSpace.z, 0);
-
-
-}

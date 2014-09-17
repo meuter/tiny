@@ -117,40 +117,24 @@ public:
 
 	void init()
 	{
-
 		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
-
 		glEnable(GL_DEPTH_TEST);
-		// glDepthFunc(GL_LEQUAL);
-		// glDepthRangef(0.01f, 1000.0f);
 
 
-		{
-			vec3 xAxis(1,0,0);
+		Mesh ground, box, sphere;
 
-			Mesh ground, box, sphere;
+		ground = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
+		ground.moveTo(0,-2,0);
+		mMeshes.push_back(std::move(ground));
 
-			ground = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
-			ground.moveTo(0,-2,0);
-			mMeshes.push_back(std::move(ground));
+		box = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
+		box.moveTo(0,4,0);
+		mMeshes.push_back(std::move(box));
 
-			box = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
-			box.moveTo(0,4,0);
-			mMeshes.push_back(std::move(box));
-
-			sphere = Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl");
-			mMeshes.push_back(std::move(sphere));
-
-			// Mesh box1 = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
-			
-			// Mesh box2 = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
-			// box2.moveTo(0,0,3);
-
-			// mMeshes.push_back(std::move(box1));
-			// mMeshes.push_back(std::move(box2));
-		}
+		sphere = Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl");
+		mMeshes.push_back(std::move(sphere));
 
 		mCamera             = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mMouseLocked        = false;
@@ -161,11 +145,6 @@ public:
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
 
-		std::cout << "Camera Coordinate :" << std::endl;
-		std::cout << "Left    = " << mCamera.left() << std::endl;
-		std::cout << "Up      = " << mCamera.up() << std::endl;
-		std::cout << "Forward = " << mCamera.forward() << std::endl;
-		
  		window().vsync(false);				
 	}
 
@@ -187,8 +166,6 @@ public:
 			mShaderProgram.draw(mCamera, mesh);
 		mFPSCounter.newFrame();
 	}
-
-
 
 
 	bool shouldStop()
@@ -254,7 +231,6 @@ public:
 
 private:	
 	PhongShaderProgram mShaderProgram;
-	// BasicShader mShaderProgram;
 	std::vector<Mesh> mMeshes;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
