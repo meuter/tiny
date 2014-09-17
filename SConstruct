@@ -46,6 +46,7 @@ test.MergeFlags("-L/usr/local/lib -lGLEW -lSDL2")
 test.MergeFlags("-framework OpenGL")
 test.Program("test/tiny/all", Split("""
 	test/tiny/core/transformable_tests.cpp
+	test/tiny/core/camera_tests.cpp
 	test/tiny/math/matrix_tests.cpp
 	test/tiny/math/quaternion_tests.cpp
 	test/tiny/math/trigo_tests.cpp

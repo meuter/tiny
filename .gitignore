@@ -30,3 +30,4 @@ src/tiny/rendering/gl/buffer.o
 src/tiny/rendering/gl/vertexarray.o
 src/tiny/rendering/gl/vertexbuffer.o
 src/tiny/rendering/gl/texture.o
+test/tiny/core/camera_tests.o

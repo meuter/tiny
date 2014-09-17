@@ -11,6 +11,8 @@
 #include "gl/texture.h"
 #include "tiny_obj_loader.h"
 
+#include <iostream>
+
 namespace tiny { namespace rendering {
 
 	class Material {
@@ -24,7 +26,12 @@ namespace tiny { namespace rendering {
 			std::vector<tinyobj::material_t> materials;
 			std::string error;
 
+			if (utils::toupper(utils::fileExtension(filename)) != "MTL")
+				throw std::runtime_error("unexpected file type '"+filename+"'");
+
 			file.open(filename);
+
+
 
 			if (!file)
 				throw std::runtime_error("could not open '" + filename + "'");
@@ -42,12 +49,11 @@ namespace tiny { namespace rendering {
 		}
 
 
-		Material() {}
-		virtual ~Material() {}
-		Material(const Material &other) = delete;
+		Material() = default;
 		Material(Material &&other) = default;
 
-		Material &operator=(const Material &other) = delete;
+		virtual ~Material() = default;
+
 		Material &operator=(Material &&other) = default;
 
 		inline const gl::Texture &texture() const { return mTexture; }

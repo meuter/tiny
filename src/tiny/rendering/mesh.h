@@ -19,6 +19,7 @@ namespace tiny { namespace rendering {
 	public:
 
 		static Mesh fromFile(const std::string &objFilname);
+		static Mesh fromFiles(const std::string &objFilname, const std::string &mtlFilename);
 
 		enum AttributeLocation : GLuint
 		{
@@ -42,9 +43,8 @@ namespace tiny { namespace rendering {
 
 		const Material &material() const { return mMaterial; }
 
-		Material mMaterial;
-		
 	private:	
+		Material mMaterial;
 		gl::VertexArray mVertexArray;
 		gl::VertexBuffer mPositions;
 		gl::VertexBuffer mTexcoords;

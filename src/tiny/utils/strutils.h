@@ -8,6 +8,7 @@ namespace tiny { namespace utils {
 
 std::string              toupper(const std::string &original);
 std::vector<std::string> split(const std::string &original, const char delim=' ');
+std::string              fileExtension(const std::string &filename);
 
 }}
 

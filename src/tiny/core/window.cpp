@@ -31,10 +31,6 @@ Window::Window(int width, int height, std::string title)
 		throw std::runtime_error("could not initiazlie GLEW");
 
 	glClearColor(0,0,0,1);
-
-	glFrontFace(GL_CW);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
 }
 
 Window::Window(Window &&other) 

@@ -28,7 +28,7 @@ namespace tiny { namespace math {
 			(*this) *= sin(angle/2.0);
 			w = cos(angle/2.0);
 		}
-		quaternion(const mat3 &m)
+		quaternion(const mat4 &m)
 		{
 			w = std::sqrt(std::max(0.0f, 1.0f+m(0,0)+m(1,1)+m(2,2))) / 2;
 			x = std::sqrt(std::max(0.0f, 1.0f+m(0,0)-m(1,1)-m(2,2))) / 2;
@@ -39,15 +39,17 @@ namespace tiny { namespace math {
 			y = std::copysign(y, m(0,2)-m(2,0));
 			z = std::copysign(z, m(1,0)-m(0,1));
 		}
+
 		quaternion(const vec3 &forward, const vec3 &up)
 		{
 			vec3 right = normalize(cross(up, forward));
 
-			mat3 m =
+			mat4 m =
 			{
-				right.x,   right.y,   right.z,
-				up.x,      up.y,      up.z,
-				forward.x, forward.y, forward.z,
+				right.x,   right.y,   right.z,   0.0f,
+				up.x,      up.y,      up.z,      0.0f,
+				forward.x, forward.y, forward.z, 0.0f,
+				0.0f,      0.0f,      0.0f,      0.1f
 			};
 
 			(*this) = quaternion(m);
@@ -70,6 +72,7 @@ namespace tiny { namespace math {
 		{
 			return ((*this) * quat(v.x, v.y, v.z, 0) * conjugate()).xyz();
 		}
+
 	};
 
 }}

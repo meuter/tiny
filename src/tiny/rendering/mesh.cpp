@@ -39,6 +39,13 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 	return result;
 }
 
+Mesh Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilename)
+{
+	Mesh result = Mesh::fromFile(objFilname);
+	result.mMaterial = Material::fromFile(mtlFilename);
+	return result;
+}
+
 void Mesh::load(const tinyobj::mesh_t &mesh) 
 {
 	mVertexArray.bind();

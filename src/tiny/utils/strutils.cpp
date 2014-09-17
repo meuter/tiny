@@ -15,5 +15,13 @@ std::vector<std::string> split(const std::string &original, const char delim)
 	return result;
 }
 
+std::string fileExtension(const std::string &filename)
+{
+	auto splitted = split(filename, '.');
+	if (splitted.size() == 1)
+		return "";
+	else 
+		return splitted[splitted.size()-1];
+}
 
 }}
