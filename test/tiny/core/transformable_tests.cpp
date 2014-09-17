@@ -85,3 +85,133 @@ TEST(Transformable_objects, can_be_scaled)
 	t.scale(vec3(1.0f/4.0f, 1.0f/2.0f, 1.0f/3.0f));
 	EXPECT_EQ(vec3(2,3,4), t.scaling());
 }
+
+TEST(Transformable_objects, have_directions_that_adapt_to_rotation_around_y_axis)
+{
+
+	Transformable t;
+
+	EXPECT_EQ(Transformable::X_AXIS, t.left());
+	EXPECT_EQ(Transformable::Y_AXIS, t.up());
+	EXPECT_EQ(Transformable::Z_AXIS, t.forward());
+
+	t.rotate(Transformable::Y_AXIS, toRadian(90));
+
+	EXPECT_EQ(-Transformable::Z_AXIS, t.left());
+	EXPECT_EQ( Transformable::Y_AXIS, t.up());
+	EXPECT_EQ( Transformable::X_AXIS, t.forward());
+
+	t.rotate(Transformable::Y_AXIS, toRadian(90));
+
+	EXPECT_EQ(-Transformable::X_AXIS, t.left());
+	EXPECT_EQ( Transformable::Y_AXIS, t.up());
+	EXPECT_EQ(-Transformable::Z_AXIS, t.forward());
+}
+
+
+TEST(Transformable_objects, have_directions_that_adapt_to_rotation_around_x_axis)
+{
+	Transformable t;
+
+	EXPECT_EQ(Transformable::X_AXIS, t.left());
+	EXPECT_EQ(Transformable::Y_AXIS, t.up());
+	EXPECT_EQ(Transformable::Z_AXIS, t.forward());
+
+	t.rotate(Transformable::X_AXIS, toRadian(90));
+
+	EXPECT_EQ( Transformable::X_AXIS, t.left());
+	EXPECT_EQ( Transformable::Z_AXIS, t.up());
+	EXPECT_EQ(-Transformable::Y_AXIS, t.forward());
+
+	t.rotate(Transformable::X_AXIS, toRadian(90));
+
+	EXPECT_EQ( Transformable::X_AXIS, t.left());
+	EXPECT_EQ(-Transformable::Y_AXIS, t.up());
+	EXPECT_EQ(-Transformable::Z_AXIS, t.forward());
+}
+
+TEST(Transformable_objects, have_directions_that_adapt_to_rotation_around_z_axis)
+{
+	Transformable t;
+
+	EXPECT_EQ(Transformable::X_AXIS, t.left());
+	EXPECT_EQ(Transformable::Y_AXIS, t.up());
+	EXPECT_EQ(Transformable::Z_AXIS, t.forward());
+
+	t.rotate(Transformable::Z_AXIS, toRadian(90));
+
+	EXPECT_EQ( Transformable::Y_AXIS, t.left());
+	EXPECT_EQ(-Transformable::X_AXIS, t.up());
+	EXPECT_EQ( Transformable::Z_AXIS, t.forward());
+
+	t.rotate(Transformable::Z_AXIS, toRadian(90));
+
+	EXPECT_EQ(-Transformable::X_AXIS, t.left());
+	EXPECT_EQ(-Transformable::Y_AXIS, t.up());
+	EXPECT_EQ( Transformable::Z_AXIS, t.forward());
+}
+
+TEST(Transformable_objects, have_a_translation_matrix_to_move_form_model_space_to_world_space)
+{
+	Transformable model;
+	vec3 pInModelSpace(1,1,1), pInWorldSpace(2,3,4);
+
+	model.moveTo(1,2,3);
+
+	EXPECT_EQ(pInWorldSpace, (model.getTranslationMatrix() * vec4(pInModelSpace,1)).xyz());
+}
+
+TEST(Transformable_objects, have_a_scaling_matrix_to_move_from_model_space_to_world_space)
+{
+	Transformable model;
+	vec3 pInModelSpace(1,1,1), pInWorldSpace(1,2,3);
+	vec3 qInModelSpace(0,0,0), qInWorldSpace(0,0,0);
+	vec3 rInModelSpace(2,2,2), rInWorldSpace(2,4,6);
+
+	model.scaleTo(1,2,3);
+
+	EXPECT_EQ(pInWorldSpace, (model.getScalingMatrix() * vec4(pInModelSpace,1)).xyz());
+	EXPECT_EQ(qInWorldSpace, (model.getScalingMatrix() * vec4(qInModelSpace,1)).xyz());
+	EXPECT_EQ(rInWorldSpace, (model.getScalingMatrix() * vec4(rInModelSpace,1)).xyz());
+}
+
+TEST(Transformable_objects, have_a_rotation_matrix_to_move_from_model_space_to_world_space__y_axis_only)
+{
+	Transformable model;
+	vec3 pInModelSpace(2,0,0), pInWorldSpace(0,0,-2);
+	vec3 qInModelSpace(0,2,0), qInWorldSpace(0,2,0);
+	vec3 rInModelSpace(0,0,2), rInWorldSpace(2,0,0);
+
+	model.rotateTo(Transformable::Y_AXIS, toRadian(90));
+	EXPECT_EQ(pInWorldSpace, (model.getRotationMatrix() * vec4(pInModelSpace,1)).xyz());
+	EXPECT_EQ(qInWorldSpace, (model.getRotationMatrix() * vec4(qInModelSpace,1)).xyz());
+	EXPECT_EQ(rInWorldSpace, (model.getRotationMatrix() * vec4(rInModelSpace,1)).xyz());
+}
+
+
+TEST(Transformable_objects, have_a_rotation_matrix_to_move_from_model_space_to_world_space__z_axis_only)
+{
+	Transformable model;
+	vec3 pInModelSpace(2,0,0), pInWorldSpace(0,2,0);
+	vec3 qInModelSpace(0,2,0), qInWorldSpace(-2,0,0);
+	vec3 rInModelSpace(0,0,2), rInWorldSpace(0,0,2);
+
+	model.rotateTo(Transformable::Z_AXIS, toRadian(90));
+	EXPECT_EQ(pInWorldSpace, (model.getRotationMatrix() * vec4(pInModelSpace,1)).xyz());
+	EXPECT_EQ(qInWorldSpace, (model.getRotationMatrix() * vec4(qInModelSpace,1)).xyz());
+	EXPECT_EQ(rInWorldSpace, (model.getRotationMatrix() * vec4(rInModelSpace,1)).xyz());
+}
+
+TEST(Transformable_objects, have_a_rotation_matrix_to_move_from_model_space_to_world_space__x_axis_only)
+{
+	Transformable model;
+	vec3 pInModelSpace(2,0,0), pInWorldSpace(2,0,0);
+	vec3 qInModelSpace(0,2,0), qInWorldSpace(0,0,2);
+	vec3 rInModelSpace(0,0,2), rInWorldSpace(0,-2,0);
+
+	model.rotateTo(Transformable::X_AXIS, toRadian(90));
+	EXPECT_EQ(pInWorldSpace, (model.getRotationMatrix() * vec4(pInModelSpace,1)).xyz());
+	EXPECT_EQ(qInWorldSpace, (model.getRotationMatrix() * vec4(qInModelSpace,1)).xyz());
+	EXPECT_EQ(rInWorldSpace, (model.getRotationMatrix() * vec4(rInModelSpace,1)).xyz());
+}
+

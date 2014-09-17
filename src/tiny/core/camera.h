@@ -41,27 +41,27 @@ namespace tiny { namespace core {
 		inline void lookAt(const vec3 target) 
 		{
 			vec3 newForward = normalize(target - mPosition);
-			vec3 newRight   = normalize(cross(up(), newForward));
-			vec3 newUp      = normalize(cross(newForward, newRight));
+			vec3 newLeft    = normalize(cross(up(), newForward));
+			vec3 newUp      = normalize(cross(newForward, newLeft));
 
 			mRotation = quat(newForward, newUp);
 		}
 
 		inline const mat4 &projection() const { return mProjection; }
 
-		mat4 getView() const 
+		mat4 getViewMatrix() const 
 		{
 			Transformable reverse;
-			reverse.moveTo(-mPosition);
+
 			reverse.rotateTo(mRotation.conjugate());
-			
+			reverse.moveTo(-mPosition);
+
 			return reverse.getRotationMatrix() * reverse.getTranslationMatrix();
 		}
 
-
 		mat4 getViewProjection() const
 		{
-			return projection() * getView();
+			return projection() * getViewMatrix();
 		}
 
 	private:

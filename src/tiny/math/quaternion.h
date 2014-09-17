@@ -42,11 +42,11 @@ namespace tiny { namespace math {
 
 		quaternion(const vec3 &forward, const vec3 &up)
 		{
-			vec3 right = normalize(cross(up, forward));
+			vec3 left = normalize(cross(up, forward));
 
 			mat4 m =
 			{
-				right.x,   right.y,   right.z,   0.0f,
+				left.x,    left.y,    left.z,   0.0f,
 				up.x,      up.y,      up.z,      0.0f,
 				forward.x, forward.y, forward.z, 0.0f,
 				0.0f,      0.0f,      0.0f,      0.1f

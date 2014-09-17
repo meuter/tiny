@@ -161,7 +161,6 @@ public:
 		mShaderProgram.setSpecularLight(2,32);
 
 		mCamera.moveTo(0,0,5);
-		std::cout << "V = " << std::endl << mCamera.getView() << std::endl;
 		mCamera.lookAt(0,0,0);
 		
  		window().vsync(false);				
