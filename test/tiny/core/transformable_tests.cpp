@@ -84,6 +84,4 @@ TEST(Transformable_objects, can_be_scaled)
 	EXPECT_EQ(vec3(8,6,12), t.scaling());
 	t.scale(vec3(1.0f/4.0f, 1.0f/2.0f, 1.0f/3.0f));
 	EXPECT_EQ(vec3(2,3,4), t.scaling());
-
-
 }
