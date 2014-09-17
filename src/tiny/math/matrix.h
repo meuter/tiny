@@ -23,7 +23,7 @@ namespace tiny { namespace math {
         };
 
         template<typename scalar>
-        struct default_layout<scalar,1,2>
+        struct default_layout<scalar,2,1>
         {
             default_layout(const scalar &x, const scalar &y) : x{x}, y{y} {}
             default_layout(const scalar data[2]) : x{data[0]}, y{data[1]} {}
@@ -32,22 +32,22 @@ namespace tiny { namespace math {
         };
 
         template<typename scalar>
-        struct default_layout<scalar,1,3>
+        struct default_layout<scalar,3,1>
         {
             default_layout(const scalar &x, const scalar &y, const scalar &z) : x{x}, y{y}, z{z} {}
-            default_layout(const default_layout<scalar,1,2> v, const scalar &z = scalar()) : x{v.x}, y{v.y}, z{z} {}
-            default_layout(const scalar &x, const default_layout<scalar,1,2> v) : x{x}, y{v.x}, z{v.y} {}
+            default_layout(const default_layout<scalar,2,1> v, const scalar &z = scalar()) : x{v.x}, y{v.y}, z{z} {}
+            default_layout(const scalar &x, const default_layout<scalar,2,1> v) : x{x}, y{v.x}, z{v.y} {}
             default_layout(const scalar data[3]) : x{data[0]}, y{data[1]}, z{data[2]} {}
             default_layout() {}
             scalar x, y, z;
         };
 
         template<typename scalar>
-        struct default_layout<scalar,1,4>
+        struct default_layout<scalar,4,1>
         {
             default_layout(const scalar &x, const scalar &y, const scalar &z, const scalar &w) : x{x}, y{y}, z{z}, w{w} {}
-            default_layout(const scalar &x, const default_layout<scalar,1,3> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
-            default_layout(const default_layout<scalar,1,3> v, const scalar &w = scalar()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
+            default_layout(const scalar &x, const default_layout<scalar,3,1> v) : x{x}, y{v.x}, z{v.y}, w{v.z} {}               
+            default_layout(const default_layout<scalar,3,1> v, const scalar &w = scalar()) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
             default_layout(const scalar data[4]) : x{data[0]}, y{data[1]}, z{data[2]}, w{data[3]} {}
             default_layout() {}
             scalar x, y, z, w;
@@ -62,10 +62,10 @@ namespace tiny { namespace math {
                     boost::equality_comparable<matrix<scalar,L,C>,
                     boost::partially_ordered<matrix<scalar,L,C> > > > > >
     {
-        typedef matrix<scalar,1,C> vec;
-        typedef matrix<scalar,1,2> vec2;
-        typedef matrix<scalar,1,3> vec3;
-        typedef matrix<scalar,1,3> vec4;
+        typedef matrix<scalar,C,1> vec;
+        typedef matrix<scalar,2,1> vec2;
+        typedef matrix<scalar,3,1> vec3;
+        typedef matrix<scalar,3,1> vec4;
 
         template<typename... scalars>
         matrix(const scalars... x) : layout{x...} {}
@@ -188,120 +188,8 @@ namespace tiny { namespace math {
             (*this) = (*this) * r;
             return *this;
         }
-
-        scalar trace() const 
-        {
-            static_assert(L == C, "trace only applies to square matrices");
-            scalar accumulator = static_cast<scalar>(0.0);
-            for (size_t i = 0; i < lines(); ++i)
-                accumulator += (*this)(i,i);
-            return accumulator;
-        }
-
-        matrix<scalar,C,L> transposed() const
-        {
-            matrix<scalar,C,L> result;
-            for (size_t l = 0; l < lines(); ++l)
-                for (size_t c = 0; c < columns(); ++c)
-                    result(c,l) = (*this)(l,c);
-            return result;
-        }
-
-        matrix &transpose()
-        {
-            (*this) = this->transposed();
-            return (*this);
-        }
-
-        vec3 operator^(const vec3 &r) const
-        {
-            const auto &l = (*this);
-            return vec3( (l.y*r.z)-(r.y*l.z), (l.z*r.x)-(r.z*l.x), (l.x*r.y)-(r.x*l.y) );
-        }
-
-        scalar operator%(const vec &r) const
-        {
-            scalar accumulator = static_cast<scalar>(0.0);
-            for (size_t i = 0; i < r.dimension(); ++i)
-                accumulator += (*this)(i) * r(i);
-            return accumulator;
-        }
-
-        scalar length() const
-        {
-            return static_cast<scalar>(std::sqrt((*this) % (*this)));
-        }
-
-        vec &normalize()
-        {
-            (*this) /= length();
-            return (*this);
-        }
-
-        vec normalized() const
-        {
-            auto result = (*this);
-            return result.normalize();
-        }
-
-        vec &homogenize()
-        {
-            (*this) /= this->w;
-            return (*this);
-        }
-
-        vec homogenized() const
-        {
-            vec result = (*this);
-            return result.homogenize();
-        }
     };
 
-    template<typename vec>
-    auto dot(const vec &l, const vec &r) -> decltype(l % r)
-    {
-        return l % r;
-    }
-
-    template<typename vec>
-    auto cross(const vec &l, const vec &r) -> decltype(l ^ r)
-    {
-        return l ^ r;
-    }
-
-    template<typename vec>
-    auto length(const vec &l) -> decltype(l.length())
-    {
-        return l.length();
-    }
-
-    template<typename vec>
-    auto normalize(const vec &v) -> decltype(v.normalized())
-    {
-        return v.normalized();
-    }
-
-    template<typename vec, typename scalar>
-    vec lerp(const vec &start, const vec &end, const scalar &percent)
-    {
-        return start + percent * (end-start);
-    }
-
-    template<typename vec, typename S>
-    vec nlerp(const vec &start, const vec &end, const S &percent)
-    {
-        return lerp(start, end, percent).normalized();
-    }
-
-    template <typename vec, typename S>
-    vec slerp(const vec &start, const vec &end, const S &percent)
-    {
-        double cosTheta = dot(start, end);
-        radian theta(acos(cosTheta) * percent);
-        vec relative = ((end - start) * cosTheta).normalize();
-
-        return start * math::cos(theta) + relative * math::sin(theta);
-    }
 
     template<typename S, size_t L, size_t C>
     std::ostream &operator<<(std::ostream &out, const matrix<S,L,C> &m)
@@ -309,19 +197,89 @@ namespace tiny { namespace math {
         size_t l, c;
         for (l = 0; l < L; ++l)
         {
-            out << "(";
-            for (c = 0; c < C-1; ++c)
-                out << m(l,c) << ",";
-            out << m(l,c) << ")";
-
-            if (l+1!=L) out << std::endl;
+            for (c = 0; c < C; ++c)
+                out << m(l,c) << " ";
+            out << std::endl;
         }
         return out;
     }
 
 
     template<typename S, size_t N>
-    using vector = matrix<S,1,N>;
+    using vector = matrix<S,N,1>;
+
+    template<typename scalar, size_t N>
+    scalar dot(const vector<scalar,N> &l, const vector<scalar,N> &r)
+    {
+        scalar accumulator = static_cast<scalar>(0.0);
+        for (size_t i = 0; i < N; i++)
+            accumulator += l(i)*r(i);
+        return accumulator;
+    }
+
+    template<typename scalar, size_t N>
+    double length(const vector<scalar,N> &v)
+    {
+        return std::sqrt(dot<scalar,N>(v,v));
+    }
+
+    template<typename scalar, size_t N>
+    vector<scalar,N> normalize(const vector<scalar,N> &v)
+    {
+        return v/length(v);
+    }
+
+    template<typename scalar>
+    vector<scalar,3> cross(const vector<scalar,3> &l, const vector<scalar,3> &r)
+    {
+        return vector<scalar,3>( 
+                    (l.y*r.z)-(r.y*l.z), 
+                    (l.z*r.x)-(r.z*l.x),
+                    (l.x*r.y)-(r.x*l.y) 
+        );
+    }
+
+    template<typename scalar, size_t N>
+    scalar trace(const matrix<scalar,N,N> &m)  
+    {
+        scalar accumulator = static_cast<scalar>(0.0);
+        for (size_t i = 0; i < N; ++i)
+            accumulator += m(i,i);
+        return accumulator;
+    }
+
+    template<typename scalar, size_t L, size_t C>
+    matrix<scalar,C,L> transposed(const matrix<scalar,L,C> &m)
+    {
+        matrix<scalar,C,L> result;
+        for (size_t l = 0; l < L; ++l)
+            for (size_t c = 0; c < C; ++c)
+                result(c,l) = m(l,c);
+        return result;
+    }
+
+    template<typename T>
+    T lerp(const T &start, const T &end, const double &percent)
+    {
+        return start + percent * (end-start);
+    }
+
+    template<typename T>
+    T nlerp(const T &start, const T &end, const double &percent)
+    {
+        return normalize(lerp(start, end, percent));
+    }
+
+    template<typename T>
+    T slerp(const T &start, const T &end, const double &percent)
+    {
+        double cosTheta = dot(start, end);
+        radian theta(acos(cosTheta) * percent);
+        T relative = normalize(((end - start) * cosTheta));
+
+        return start * math::cos(theta) + relative * math::sin(theta);
+    }
+
 
     using byte = unsigned char;
 

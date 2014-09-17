@@ -156,28 +156,6 @@ public:
 		std::cout << "V = " << std::endl << mCamera.getView() << std::endl;
 		mCamera.lookAt(0,0,0);
 		
-
-		{
-			Mesh mesh;
-			mat4 MVP = mCamera.getViewProjection() * mesh.getModel();
-			mat4 V = mCamera.getView();
-
-			vec4 front(0,0,0,1), back(0,0,-1,1);
-
-			std::cout << "M = " << std::endl << mesh.getModel() << std::endl;
-			std::cout << "V = " << std::endl << mCamera.getView() << std::endl;
-			std::cout << "front = " << front << std::endl;
-			std::cout << "back = " << back << std::endl;
-
-			std::cout << "camera.pos = " << mCamera.position() << std::endl;
-
-			std::cout << "front * V = " << (front * V) << std::endl;
-			std::cout << "back  * V = " << (back *  V) << std::endl;
-			std::cout << "pos  * V = " << (vec4(mCamera.position(),1) *  V) << std::endl;
-
-
-		}
-
  		window().vsync(false);				
 	}
 

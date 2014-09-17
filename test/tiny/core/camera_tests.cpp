@@ -48,7 +48,7 @@ TEST(Camera, is_aligned_with_the_original_coordinate_system_by_default)
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
 
-	vec3 transformedP = (vec4(p,1.0f) * camera.getView()).xyz();
+	vec3 transformedP = (camera.getView() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(expectedView, camera.getView());
 	EXPECT_EQ(p, transformedP);
@@ -68,7 +68,7 @@ TEST(Camera, can_be_used_to_change_coordinate_system)
 		0.0f, 0.0f, 0.0f,  1.0f
 	};
 
-	vec3 transformedP = (camera.getView() * vec4(p,1.0f).transposed()).transposed().xyz();
+	vec3 transformedP = (camera.getView() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(expectedView, camera.getView());
 	EXPECT_EQ(vec3(0,0,-5), transformedP);
@@ -90,8 +90,8 @@ TEST(Camera, has_a_look_at_function_that_can_be_used_to_point_the_camera_in_the_
 		 0.0f, 0.0f,  0.0f,  1.0f
 	};
 
-	vec3 transformedP = (camera.getView() * vec4(p,1.0f).transposed()).transposed().xyz();
-
+	vec3 transformedP = (camera.getView() * vec4(p,1.0f)).xyz();
+	
 	EXPECT_EQ(expectedView, camera.getView());
 	EXPECT_EQ(vec3(0,0,5), transformedP);
 }

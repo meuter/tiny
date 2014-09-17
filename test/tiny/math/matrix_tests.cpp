@@ -21,7 +21,7 @@ TEST(int2, can_be_printed)
     std::stringstream str;
     str << v;
 
-    EXPECT_EQ("(1,2)", str.str());
+    EXPECT_EQ("1 \n2 \n", str.str());
 }
 
 TEST(int3x3, can_be_declared)
@@ -59,7 +59,7 @@ TEST(int2x2, can_be_printed)
     std::stringstream str;
     str << m;
 
-    EXPECT_EQ("(1,2)\n(3,4)", str.str());
+    EXPECT_EQ("1 2 \n3 4 \n", str.str());
 }
 
 
@@ -109,10 +109,11 @@ TEST(int2, has_a_dimension_of_2)
 
 TEST(int2, has_a_length)
 {
-    int2 u(0,1);
+    int2 u(0,1), v(1,1), w(3,4);
 
-    EXPECT_EQ(1, u.length());
     EXPECT_EQ(1, length(u));
+    EXPECT_EQ(std::sqrt(2), length(v));
+    EXPECT_EQ(5, length(w));
 }
 
 
@@ -158,13 +159,12 @@ TEST(int2, can_be_devided_by_scalar)
 
 TEST(float3, can_be_normalized)
 {
-    float3 v(6,4,2);
-    auto l = v.length();
+    float3 v(6,4,2), n = normalize(v);
+    auto l = length(v);
 
-    EXPECT_EQ(&v, &v.normalize());
-    EXPECT_FLOAT_EQ(v.x, 6/l);
-    EXPECT_FLOAT_EQ(v.y, 4/l);
-    EXPECT_FLOAT_EQ(v.z, 2/l);
+    EXPECT_FLOAT_EQ(6/l, n.x);
+    EXPECT_FLOAT_EQ(4/l, n.y);
+    EXPECT_FLOAT_EQ(2/l, n.z);
 }
 
 TEST(general_sized_vector, has_dot_product)
@@ -172,8 +172,6 @@ TEST(general_sized_vector, has_dot_product)
     vector<int,5> u{1,2,3,4,10}, v{5,6,7,8,20};
     int expected = 1*5+2*6+3*7+4*8+10*20;
 
-    EXPECT_EQ(expected, u % v);
-    EXPECT_EQ(expected, v % u);
     EXPECT_EQ(expected, dot(u,v));
 }
 
@@ -268,30 +266,14 @@ TEST(double3, can_be_compared)
     EXPECT_GT(u,v);
 }
 
-
 TEST(int3, has_cross_product)
 {
     int3 i(1,0,0), j(0,1,0), k(0,0,1);
     int4 l(1,0,0,0);
 
-    EXPECT_EQ(i, j ^ k);
-    EXPECT_EQ(j, k ^ i);
-    EXPECT_EQ(k, i ^ j);
-    EXPECT_EQ(i ^ j, cross(i,j));
-
-    int2x2 x {1,2,3,4};
-}
-
-TEST(float4, can_be_homogenized)
-{
-    float4 v(4,6,8,2), u = v;
-    float4 expected(2,3,4,1);
-
-    u.homogenize();
-
-    EXPECT_EQ(expected, v.homogenized());
-    EXPECT_EQ(expected, u);
-
+    EXPECT_EQ(i, cross(j, k));
+    EXPECT_EQ(j, cross(k, i));
+    EXPECT_EQ(k, cross(i, j));
 }
 
 TEST(matrix, can_be_declared_and_initialized_with_scalars)
@@ -324,7 +306,7 @@ TEST(matrix, can_be_transposed)
         3,6,
     };
 
-    EXPECT_EQ(expected, m.transposed());
+    EXPECT_EQ(expected, transposed(m));
     EXPECT_EQ(orig, m);
 }
 
@@ -336,23 +318,7 @@ TEST(square_matrix, has_a_trace)
         3, 7, 6
     };
 
-    EXPECT_EQ(1+7+6, m.trace());
-}
-
-TEST(square_matrix, can_be_transposed_in_place)
-{
-    int2x2 m{
-        1,2,
-        3,4
-    };
-
-    int2x2 expected {
-        1,3,
-        2,4
-    };
-
-    EXPECT_EQ(expected, m.transpose());
-    EXPECT_EQ(expected, m);
+    EXPECT_EQ(1+7+6, trace(m));
 }
 
 TEST(float2x2, has_an_identify)
@@ -420,21 +386,21 @@ TEST(float3, can_be_build_from_float2_and_1_float)
 
 TEST(lerp, can_be_used_on_float)
 {
-    EXPECT_FLOAT_EQ(3.0f, lerp(1,5,0.5f));
+    EXPECT_FLOAT_EQ(3.0f, lerp(1,5,0.5));
 }
 
 TEST(lerp, can_be_used_on_float2)
 {
     float2 start(1,5), end(7,-15);
 
-    EXPECT_EQ(float2(4,-5), lerp(start,end,0.5f));
+    EXPECT_EQ(float2(4,-5), lerp(start,end,0.5));
 }
 
 TEST(nlerp, can_be_used_on_float2)
 {
     float2 start(1,5), end(7,-15);
 
-    EXPECT_EQ(float2(4,-5).normalized(), nlerp(start,end,0.5f));
+    EXPECT_EQ(normalize(float2(4,-5)), nlerp(start,end,0.5f));
 }
 
 TEST(slerp, can_be_used_on_float2)
