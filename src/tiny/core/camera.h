@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "transformable.h"
+#include <tiny/math/trigo.h>
 #include <algorithm>
 
 namespace tiny { namespace core {
@@ -13,16 +14,16 @@ namespace tiny { namespace core {
 
 		static Camera withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar)
 		{
-			zFar *= -1;
-			zNear *= -1;
-			float zRange = zFar - zNear;  
-			float tanHalfFov = tan(fieldOfView/2.0);
+			float zRange = zNear - zFar;
+			float yScale = 1.0f / tan(fieldOfView/2.0);
+			float xScale = -1 * yScale / aspectRatio;
+			float zScale = -1 * (zNear+zFar)/zRange;
 
 			return Camera({
-				-1.0f/(tanHalfFov*aspectRatio), 0.0f,           0.0f,                 0.0f,
-				0.0f,                           1.0f/tanHalfFov, 0.0f,                 0.0f,
-				0.0f,                           0.0f,            -(-zNear-zFar)/zRange, 2.0f*zFar*zNear/zRange,
-				0.0f,                           0.0f,            1.0f,                 0.0f
+				xScale, 0.0f,   0.0f,    0.0f,
+				0.0f,   yScale, 0.0f,    0.0f,
+				0.0f,   0.0f,   zScale,  2.0f*zFar*zNear/zRange,
+				0.0f,   0.0f,   1.0f,    0.0f
 			});
 		}
 
