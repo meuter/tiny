@@ -19,9 +19,9 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Texture &operator=(Texture &&other);
 
-		void load(unsigned char *data, int width, int height);
-		void loadFile(const std::string &filename);
-		void bind(GLuint textureUnit = 0) const;
+		void   load(unsigned char *data, int width, int height);
+		void   loadFile(const std::string &filename);
+		GLuint bind(GLuint slot) const;
 
 	protected:
 		void flip(unsigned *pixels, unsigned width, unsigned height);

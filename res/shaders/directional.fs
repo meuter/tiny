@@ -62,7 +62,7 @@ vec4 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal)
 
 void main()
 {
-	vec4 light = vec4(material.ambient, 1);
+	vec4 light = vec4(0,0,0,1);
 	vec4 color = vec4(material.diffuse, 1);
 	vec4 texel = texture2D(material.texture, fragTexcoord);
 

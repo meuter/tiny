@@ -11,7 +11,7 @@
 
 namespace tiny { namespace rendering {
 
-	class Texture;
+	class Material;
 
 	class ShaderProgram : boost::noncopyable
 	{

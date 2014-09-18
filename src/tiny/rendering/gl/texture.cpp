@@ -71,13 +71,15 @@ void Texture::loadFile(const std::string &filename)
 	stbi_image_free(pixels);
 }
 
-void Texture::bind(GLuint textureSlot) const
+GLuint Texture::bind(GLuint slot) const
 {
-	if (textureSlot >= 32)
+	if (slot >= 32)
 		throw std::runtime_error("only 32 texture units are available");
 
-	glActiveTexture(textureSlot);
+	glActiveTexture(slot);
 	glBindTexture(GL_TEXTURE_2D, mHandle);
+
+	return slot;
 }
 
 void Texture::flip(unsigned* buffer, unsigned width, unsigned height)

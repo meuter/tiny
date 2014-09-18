@@ -1,5 +1,4 @@
 #include "shaderprogram.h"
-#include "gl/texture.h"
 #include "mesh.h"
 #include <stdexcept>
 #include <fstream>

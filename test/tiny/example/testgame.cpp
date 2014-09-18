@@ -15,6 +15,120 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
+class AmbientShader : public ShaderProgram
+{
+public:
+	using ShaderProgram::setUniform;
+	using ShaderProgram::use;
+
+	AmbientShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/ambient.vs", "res/shaders/ambient.fs")) {}
+
+	void setUniform(const std::string &uniform, const Material &material)
+	{
+		setUniform(uniform + ".texture",   material.texture().bind(0));
+		setUniform(uniform + ".ambient",   material.ambient());
+		setUniform(uniform + ".diffuse",   material.diffuse());
+		setUniform(uniform + ".specular",  material.specular());
+		setUniform(uniform + ".shininess", material.shininess());
+	}
+
+	void draw(Camera &camera, Mesh &mesh)
+	{
+		use();
+		setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+		setUniform("material", mesh.material());
+
+		mesh.draw();
+	}
+};
+
+class DirectionalLightShader : public ShaderProgram
+{
+public:	
+	using ShaderProgram::setUniform;
+	using ShaderProgram::use;
+
+	DirectionalLightShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs")) {}
+
+	void setUniform(const std::string &uniform, const gl::BaseLight &lightSource)
+	{
+		setUniform(uniform + ".color",     lightSource.color);
+		setUniform(uniform + ".intensity", lightSource.intensity);
+	}
+
+	void setUniform(const std::string &uniform, const gl::DirectionalLight &directionalLight)
+	{
+		setUniform(uniform + ".base",     dynamic_cast<const gl::BaseLight&>(directionalLight));
+		setUniform(uniform + ".direction", directionalLight.direction);
+	}
+
+	void setUniform(const std::string &uniform, const Material &material)
+	{
+		setUniform(uniform + ".texture",   material.texture().bind(0));
+		setUniform(uniform + ".ambient",   material.ambient());
+		setUniform(uniform + ".diffuse",   material.diffuse());
+		setUniform(uniform + ".specular",  material.specular());
+		setUniform(uniform + ".shininess", material.shininess());
+	}
+
+	void draw(Camera &camera, Mesh &mesh, gl::DirectionalLight &directionalLight)
+	{
+		use();
+		setUniform("M",   mesh.modelMatrix());
+		setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+		setUniform("material", mesh.material());
+		setUniform("directionalLight", directionalLight);
+		setUniform("eyePos", camera.position());
+
+		mesh.draw();
+	}
+
+};
+
+
+class GLContext
+{
+public:	
+
+	void enableBlending()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDepthMask(false);
+		glDepthFunc(GL_EQUAL);
+	}
+
+	void disableBlending()
+	{
+		glDepthFunc(GL_LESS);
+		glDepthMask(true);
+		glDisable(GL_BLEND);
+	}
+
+	void enableBackfaceCulling()
+	{
+		glFrontFace(GL_CCW);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+	}
+
+	void disableBackfaceCulling()
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
+	void enableDepthTest()
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+	}
+
+	void disableDepthTest()
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+};
+
 class MyGame : public Game
 {
 public:
@@ -23,9 +137,9 @@ public:
 
 	void init()
 	{
-		glFrontFace(GL_CCW);
-		glCullFace(GL_BACK);
-		glEnable(GL_CULL_FACE);
+		mContext.enableBackfaceCulling();
+		mContext.enableDepthTest();
+
 		glEnable(GL_DEPTH_TEST);
 
 		mMeshes.push_back(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
@@ -34,11 +148,12 @@ public:
 		mMeshes.push_back(Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"));
 		mMeshes.back().moveTo(0,4,0);
 
-		mMeshes.push_back(Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl"));
+		mMeshes.push_back(Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 
-		mShaderProgram.setDirectionalLight(gl::DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
+		mWhiteSun = gl::DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1));
+		mBlueMoon = gl::DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1));
 
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
@@ -61,7 +176,13 @@ public:
 	void render()
 	{
 		for (auto &mesh: mMeshes)
-			mShaderProgram.draw(mCamera, mesh);
+		{
+			mAmbientShader.draw(mCamera, mesh);
+			mContext.enableBlending();
+			mDirectionalShader.draw(mCamera, mesh, mWhiteSun);
+			mDirectionalShader.draw(mCamera, mesh, mBlueMoon);
+			mContext.disableBlending();
+		}
 		mFPSCounter.newFrame();
 	}
 
@@ -124,10 +245,13 @@ public:
 	}
 
 private:	
-	gl::PhongShader mShaderProgram;
+	AmbientShader mAmbientShader;
+	DirectionalLightShader mDirectionalShader;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	std::vector<Mesh> mMeshes;
+	gl::DirectionalLight mWhiteSun, mBlueMoon;
+	GLContext mContext;
 };
 
 
