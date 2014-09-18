@@ -29,39 +29,11 @@ struct DirectionalLight : public BaseLight
 	vec3 direction;
 };
 
-class BasicShader : public ShaderProgram
+
+class PhongShader : public ShaderProgram
 {
 public:
-	BasicShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/basic.vs", "res/shaders/basic.fs")) {}
-
-	void draw(const Camera &camera, const Mesh &mesh)
-	{
-		use();
-
-		setUniform("M", mesh.modelMatrix());
-		setUniform("V", camera.viewMatrix());
-		setUniform("P", camera.projectionMatrix());
-		setUniform("texture", 0);
-		setUniform("diffuse", mesh.material().diffuse());
-
-		mesh.material().texture().bind(0);
-		mesh.draw();
-	}
-
-	void setDirectionalLight(const DirectionalLight directional)
-	{
-	}
-
-	void setSpecularLight(float intensity, float exponent)
-	{
-	}
-};
-
-
-class PhongShaderProgram : public ShaderProgram
-{
-public:
-	PhongShaderProgram() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
+	PhongShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
 
 	using ShaderProgram::setUniform;
 	using ShaderProgram::use;
@@ -85,6 +57,8 @@ public:
 		setUniform(uniform + ".texture", textureSlot);
 		setUniform(uniform + ".ambient", material.ambient());
 		setUniform(uniform + ".diffuse", material.diffuse());
+		setUniform(uniform + ".specular", material.specular());
+		setUniform(uniform + ".shininess", material.shininess());
 
 		material.texture().bind(textureSlot);
 	}
@@ -92,12 +66,6 @@ public:
 	void setDirectionalLight(const DirectionalLight directional)
 	{
 		mDirectional = directional;
-	}
-
-	void setSpecularLight(float intensity, float exponent)
-	{
-		mSpecularIntensity = intensity;
-		mSpecularExponent = exponent;
 	}
 
 	void draw(const Camera &camera, const Mesh &mesh)
@@ -108,15 +76,12 @@ public:
 		setUniform("P", camera.projectionMatrix());
 		setUniform("material", mesh.material());
 		setUniform("directionalLight", mDirectional);
-		setUniform("specularIntensity", mSpecularIntensity);
-		setUniform("specularExponent", mSpecularExponent);
 		setUniform("eyePos", camera.position());
 
 		mesh.draw();
 	}
 private:
 	DirectionalLight mDirectional;
-	float mSpecularIntensity, mSpecularExponent;
 };
 
 
@@ -133,25 +98,17 @@ public:
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 
+		mMeshes.push_back(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
+		mMeshes.back().moveTo(0,-2,0);
 
-		Mesh ground, box, sphere;
+		mMeshes.push_back(Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"));
+		mMeshes.back().moveTo(0,4,0);
 
-		ground = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
-		ground.moveTo(0,-2,0);
-		mMeshes.push_back(std::move(ground));
+		mMeshes.push_back(Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl"));
 
-		box = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
-		box.moveTo(0,4,0);
-		mMeshes.push_back(std::move(box));
-
-		sphere = Mesh::fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_smooth.mtl");
-		mMeshes.push_back(std::move(sphere));
-
-		mCamera             = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
-		mMouseLocked        = false;
+		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 
 		mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
-		mShaderProgram.setSpecularLight(2,32);
 
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
@@ -212,13 +169,16 @@ public:
 	{
 		const float sensitivity = 0.005f;
 
-		if (inputs().isKeyPressed(Key::KEY_ESCAPE))
+		if (inputs().isMouseReleased(MouseButton::MIDDLE))
 		{
-			inputs().showMouseCursor(true);
-			mMouseLocked = false;
+			inputs().showMouseCursor(true);		
 		}
-
-		if (mMouseLocked)
+		else if (inputs().isMousePressed(MouseButton::MIDDLE))
+		{
+			inputs().showMouseCursor(false);
+			inputs().setMousePosition(window().center());
+		}
+		else if (inputs().isMouseHeld(MouseButton::MIDDLE))
 		{
 	 		auto dpos = window().center() - inputs().getMousePosition();
 
@@ -231,21 +191,13 @@ public:
 			if (dpos.x != 0 || dpos.y != 0)
 				inputs().setMousePosition(window().center());
 		}
-
-		if (inputs().isMousePressed(MouseButton::LEFT))
-		{
-			inputs().showMouseCursor(false);
-			inputs().setMousePosition(window().center());
-			mMouseLocked = true;
-		}
 	}
 
 private:	
-	PhongShaderProgram mShaderProgram;
-	std::vector<Mesh> mMeshes;
+	PhongShader mShaderProgram;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
-	bool mMouseLocked;
+	std::vector<Mesh> mMeshes;
 };
 
 

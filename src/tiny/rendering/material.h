@@ -57,9 +57,10 @@ namespace tiny { namespace rendering {
 		Material &operator=(Material &&other) = default;
 
 		inline const gl::Texture &texture() const { return mTexture; }
-
-		inline const core::vec3 &ambient() const { return mAmbient; }
-		inline const core::vec3 &diffuse() const { return mDiffuse; }
+		inline const core::vec3 &ambient()  const { return mAmbient; }
+		inline const core::vec3 &diffuse()  const { return mDiffuse; }
+		inline const core::vec3 &specular() const { return mSpecular; }
+		inline const float shininess()      const { return mShininess; }
 
 		void load(const tinyobj::material_t &material)
 		{

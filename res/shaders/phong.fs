@@ -16,13 +16,13 @@ struct Material
 {
 	sampler2D texture;
 	vec3 ambient;
-	vec3 diffuse;
+	vec3 diffuse; 
+	vec3 specular;
+	float shininess;
 };
 
 uniform Material material;
 uniform DirectionalLight directionalLight;
-uniform float specularIntensity;
-uniform float specularExponent;
 uniform vec3 eyePos;
 
 varying vec2 texcoord0;
@@ -43,10 +43,10 @@ vec4 calcLight(BaseLight base, vec3 direction, vec3 normal)
 		vec3 directionToEye = normalize(eyePos - worldPosition0);
 		vec3 reflectDirection = normalize(reflect(direction, normal));	
 
-		float specularFactor = pow(dot(directionToEye, reflectDirection), specularExponent);	
+		float specularFactor = pow(dot(directionToEye, reflectDirection), material.shininess);	
 
 		if (specularFactor > 0)
-			specularLight = vec4(base.color, 1.0f) * specularIntensity * specularFactor;
+			specularLight = vec4(base.color, 1.0f) * vec4(material.specular, 1.0f) * specularFactor;
 	}
 
 	return diffuseLight + specularLight;
