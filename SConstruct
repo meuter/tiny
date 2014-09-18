@@ -21,6 +21,7 @@ env.Library("tiny", Split("""
 	src/tiny/core/inputs.cpp
 	src/tiny/core/engine.cpp
 	src/tiny/core/window.cpp
+	src/tiny/core/camera.cpp
 	src/tiny/utils/strutils.cpp
 	src/tiny/rendering/shader.cpp
 	src/tiny/rendering/shaderprogram.cpp
