@@ -33,3 +33,5 @@ src/tiny/rendering/gl/texture.o
 test/tiny/core/camera_tests.o
 src/tiny/rendering/gl/phong.o
 src/tiny/core/camera.o
+test/tiny/example/testgame.o
+testgame

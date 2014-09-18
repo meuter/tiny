@@ -37,8 +37,8 @@ example = env.Clone()
 example.MergeFlags("-L. -ltiny")
 example.MergeFlags("-L/usr/local/lib -lGLEW -lSDL2")
 example.MergeFlags("-framework OpenGL")
-example.Program("window_example", Split("""
-	test/tiny/example/window_example.cpp
+example.Program("testgame", Split("""
+	test/tiny/example/testgame.cpp
 """));
 
 test = env.Clone()
