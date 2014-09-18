@@ -22,15 +22,15 @@ void PhongShader::setUniform(const std::string &uniform, const DirectionalLight 
 
 void PhongShader::setUniform(const std::string &uniform, const Material &material)
 {
-	const unsigned int textureSlot = 1;
+	const unsigned int ambientTextureSlot = 1;
 
-	setUniform(uniform + ".texture", textureSlot);
+	setUniform(uniform + ".texture", ambientTextureSlot);
 	setUniform(uniform + ".ambient", material.ambient());
 	setUniform(uniform + ".diffuse", material.diffuse());
 	setUniform(uniform + ".specular", material.specular());
 	setUniform(uniform + ".shininess", material.shininess());
 
-	material.texture().bind(textureSlot);
+	material.texture().bind(ambientTextureSlot);
 }
 
 void PhongShader::setDirectionalLight(const DirectionalLight directional)
@@ -41,9 +41,8 @@ void PhongShader::setDirectionalLight(const DirectionalLight directional)
 void PhongShader::draw(const core::Camera &camera, const Mesh &mesh)
 {
 	use();
-	setUniform("M", mesh.modelMatrix());
-	setUniform("V", camera.viewMatrix());
-	setUniform("P", camera.projectionMatrix());
+	setUniform("M",   mesh.modelMatrix());
+	setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 	setUniform("material", mesh.material());
 	setUniform("directionalLight", mDirectional);
 	setUniform("eyePos", camera.position());

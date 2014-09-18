@@ -11,7 +11,6 @@ namespace tiny { namespace core {
 	class Camera : public Transformable
 	{
 	public:	
-
 		static Camera withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar);
 
 		Camera() = default;

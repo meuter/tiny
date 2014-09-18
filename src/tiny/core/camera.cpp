@@ -47,4 +47,5 @@ mat4 Camera::viewMatrix() const
 
 	return reverse.rotationMatrix() * reverse.translationMatrix();
 }
+
 }}

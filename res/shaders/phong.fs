@@ -25,9 +25,9 @@ uniform Material material;
 uniform DirectionalLight directionalLight;
 uniform vec3 eyePos;
 
-varying vec2 texcoord0;
-varying vec3 normal0;
-varying vec3 worldPosition0;
+varying vec2 fragTexcoord;
+varying vec3 fragNormal;
+varying vec3 fragWorldPosition;
 
 vec4 calcLight(BaseLight base, vec3 direction, vec3 normal)
 {
@@ -40,7 +40,7 @@ vec4 calcLight(BaseLight base, vec3 direction, vec3 normal)
 	{
 		diffuseLight = vec4(base.color, 1.0f) * base.intensity * diffuseFactor;
 
-		vec3 directionToEye = normalize(eyePos - worldPosition0);
+		vec3 directionToEye = normalize(eyePos - fragWorldPosition);
 		vec3 reflectDirection = normalize(reflect(direction, normal));	
 
 		float specularFactor = pow(dot(directionToEye, reflectDirection), material.shininess);	
@@ -61,9 +61,9 @@ void main()
 {
 	vec4 light = vec4(material.ambient, 1);
 	vec4 color = vec4(material.diffuse, 1);
-	vec4 texel = texture2D(material.texture, texcoord0);
+	vec4 texel = texture2D(material.texture, fragTexcoord);
 
-	light += calcDirectionalLight(directionalLight, normal0);
+	light += calcDirectionalLight(directionalLight, fragNormal);
 
 	gl_FragColor = color * texel * light;
 }
