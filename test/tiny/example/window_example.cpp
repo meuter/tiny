@@ -2,6 +2,7 @@
 #include <tiny/rendering/shader.h>
 #include <tiny/rendering/mesh.h>
 #include <tiny/rendering/material.h>
+#include <tiny/rendering/gl/phong.h>
 
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
@@ -13,77 +14,6 @@
 using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
-
-struct BaseLight
-{
-	BaseLight() : color(0,0,0), intensity(0) {}
-	BaseLight(const vec3 &color, const float &intensity) : color(color), intensity(intensity) {}
-	vec3 color;
-	float intensity;
-};
-
-struct DirectionalLight : public BaseLight
-{
-	DirectionalLight() : BaseLight(), direction(0,0,0) {}
-	DirectionalLight(const vec3 &color, const float &intensity, const vec3 &direction) : BaseLight(color, intensity), direction(direction) {}
-	vec3 direction;
-};
-
-
-class PhongShader : public ShaderProgram
-{
-public:
-	PhongShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/phong.vs", "res/shaders/phong.fs")) {}
-
-	using ShaderProgram::setUniform;
-	using ShaderProgram::use;
-
-	void setUniform(const std::string &uniform, const BaseLight &lightSource)
-	{
-		setUniform(uniform + ".color",     lightSource.color);
-		setUniform(uniform + ".intensity", lightSource.intensity);
-	}
-
-	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
-	{
-		setUniform(uniform + ".base",     dynamic_cast<const BaseLight&>(directionalLight));
-		setUniform(uniform + ".direction", directionalLight.direction);
-	}
-
-	void setUniform(const std::string &uniform, const Material &material)
-	{
-		const unsigned int textureSlot = 1;
-
-		setUniform(uniform + ".texture", textureSlot);
-		setUniform(uniform + ".ambient", material.ambient());
-		setUniform(uniform + ".diffuse", material.diffuse());
-		setUniform(uniform + ".specular", material.specular());
-		setUniform(uniform + ".shininess", material.shininess());
-
-		material.texture().bind(textureSlot);
-	}
-
-	void setDirectionalLight(const DirectionalLight directional)
-	{
-		mDirectional = directional;
-	}
-
-	void draw(const Camera &camera, const Mesh &mesh)
-	{
-		use();
-		setUniform("M", mesh.modelMatrix());
-		setUniform("V", camera.viewMatrix());
-		setUniform("P", camera.projectionMatrix());
-		setUniform("material", mesh.material());
-		setUniform("directionalLight", mDirectional);
-		setUniform("eyePos", camera.position());
-
-		mesh.draw();
-	}
-private:
-	DirectionalLight mDirectional;
-};
-
 
 class MyGame : public Game
 {
@@ -108,7 +38,7 @@ public:
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 
-		mShaderProgram.setDirectionalLight(DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
+		mShaderProgram.setDirectionalLight(gl::DirectionalLight(vec3(1,1,1)*0.7f, 1.0f, vec3(0,-1,0)));
 
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
@@ -194,7 +124,7 @@ public:
 	}
 
 private:	
-	PhongShader mShaderProgram;
+	gl::PhongShader mShaderProgram;
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	std::vector<Mesh> mMeshes;

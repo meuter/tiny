@@ -29,6 +29,7 @@ env.Library("tiny", Split("""
 	src/tiny/rendering/gl/texture.cpp
 	src/tiny/rendering/gl/buffer.cpp
 	src/tiny/rendering/gl/vertexarray.cpp
+	src/tiny/rendering/gl/phong.cpp
 """))
 
 example = env.Clone()
