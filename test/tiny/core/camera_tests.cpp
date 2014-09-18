@@ -25,7 +25,7 @@ TEST(Camera, has_a_constructor_that_takes_the_projection_as_input)
 
 	Camera camera(expectedProjection);
 
-	EXPECT_EQ(expectedProjection, camera.projection());
+	EXPECT_EQ(expectedProjection, camera.projectionMatrix());
 }
 
 TEST(Camera, is_transformable)
@@ -41,7 +41,7 @@ TEST(Camera, is_aligned_with_the_original_coordinate_system_by_default)
 	Camera camera;
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(1,0,0), camera.left());
 	EXPECT_EQ(vec3(0,1,0), camera.up());
@@ -55,7 +55,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_z
 	camera.moveTo(0,0,5);
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(1,0,0), camera.left());
 	EXPECT_EQ(vec3(0,1,0), camera.up());
@@ -70,7 +70,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_z
 	camera.rotate(Transformable::Y_AXIS, toRadian(180));
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 	
 	EXPECT_EQ(vec3(-1,0,0), camera.left());
 	EXPECT_EQ(vec3(0,1,0), camera.up());
@@ -84,7 +84,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_x
 	camera.moveTo(5,0,0);
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(1,0,0), camera.left());
 	EXPECT_EQ(vec3(0,1,0), camera.up());
@@ -103,7 +103,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_x
 	EXPECT_EQ(-Transformable::X_AXIS, camera.forward());
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(0,0,5), transformedP);	
 }
@@ -115,7 +115,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_x
 	camera.rotate(Transformable::Y_AXIS,toRadian(-90-45));
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(normalize(vec3(-1,0,-1)), camera.forward());
 	EXPECT_EQ(Transformable::Y_AXIS, camera.up());
@@ -130,7 +130,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_y
 	camera.moveTo(0,5,0);
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(1,0,0), camera.left());
 	EXPECT_EQ(vec3(0,1,0), camera.up());
@@ -149,7 +149,7 @@ TEST(Camera, has_a_vew_matrix_to_change_from_world_space_to_camera_space__move_x
 	EXPECT_EQ(-Transformable::Y_AXIS, camera.forward());
 
 	vec3 p(0,0,0);
-	vec3 transformedP = (camera.getViewMatrix() * vec4(p,1.0f)).xyz();
+	vec3 transformedP = (camera.viewMatrix() * vec4(p,1.0f)).xyz();
 
 	EXPECT_EQ(vec3(0,0,5), transformedP);	
 }

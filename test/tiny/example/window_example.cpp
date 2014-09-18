@@ -38,7 +38,9 @@ public:
 	{
 		use();
 
-		setUniform("MVP", camera.projection() * camera.getViewMatrix() * mesh.getModel());
+		setUniform("M", mesh.modelMatrix());
+		setUniform("V", camera.viewMatrix());
+		setUniform("P", camera.projectionMatrix());
 		setUniform("texture", 0);
 		setUniform("diffuse", mesh.material().diffuse());
 
@@ -53,7 +55,6 @@ public:
 	void setSpecularLight(float intensity, float exponent)
 	{
 	}
-
 };
 
 
@@ -73,8 +74,19 @@ public:
 
 	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 	{
-		setUniform(uniform + ".base",    dynamic_cast<const BaseLight&>(directionalLight));
+		setUniform(uniform + ".base",     dynamic_cast<const BaseLight&>(directionalLight));
 		setUniform(uniform + ".direction", directionalLight.direction);
+	}
+
+	void setUniform(const std::string &uniform, const Material &material)
+	{
+		const unsigned int textureSlot = 1;
+
+		setUniform(uniform + ".texture", textureSlot);
+		setUniform(uniform + ".ambient", material.ambient());
+		setUniform(uniform + ".diffuse", material.diffuse());
+
+		material.texture().bind(textureSlot);
 	}
 
 	void setDirectionalLight(const DirectionalLight directional)
@@ -91,16 +103,15 @@ public:
 	void draw(const Camera &camera, const Mesh &mesh)
 	{
 		use();
-		setUniform("MVP", camera.projection() * camera.getViewMatrix() * mesh.getModel());
-		setUniform("M", mesh.getModel());
-		setUniform("diffuse", mesh.material().diffuse());
-		setUniform("ambient", mesh.material().ambient());
+		setUniform("M", mesh.modelMatrix());
+		setUniform("V", camera.viewMatrix());
+		setUniform("P", camera.projectionMatrix());
+		setUniform("material", mesh.material());
 		setUniform("directionalLight", mDirectional);
 		setUniform("specularIntensity", mSpecularIntensity);
 		setUniform("specularExponent", mSpecularExponent);
 		setUniform("eyePos", camera.position());
 
-		mesh.material().texture().bind();
 		mesh.draw();
 	}
 private:

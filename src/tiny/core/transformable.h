@@ -11,7 +11,7 @@ namespace tiny { namespace core {
 		static const vec3 X_AXIS, Y_AXIS, Z_AXIS;
 
 		Transformable();
-		virtual ~Transformable();
+		virtual ~Transformable() = default;
 
 		inline void move(const vec3 &direction, float amount)    { mPosition += amount * direction; }
 		inline void moveTo(const vec3 &position)                 { mPosition = position; }
@@ -27,21 +27,21 @@ namespace tiny { namespace core {
 		inline void scaleTo(const vec3 &scale)                   { mScaling = scale; }
 		inline void scaleTo(float sx, float sy, float sz)        { mScaling = vec3(sx, sy, sz); }
 
-		inline vec3 left()     const { return mRotation.rotate( X_AXIS); }
-		inline vec3 right()    const { return mRotation.rotate(-X_AXIS); }
-		inline vec3 up()       const { return mRotation.rotate( Y_AXIS); }
-		inline vec3 down()     const { return mRotation.rotate(-Y_AXIS); }
-		inline vec3 forward()  const { return mRotation.rotate( Z_AXIS); }
-		inline vec3 backward() const { return mRotation.rotate(-Z_AXIS); }
+		inline vec3 left()            const                      { return mRotation.rotate( X_AXIS); }
+		inline vec3 right()           const                      { return mRotation.rotate(-X_AXIS); }
+		inline vec3 up()              const                      { return mRotation.rotate( Y_AXIS); }
+		inline vec3 down()            const                      { return mRotation.rotate(-Y_AXIS); }
+		inline vec3 forward()         const                      { return mRotation.rotate( Z_AXIS); }
+		inline vec3 backward()        const                      { return mRotation.rotate(-Z_AXIS); }
 
-		inline const vec3 &position() const { return mPosition; }
-		inline const vec3 &scaling()  const { return mScaling; }
-		inline const quat &rotation() const { return mRotation; }
+		inline const vec3 &position() const                      { return mPosition; }
+		inline const vec3 &scaling()  const                      { return mScaling; }
+		inline const quat &rotation() const                      { return mRotation; }
 
-		mat4 getModel()             const;
-		mat4 getTranslationMatrix() const;
-		mat4 getScalingMatrix()     const;
-		mat4 getRotationMatrix()    const;
+		mat4 modelMatrix()            const;
+		mat4 translationMatrix()      const;
+		mat4 scalingMatrix()          const;
+		mat4 rotationMatrix()         const;
 
 	protected:
 		vec3 mScaling;

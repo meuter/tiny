@@ -63,9 +63,11 @@ namespace tiny { namespace rendering {
 
 		void load(const tinyobj::material_t &material)
 		{
-			mAmbient  = core::vec3(material.ambient);
-			mDiffuse  = core::vec3(material.diffuse);
-			mSpecular = core::vec3(material.specular);
+			mAmbient   = core::vec3(material.ambient);
+			mDiffuse   = core::vec3(material.diffuse);
+			mSpecular  = core::vec3(material.specular);
+			mEmission  = core::vec3(material.emission);
+			mShininess = material.shininess;
 
 			if (!material.ambient_texname.empty())
 				mAmbientMap = gl::Texture::fromFile(material.ambient_texname);
@@ -78,12 +80,12 @@ namespace tiny { namespace rendering {
 	
 			if (!material.diffuse_texname.empty())
 				mTexture = gl::Texture::fromFile(material.diffuse_texname);
-
 		}
 
 
 	private:
-		core::vec3 mAmbient, mDiffuse, mSpecular;
+		core::vec3 mAmbient, mDiffuse, mSpecular, mEmission;
+		float mShininess;
 		gl::Texture mAmbientMap, mSpecularMap, mNormalMap, mTexture;
 
 	};

@@ -9,20 +9,14 @@ const vec3 Transformable::Z_AXIS(0,0,1);
 
 Transformable::Transformable() : mScaling(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) 
 {
-
 }
 
-Transformable::~Transformable()
+mat4 Transformable::modelMatrix() const
 {
-
+	return translationMatrix() * rotationMatrix() * scalingMatrix();
 }
 
-mat4 Transformable::getModel() const
-{
-	return getTranslationMatrix() * getRotationMatrix() * getScalingMatrix();
-}
-
-mat4 Transformable::getTranslationMatrix() const
+mat4 Transformable::translationMatrix() const
 {
 	return mat4
 	{
@@ -33,7 +27,7 @@ mat4 Transformable::getTranslationMatrix() const
 	};
 }
 
-mat4 Transformable::getScalingMatrix() const
+mat4 Transformable::scalingMatrix() const
 {
 	return mat4
 	{
@@ -44,7 +38,7 @@ mat4 Transformable::getScalingMatrix() const
 	};
 }
 
-mat4 Transformable::getRotationMatrix() const
+mat4 Transformable::rotationMatrix() const
 {
 	auto l = left();
 	auto u = up();

@@ -46,21 +46,19 @@ namespace tiny { namespace core {
 			mRotation = quat(newForward, newUp);
 		}
 
-		inline const mat4 &projection() const { return mProjection; }
+		inline const mat4 &projectionMatrix() const
+		{
+			return mProjection; 
+		}
 
-		mat4 getViewMatrix() const 
+		mat4 viewMatrix() const 
 		{
 			Transformable reverse;
 
 			reverse.rotateTo(mRotation.conjugate());
 			reverse.moveTo(-mPosition);
 
-			return reverse.getRotationMatrix() * reverse.getTranslationMatrix();
-		}
-
-		mat4 getViewProjection() const
-		{
-			return projection() * getViewMatrix();
+			return reverse.rotationMatrix() * reverse.translationMatrix();
 		}
 
 	private:

@@ -71,12 +71,12 @@ void Texture::loadFile(const std::string &filename)
 	stbi_image_free(pixels);
 }
 
-void Texture::bind(GLuint textureUnit) const
+void Texture::bind(GLuint textureSlot) const
 {
-	if (textureUnit >= 32)
+	if (textureSlot >= 32)
 		throw std::runtime_error("only 32 texture units are available");
 
-	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glActiveTexture(textureSlot);
 	glBindTexture(GL_TEXTURE_2D, mHandle);
 }
 

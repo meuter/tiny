@@ -12,9 +12,14 @@ struct DirectionalLight
 	vec3 direction;
 };
 
-uniform sampler2D texture;
-uniform vec3 ambient;
-uniform vec3 diffuse;
+struct Material
+{
+	sampler2D texture;
+	vec3 ambient;
+	vec3 diffuse;
+};
+
+uniform Material material;
 uniform DirectionalLight directionalLight;
 uniform float specularIntensity;
 uniform float specularExponent;
@@ -26,7 +31,7 @@ varying vec3 worldPosition0;
 
 vec4 calcLight(BaseLight base, vec3 direction, vec3 normal)
 {
-	float diffuseFactor = dot(normal, -direction);
+	float diffuseFactor = clamp(dot(normal, -direction), 0,1);
 
 	vec4 diffuseLight  = vec4(0,0,0,0);
 	vec4 specularLight = vec4(0,0,0,0);
@@ -36,9 +41,9 @@ vec4 calcLight(BaseLight base, vec3 direction, vec3 normal)
 		diffuseLight = vec4(base.color, 1.0f) * base.intensity * diffuseFactor;
 
 		vec3 directionToEye = normalize(eyePos - worldPosition0);
-		vec3 reflectDirection = normalize(reflect(direction, normal));
+		vec3 reflectDirection = normalize(reflect(direction, normal));	
 
-		float specularFactor = pow(dot(directionToEye, reflectDirection), specularExponent);
+		float specularFactor = pow(dot(directionToEye, reflectDirection), specularExponent);	
 
 		if (specularFactor > 0)
 			specularLight = vec4(base.color, 1.0f) * specularIntensity * specularFactor;
@@ -54,9 +59,9 @@ vec4 calcDirectionalLight(DirectionalLight directionalLight, vec3 normal)
 
 void main()
 {
-	vec4 light = vec4(ambient, 1);
-	vec4 color = vec4(diffuse, 1);
-	vec4 texel = texture2D(texture, texcoord0);
+	vec4 light = vec4(material.ambient, 1);
+	vec4 color = vec4(material.diffuse, 1);
+	vec4 texel = texture2D(material.texture, texcoord0);
 
 	light += calcDirectionalLight(directionalLight, normal0);
 
