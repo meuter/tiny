@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 #include <tiny/core/window.h>
-#include <tiny/rendering/shader.h>
+#include <tiny/rendering/gl/shader.h>
 #include <GL/glew.h>
 
 using namespace tiny::rendering;
+using namespace tiny::rendering::gl;
 using namespace tiny::core;
 using namespace testing;
 

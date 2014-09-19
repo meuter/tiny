@@ -3,8 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-
-namespace tiny { namespace rendering {
+namespace tiny { namespace rendering { namespace gl {
 
 Shader Shader::fromFile(GLenum shaderType, const std::string filename)
 {
@@ -88,4 +87,4 @@ void Shader::destroy()
 }
 
 
-}}
+}}}

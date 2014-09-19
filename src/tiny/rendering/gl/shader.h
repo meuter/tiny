@@ -5,7 +5,7 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace rendering { namespace gl {
 
 	class Shader : boost::noncopyable
 	{
@@ -33,6 +33,6 @@ namespace tiny { namespace rendering {
 		GLuint mHandle;
 	};
 
-}}
+}}}
 
 #endif

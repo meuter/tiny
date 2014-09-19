@@ -7,7 +7,7 @@
 #include <boost/noncopyable.hpp>
 #include <tiny/core/types.h>
 
-#include "shader.h"
+#include "gl/shader.h"
 
 namespace tiny { namespace rendering {
 
@@ -24,7 +24,7 @@ namespace tiny { namespace rendering {
 
 		ShaderProgram &operator=(ShaderProgram &&other);
 
-		void addShader(Shader &&shader);
+		void addShader(gl::Shader &&shader);
 		void link();
 
 		void setUniform(const std::string &uniform, float value);
@@ -46,7 +46,7 @@ namespace tiny { namespace rendering {
 
 	private:
 		GLuint mHandle;
-		std::vector<Shader> mShaders;
+		std::vector<gl::Shader> mShaders;
 	};
 
 }}

@@ -1,7 +1,7 @@
 #include <tiny/rendering/shaderprogram.h>
-#include <tiny/rendering/shader.h>
 #include <tiny/rendering/mesh.h>
 #include <tiny/rendering/material.h>
+#include <tiny/rendering/gl/shader.h>
 #include <tiny/rendering/gl/phong.h>
 
 #include <tiny/core/game.h>
