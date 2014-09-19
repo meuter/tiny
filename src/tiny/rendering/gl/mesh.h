@@ -1,5 +1,5 @@
-#ifndef __TINY_CORE_MESH_H__
-#define __TINY_CORE_MESH_H__
+#ifndef __TINY_RENDERING_GL_MESH_H__
+#define __TINY_RENDERING_GL_MESH_H__
 
 #include <GL/glew.h>
 #include <vector>

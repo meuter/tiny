@@ -11,6 +11,7 @@
 #include "scene.h"
 #include "ambient.h"
 #include "directional.h"
+#include "point.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -26,17 +27,27 @@ namespace tiny { namespace rendering { namespace gl {
 			mContext.enableDepthTest();
 		}
 
-		void addDirectionalLight(DirectionalLight &&directionalLight)
+		void addDirectionalLight(const DirectionalLight &directionalLight)
 		{
-			mDirectionalLights.push_back(std::move(directionalLight));
+			mDirectionalLights.push_back(directionalLight);
+		}
+
+		void addPointLight(const PointLight &pointLight)
+		{
+			mPointLights.push_back(pointLight);
 		}
 
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
-			mAmbientShader.shade(camera, mesh);
+			mAmbientShader.shade(camera, mesh);			
 			mContext.enableBlending();
-			for (const auto &directionalLight : mDirectionalLights)
-				mDirectionalShader.shade(camera, mesh, directionalLight);
+			{
+				for (const auto &directionalLight : mDirectionalLights)
+					mDirectionalShader.shade(camera, mesh, directionalLight);
+
+				for (const auto &pointLight : mPointLights)
+					mPointShader.shade(camera, mesh, pointLight);
+			}
 			mContext.disableBlending();
 		}
 
@@ -49,8 +60,10 @@ namespace tiny { namespace rendering { namespace gl {
 	private:
 		AmbientShader mAmbientShader;
 		DirectionalLightShader mDirectionalShader;
+		PointLightShader mPointShader;
 		Context &mContext;
 		std::vector<DirectionalLight> mDirectionalLights;
+		std::vector<PointLight> mPointLights;
 	};
 
 }}}

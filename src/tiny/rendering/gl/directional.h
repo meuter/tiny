@@ -1,5 +1,5 @@
-#ifndef __TINY_RENDERING_GL_H__
-#define __TINY_RENDERING_GL_H__
+#ifndef __TINY_RENDERING_GL_DIRECTIONAL_H__
+#define __TINY_RENDERING_GL_DIRECTIONAL_H__
 
 #include <tiny/core/camera.h>
 
@@ -8,18 +8,14 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-	struct BaseLight
+	struct DirectionalLight
 	{
-		BaseLight() : color(0,0,0), intensity(0) {}
-		BaseLight(const core::vec3 &color, const float &intensity) : color(color), intensity(intensity) {}
+		DirectionalLight() : color(1,1,1), intensity(0), direction(0,0,0) {}
+		DirectionalLight(const core::vec3 &color, const float &intensity, const core::vec3 &direction) 
+			: color(color), intensity(intensity), direction(direction) {}
+
 		core::vec3 color;
 		float intensity;
-	};
-
-	struct DirectionalLight : public BaseLight
-	{
-		DirectionalLight() : BaseLight(), direction(0,0,0) {}
-		DirectionalLight(const core::vec3 &color, const float &intensity, const core::vec3 &direction) : BaseLight(color, intensity), direction(direction) {}
 		core::vec3 direction;
 	};
 
@@ -31,15 +27,10 @@ namespace tiny { namespace rendering { namespace gl {
 
 		DirectionalLightShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs")) {}
 
-		void setUniform(const std::string &uniform, const BaseLight &lightSource)
-		{
-			setUniform(uniform + ".color",     lightSource.color);
-			setUniform(uniform + ".intensity", lightSource.intensity);
-		}
-
 		void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 		{
-			setUniform(uniform + ".base",     dynamic_cast<const BaseLight&>(directionalLight));
+			setUniform(uniform + ".color",     directionalLight.color);
+			setUniform(uniform + ".intensity", directionalLight.intensity);
 			setUniform(uniform + ".direction", directionalLight.direction);
 		}
 

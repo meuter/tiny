@@ -1,5 +1,5 @@
-#ifndef __TINY_RENDERING_SHADER_PROGRAM_H__
-#define __TINY_RENDERING_SHADER_PROGRAM_H__
+#ifndef __TINY_RENDERING_GL_SHADER_PROGRAM_H__
+#define __TINY_RENDERING_GL_SHADER_PROGRAM_H__
 
 #include <GL/glew.h>
 #include <string>

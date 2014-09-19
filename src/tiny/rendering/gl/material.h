@@ -1,5 +1,5 @@
-#ifndef __TINY_RENDERING_MATERIAL_H__
-#define __TINY_RENDERING_MATERIAL_H__
+#ifndef __TINY_RENDERING_GL_MATERIAL_H__
+#define __TINY_RENDERING_GL_MATERIAL_H__
 
 #include <string>
 #include <fstream>
