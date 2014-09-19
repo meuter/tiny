@@ -1,5 +1,5 @@
 #include "mesh.h"
-#include "shaderprogram.h"
+#include "gl/shaderprogram.h"
 #include <stdexcept>
 #include <fstream>
 #include <iostream>
@@ -42,7 +42,7 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 Mesh Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilename)
 {
 	Mesh result = Mesh::fromFile(objFilname);
-	result.mMaterial = Material::fromFile(mtlFilename);
+	result.mMaterial = gl::Material::fromFile(mtlFilename);
 	return result;
 }
 

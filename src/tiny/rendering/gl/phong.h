@@ -2,18 +2,19 @@
 #define __TINY_RENDERING_GL_PHONG_H__
 
 #include <tiny/core/types.h>
-#include <tiny/rendering/shaderprogram.h>
+#include "shaderprogram.h"
 
 namespace tiny { namespace core {
 	class Camera;
 }}
 
 namespace tiny { namespace rendering {
-	class Material;
 	class Mesh;
 }}
 
 namespace tiny { namespace rendering { namespace gl {
+	
+	class Material;
 
 	struct BaseLight
 	{

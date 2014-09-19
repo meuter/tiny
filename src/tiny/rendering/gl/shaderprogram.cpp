@@ -1,18 +1,17 @@
 #include "shaderprogram.h"
-#include "mesh.h"
+#include "../mesh.h"
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
 #include <utility>
 
-
-namespace tiny { namespace rendering {
+namespace tiny { namespace rendering { namespace gl {
 
 ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
 {
 	auto result = ShaderProgram();
-	result.addShader(gl::Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
-	result.addShader(gl::Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
+	result.addShader(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
+	result.addShader(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
 	result.link();
 	return result;
 }
@@ -42,7 +41,7 @@ ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
 	return (*this);
 }
 
-void ShaderProgram::addShader(gl::Shader &&shader)
+void ShaderProgram::addShader(Shader &&shader)
 {	
 	glAttachShader(mHandle, shader.handle());
 	mShaders.push_back(std::move(shader));
@@ -141,10 +140,10 @@ void ShaderProgram::destroy()
 {
 	if (mHandle != 0)
 	{
-		for (gl::Shader &shader : mShaders)
+		for (Shader &shader : mShaders)
 			glDetachShader(mHandle, shader.handle());
 		glDeleteProgram(mHandle);
 	}
 }
 
-}}
+}}}

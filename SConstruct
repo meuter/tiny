@@ -23,9 +23,9 @@ env.Library("tiny", Split("""
 	src/tiny/core/window.cpp
 	src/tiny/core/camera.cpp
 	src/tiny/utils/strutils.cpp
-	src/tiny/rendering/shaderprogram.cpp
 	src/tiny/rendering/mesh.cpp
 	src/tiny/rendering/tiny_obj_loader.cc
+	src/tiny/rendering/gl/shaderprogram.cpp
 	src/tiny/rendering/gl/shader.cpp
 	src/tiny/rendering/gl/texture.cpp
 	src/tiny/rendering/gl/buffer.cpp

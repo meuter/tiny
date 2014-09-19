@@ -3,17 +3,17 @@
 
 #include <string>
 #include <fstream>
-#include <map>
 #include <vector>
+#include <map>
 #include <tiny/core/types.h>
 #include <tiny/utils/strutils.h>
+#include <tiny/rendering/tiny_obj_loader.h>
 
-#include "gl/texture.h"
-#include "tiny_obj_loader.h"
+#include "texture.h"
 
 #include <iostream>
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace rendering { namespace gl {
 
 	class Material {
 	public:	
@@ -90,6 +90,7 @@ namespace tiny { namespace rendering {
 		gl::Texture mAmbientMap, mSpecularMap, mNormalMap, mTexture;
 
 	};
-}}
+
+}}}
 
 #endif

@@ -1,6 +1,6 @@
-#include <tiny/rendering/shaderprogram.h>
 #include <tiny/rendering/mesh.h>
-#include <tiny/rendering/material.h>
+#include <tiny/rendering/gl/material.h>
+#include <tiny/rendering/gl/shaderprogram.h>
 #include <tiny/rendering/gl/shader.h>
 #include <tiny/rendering/gl/phong.h>
 
@@ -12,6 +12,7 @@
 #include <iostream>
 
 using namespace tiny::rendering;
+using namespace tiny::rendering::gl;
 using namespace tiny::core;
 using namespace tiny::math;
 

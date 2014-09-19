@@ -1,6 +1,6 @@
 #include "phong.h"
 #include <tiny/core/camera.h>
-#include <tiny/rendering/material.h>
+#include <tiny/rendering/gl/material.h>
 #include <tiny/rendering/mesh.h>
 
 namespace tiny { namespace rendering { namespace gl {

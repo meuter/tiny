@@ -5,9 +5,9 @@
 #include <tiny/core/types.h>
 #include <vector>
 #include <string>
-#include "../core/transformable.h"
+#include <tiny/core/transformable.h>
 #include "tiny_obj_loader.h"
-#include "material.h"
+#include "gl/material.h"
 #include "gl/vertexarray.h"
 #include "gl/vertexbuffer.h"
 #include "gl/indexbuffer.h"
@@ -41,10 +41,10 @@ namespace tiny { namespace rendering {
 		void unload();
 		void draw() const;
 
-		const Material &material() const { return mMaterial; }
+		const gl::Material &material() const { return mMaterial; }
 
 	private:	
-		Material mMaterial;
+		gl::Material mMaterial;
 		gl::VertexArray mVertexArray;
 		gl::VertexBuffer mPositions;
 		gl::VertexBuffer mTexcoords;
