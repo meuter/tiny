@@ -5,6 +5,7 @@
 
 #include "shaderprogram.h"
 #include "mesh.h"
+#include "material.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -88,6 +89,17 @@ void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &val
 {
 	glUniformMatrix4fv(getUniformLocation(uniform), 1, GL_TRUE, &value(0,0));
 }
+
+void ShaderProgram::setUniform(const std::string &uniform, const Material &material)
+{
+	setUniform(uniform + ".texture",   material.texture().bind(0));
+	setUniform(uniform + ".ambient",   material.ambient());
+	setUniform(uniform + ".diffuse",   material.diffuse());
+	setUniform(uniform + ".specular",  material.specular());
+	setUniform(uniform + ".shininess", material.shininess());
+}
+
+
 
 void ShaderProgram::bindAttributeLocations()
 {

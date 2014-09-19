@@ -32,7 +32,6 @@ env.Library("tiny", Split("""
 	src/tiny/rendering/gl/texture.cpp
 	src/tiny/rendering/gl/buffer.cpp
 	src/tiny/rendering/gl/vertexarray.cpp
-	src/tiny/rendering/gl/phong.cpp
 
 	src/tiny/contrib/tiny_obj_loader.cc
 """))
