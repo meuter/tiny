@@ -48,4 +48,56 @@ mat4 Camera::viewMatrix() const
 	return reverse.rotationMatrix() * reverse.translationMatrix();
 }
 
+void Camera::update(Window &window, Inputs &inputs, sec dt)
+{
+
+	{
+		float amount = dt.count() * 10;
+
+		if (inputs.isKeyHeld(Key::KEY_UP))
+			move(forward(), amount);
+		if (inputs.isKeyHeld(Key::KEY_DOWN))
+			move(backward(), amount);
+		if (inputs.isKeyHeld(Key::KEY_LEFT))
+			move(left(), amount);
+		if (inputs.isKeyHeld(Key::KEY_RIGHT))
+			move(right(), amount);
+		if (inputs.isKeyHeld(Key::KEY_PAGEUP))
+			move(up(), amount);
+		if (inputs.isKeyHeld(Key::KEY_PAGEDOWN))
+			move(down(), amount);
+	}
+
+
+	{
+		const float sensitivity = 0.005f;
+
+		if (inputs.isMouseReleased(MouseButton::MIDDLE))
+		{
+			inputs.showMouseCursor(true);		
+		}
+		else if (inputs.isMousePressed(MouseButton::MIDDLE))
+		{
+			inputs.showMouseCursor(false);
+			inputs.setMousePosition(window.center());
+		}
+		else if (inputs.isMouseHeld(MouseButton::MIDDLE))
+		{
+	 		auto dpos = window.center() - inputs.getMousePosition();
+
+			if (dpos.x != 0)
+				rotate(up(), rad{dpos.x * sensitivity});
+
+			if (dpos.y != 0)
+				rotate(right(), rad{dpos.y * sensitivity});
+
+			if (dpos.x != 0 || dpos.y != 0)
+				inputs.setMousePosition(window.center());
+		}
+	}
+
+}
+
+
+
 }}

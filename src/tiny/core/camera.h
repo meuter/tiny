@@ -1,10 +1,12 @@
 #ifndef __TINY_CORE_CAMERA_H__
 #define __TINY_CORE_CAMERA_H__
 
+#include <tiny/math/trigo.h>
+
 #include "types.h"
 #include "transformable.h"
-#include <tiny/math/trigo.h>
-#include <algorithm>
+#include "window.h"
+#include "inputs.h"
 
 namespace tiny { namespace core {
 
@@ -20,6 +22,8 @@ namespace tiny { namespace core {
 
 		void lookAt(float x, float y, float z);
 		void lookAt(const vec3 target);
+
+		void update(Window &window, Inputs &inputs, sec dt);
 
 		const mat4 &projectionMatrix() const;
 		mat4 viewMatrix()              const;

@@ -32,7 +32,7 @@ public:
 		setUniform(uniform + ".shininess", material.shininess());
 	}
 
-	void draw(Camera &camera, Mesh &mesh)
+	void draw(const Camera &camera, const Mesh &mesh)
 	{
 		use();
 		setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
@@ -71,7 +71,7 @@ public:
 		setUniform(uniform + ".shininess", material.shininess());
 	}
 
-	void draw(Camera &camera, Mesh &mesh, DirectionalLight &directionalLight)
+	void draw(const Camera &camera, const Mesh &mesh, const DirectionalLight &directionalLight)
 	{
 		use();
 		setUniform("M",   mesh.modelMatrix());
@@ -129,6 +129,44 @@ public:
 	}
 };
 
+
+class Renderer
+{
+public:	
+
+	void init()
+	{
+		mContext.enableBackfaceCulling();
+		mContext.enableDepthTest();
+	}
+
+	void addDirectionalLight(DirectionalLight &&directionalLight)
+	{
+		mDirectionalLights.push_back(std::move(directionalLight));
+	}
+
+	void render(Camera &camera, Mesh &mesh)
+	{
+		mAmbientShader.draw(camera, mesh);
+		mContext.enableBlending();
+		for (const auto &directionalLight : mDirectionalLights)
+			mDirectionalShader.draw(camera, mesh, directionalLight);
+		mContext.disableBlending();
+	}
+
+private:
+	AmbientShader mAmbientShader;
+	DirectionalLightShader mDirectionalShader;
+	GLContext mContext;
+
+	std::vector<DirectionalLight> mDirectionalLights;
+};
+
+
+
+
+
+
 class MyGame : public Game
 {
 public:
@@ -137,10 +175,6 @@ public:
 
 	void init()
 	{
-		mContext.enableBackfaceCulling();
-		mContext.enableDepthTest();
-
-		glEnable(GL_DEPTH_TEST);
 
 		mMeshes.push_back(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
 		mMeshes.back().moveTo(0,-2,0);
@@ -151,12 +185,12 @@ public:
 		mMeshes.push_back(Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
-
-		mWhiteSun = DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1));
-		mBlueMoon = DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1));
-
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
+
+		mRenderer.init();
+		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1)));
+		mRenderer.addDirectionalLight(DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1)));
 
  		window().vsync(false);				
 	}
@@ -168,24 +202,16 @@ public:
 			stop();
 
 		mFPSCounter.update(dt);
-
-		moveCamera(dt);
-		lookCamera(dt);
+		mCamera.update(window(), inputs(), dt);
 	}
 
 	void render()
 	{
 		for (auto &mesh: mMeshes)
-		{
-			mAmbientShader.draw(mCamera, mesh);
-			mContext.enableBlending();
-			mDirectionalShader.draw(mCamera, mesh, mWhiteSun);
-			mDirectionalShader.draw(mCamera, mesh, mBlueMoon);
-			mContext.disableBlending();
-		}
+			mRenderer.render(mCamera, mesh);
+
 		mFPSCounter.newFrame();
 	}
-
 
 	bool shouldStop()
 	{
@@ -198,60 +224,12 @@ public:
 		return false;
 	}
 
-	void moveCamera(sec dt)
-	{
-		float amount = dt.count() * 10;
-
-		if (inputs().isKeyHeld(Key::KEY_UP))
-			mCamera.move(mCamera.forward(), amount);
-		if (inputs().isKeyHeld(Key::KEY_DOWN))
-			mCamera.move(mCamera.backward(), amount);
-		if (inputs().isKeyHeld(Key::KEY_LEFT))
-			mCamera.move(mCamera.left(), amount);
-		if (inputs().isKeyHeld(Key::KEY_RIGHT))
-			mCamera.move(mCamera.right(), amount);
-		if (inputs().isKeyHeld(Key::KEY_PAGEUP))
-			mCamera.move(mCamera.up(), amount);
-		if (inputs().isKeyHeld(Key::KEY_PAGEDOWN))
-			mCamera.move(mCamera.down(), amount);
-	}
-
-	void lookCamera(sec dt)
-	{
-		const float sensitivity = 0.005f;
-
-		if (inputs().isMouseReleased(MouseButton::MIDDLE))
-		{
-			inputs().showMouseCursor(true);		
-		}
-		else if (inputs().isMousePressed(MouseButton::MIDDLE))
-		{
-			inputs().showMouseCursor(false);
-			inputs().setMousePosition(window().center());
-		}
-		else if (inputs().isMouseHeld(MouseButton::MIDDLE))
-		{
-	 		auto dpos = window().center() - inputs().getMousePosition();
-
-			if (dpos.x != 0)
-				mCamera.rotate(mCamera.up(), rad{dpos.x * sensitivity});
-
-			if (dpos.y != 0)
-				mCamera.rotate(mCamera.right(), rad{dpos.y * sensitivity});
-
-			if (dpos.x != 0 || dpos.y != 0)
-				inputs().setMousePosition(window().center());
-		}
-	}
-
 private:	
-	AmbientShader mAmbientShader;
-	DirectionalLightShader mDirectionalShader;
-	Camera mCamera; 
 	FPSCounter mFPSCounter;
+	Renderer mRenderer;
+	Camera mCamera; 
+
 	std::vector<Mesh> mMeshes;
-	DirectionalLight mWhiteSun, mBlueMoon;
-	GLContext mContext;
 };
 
 
