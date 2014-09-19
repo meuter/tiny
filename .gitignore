@@ -35,3 +35,6 @@ src/tiny/rendering/gl/phong.o
 src/tiny/core/camera.o
 test/tiny/example/testgame.o
 testgame
+src/tiny/rendering/gl/shaderprogram.o
+src/tiny/rendering/gl/shader.o
+src/tiny/contrib/tiny_obj_loader.o

@@ -2,7 +2,9 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x)
-#include "../stb_image.h"
+#include <tiny/contrib/stb_image.h>
+#undef STBI_ASSERT
+#undef STB_IMAGE_IMPLEMENTATION
 
 
 namespace tiny { namespace rendering { namespace gl {

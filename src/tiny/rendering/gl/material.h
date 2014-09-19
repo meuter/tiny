@@ -7,7 +7,7 @@
 #include <map>
 #include <tiny/core/types.h>
 #include <tiny/utils/strutils.h>
-#include <tiny/rendering/tiny_obj_loader.h>
+#include <tiny/contrib/tiny_obj_loader.h>
 
 #include "texture.h"
 

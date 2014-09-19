@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include <tiny/core/transformable.h>
-#include "tiny_obj_loader.h"
+#include <tiny/contrib/tiny_obj_loader.h>
 #include "gl/material.h"
 #include "gl/vertexarray.h"
 #include "gl/vertexbuffer.h"
