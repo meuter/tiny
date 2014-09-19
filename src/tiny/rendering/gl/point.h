@@ -10,14 +10,15 @@ namespace tiny { namespace rendering { namespace gl {
 
 	struct PointLight
 	{
-		PointLight() : color(1,1,1), intensity(0), position(0,0,0), attenuation(0,1,0) {}
-		PointLight(const core::vec3 &color, const float &intensity, const core::vec3 &position, const core::vec3 attenuation) 
-			: color(color), intensity(intensity), position(position), attenuation(attenuation) {}
+		PointLight() : color(1,1,1), intensity(0), position(0,0,0), attenuation(1,0,0), range(2) {}
+		PointLight(const core::vec3 &color, float intensity, const core::vec3 &position, const core::vec3 attenuation = core::vec3(1,0,0), float range = 6) 
+			: color(color), intensity(intensity), position(position), attenuation(attenuation), range(range) {}
 
 		core::vec3 color;
 		float intensity;
 		core::vec3 position;
 		core::vec3 attenuation;
+		float range;
 	};
 
 	class PointLightShader : public ShaderProgram
@@ -34,6 +35,7 @@ namespace tiny { namespace rendering { namespace gl {
 			setUniform(uniform + ".intensity",   pointLight.intensity);
 			setUniform(uniform + ".position",    pointLight.position);
 			setUniform(uniform + ".attenuation", pointLight.attenuation);
+			setUniform(uniform + ".range",       pointLight.range);
 		}
 
 		void shade(const core::Camera &camera, const Mesh &mesh, const PointLight &pointLight)

@@ -6,6 +6,7 @@ struct PointLight
 	float intensity;
 	vec3 position;
 	vec3 attenuation;
+	float range;
 };
 
 struct Material
@@ -55,13 +56,16 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal)
 {
 	vec3  lightDirection  = fragWorldPosition - pointLight.position;
 	float distanceToPoint = length(lightDirection);
-	float attenuation     = distanceToPoint * pow(pointLight.attenuation.x,2) +
+
+	if (distanceToPoint > pointLight.range)
+		return vec4(0,0,0,0);
+
+	float attenuation     = distanceToPoint * pointLight.attenuation.x * pointLight.attenuation.x +
 	                        distanceToPoint * pointLight.attenuation.y + 
 	                        pointLight.attenuation.z +
 	                        0.0001f;
-	float intensity       = pointLight.intensity / attenuation;
 
-	return calcLight(pointLight.color, -lightDirection, intensity, normal);
+	return calcLight(pointLight.color, -lightDirection, pointLight.intensity / attenuation, normal);
 }
 
 
@@ -71,5 +75,5 @@ void main()
 	vec4 light = calcPointLight(pointLight, fragNormal);
 	vec4 texel = texture2D(material.texture, fragTexcoord);
 
-	gl_FragColor = color * texel * light;
+	gl_FragColor = color * light;
 }
