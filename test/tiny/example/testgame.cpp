@@ -1,8 +1,10 @@
 #include <tiny/rendering/gl/mesh.h>
+#include <tiny/rendering/gl/scene.h>
 #include <tiny/rendering/gl/material.h>
 #include <tiny/rendering/gl/shaderprogram.h>
 #include <tiny/rendering/gl/shader.h>
 #include <tiny/rendering/gl/phong.h>
+#include <tiny/rendering/gl/context.h>
 
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
@@ -11,221 +13,10 @@
 
 #include <iostream>
 
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
 
 using namespace tiny::rendering::gl;
 using namespace tiny::core;
 using namespace tiny::math;
-
-class AmbientShader : public ShaderProgram
-{
-public:
-	using ShaderProgram::setUniform;
-	using ShaderProgram::use;
-
-	AmbientShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/ambient.vs", "res/shaders/ambient.fs")) {}
-
-	void setUniform(const std::string &uniform, const Material &material)
-	{
-		setUniform(uniform + ".texture",   material.texture().bind(0));
-		setUniform(uniform + ".ambient",   material.ambient());
-		setUniform(uniform + ".diffuse",   material.diffuse());
-		setUniform(uniform + ".specular",  material.specular());
-		setUniform(uniform + ".shininess", material.shininess());
-	}
-
-	void draw(const Camera &camera, const Mesh &mesh)
-	{
-		use();
-		setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-		setUniform("material", mesh.material());
-
-		mesh.draw();
-	}
-};
-
-class DirectionalLightShader : public ShaderProgram
-{
-public:	
-	using ShaderProgram::setUniform;
-	using ShaderProgram::use;
-
-	DirectionalLightShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs")) {}
-
-	void setUniform(const std::string &uniform, const BaseLight &lightSource)
-	{
-		setUniform(uniform + ".color",     lightSource.color);
-		setUniform(uniform + ".intensity", lightSource.intensity);
-	}
-
-	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
-	{
-		setUniform(uniform + ".base",     dynamic_cast<const BaseLight&>(directionalLight));
-		setUniform(uniform + ".direction", directionalLight.direction);
-	}
-
-	void setUniform(const std::string &uniform, const Material &material)
-	{
-		setUniform(uniform + ".texture",   material.texture().bind(0));
-		setUniform(uniform + ".ambient",   material.ambient());
-		setUniform(uniform + ".diffuse",   material.diffuse());
-		setUniform(uniform + ".specular",  material.specular());
-		setUniform(uniform + ".shininess", material.shininess());
-	}
-
-	void draw(const Camera &camera, const Mesh &mesh, const DirectionalLight &directionalLight)
-	{
-		use();
-		setUniform("M",   mesh.modelMatrix());
-		setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-		setUniform("material", mesh.material());
-		setUniform("directionalLight", directionalLight);
-		setUniform("eyePos", camera.position());
-
-		mesh.draw();
-	}
-
-};
-
-class Context : public boost::noncopyable
-{
-public:
-
-	Context() : mHandle(NULL) {}
-
-	Context(Context &&other) : mHandle(other.mHandle)
-	{
-		other.release();
-	}
-
-	Context(Window &window) : mHandle(NULL)
-	{
-		mHandle = SDL_GL_CreateContext(window.handle());
-		if (mHandle == NULL)
-			throw std::runtime_error("could not create GL context");
-
-		glewExperimental = GL_TRUE; 
-		if (GLEW_OK != glewInit())
-			throw std::runtime_error("could not initiazlie GLEW");
-
-		glClearColor(0,0,0,1);
-	}
-
-	Context &operator=(Context &&other)
-	{
-		destroy();
-		mHandle = other.mHandle;
-		other.release();
-		return (*this);
-	}
-
-	void destroy()
-	{
-		if (mHandle)
-			SDL_GL_DeleteContext(mHandle);
-	}
-
-	void release()
-	{
-		mHandle = NULL;
-	}
-
-
-	void clear()
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-
-	void vsync(bool onoff)
-	{
-		SDL_GL_SetSwapInterval(onoff ? 1 : 0);
-	}
-
-	std::string version() const
-	{
-		return (char *)glGetString(GL_VERSION);
-	}
-
-	void enableBlending()
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE);
-		glDepthMask(false);
-		glDepthFunc(GL_EQUAL);
-	}
-
-	void disableBlending()
-	{
-		glDepthFunc(GL_LESS);
-		glDepthMask(true);
-		glDisable(GL_BLEND);
-	}
-
-	void enableBackfaceCulling()
-	{
-		glFrontFace(GL_CCW);
-		glCullFace(GL_BACK);
-		glEnable(GL_CULL_FACE);
-	}
-
-	void disableBackfaceCulling()
-	{
-		glDisable(GL_CULL_FACE);
-	}
-
-	void enableDepthTest()
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-	}
-
-	void disableDepthTest()
-	{
-		glDisable(GL_DEPTH_TEST);
-	}	
-
-private:	
-
-	void *mHandle;
-};
-
-
-class Renderer
-{
-public:	
-
-	Renderer(Context &context) : mContext(context) {}
-
-	void init()
-	{
-		mContext.enableBackfaceCulling();
-		mContext.enableDepthTest();
-	}
-
-	void addDirectionalLight(DirectionalLight &&directionalLight)
-	{
-		mDirectionalLights.push_back(std::move(directionalLight));
-	}
-
-	void render(Camera &camera, Mesh &mesh)
-	{
-		mAmbientShader.draw(camera, mesh);
-		mContext.enableBlending();
-		for (const auto &directionalLight : mDirectionalLights)
-			mDirectionalShader.draw(camera, mesh, directionalLight);
-		mContext.disableBlending();
-	}
-
-private:
-	AmbientShader mAmbientShader;
-	DirectionalLightShader mDirectionalShader;
-	Context &mContext;
-
-	std::vector<DirectionalLight> mDirectionalLights;
-};
-
-
 
 class MyGame : public Game
 {
@@ -235,15 +26,9 @@ public:
 
 	void init()
 	{
-		std::cout << "using OpenGL version " << mContext.version() << std::endl;
-
-		mMeshes.push_back(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
-		mMeshes.back().moveTo(0,-2,0);
-
-		mMeshes.push_back(Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"));
-		mMeshes.back().moveTo(0,4,0);
-
-		mMeshes.push_back(Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
+		mScene.add(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
+		mScene.add(Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).moveTo(0,4,0);
+		mScene.add(Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mCamera.moveTo(0,0,5);
@@ -268,9 +53,7 @@ public:
 
 	void render()
 	{
-		for (auto &mesh: mMeshes)
-			mRenderer.render(mCamera, mesh);
-
+		mRenderer.render(mCamera, mScene);
 		mFPSCounter.newFrame();
 	}
 
@@ -287,11 +70,10 @@ public:
 
 private:	
 	Context mContext;
-	Renderer mRenderer;
+	PhongRenderer mRenderer;
 	FPSCounter mFPSCounter;
 	Camera mCamera; 
-
-	std::vector<Mesh> mMeshes;
+	Scene mScene;
 };
 
 
