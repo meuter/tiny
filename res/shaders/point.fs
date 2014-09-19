@@ -56,16 +56,15 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal)
 {
 	vec3  lightDirection  = fragWorldPosition - pointLight.position;
 	float distanceToPoint = length(lightDirection);
+	vec4  light = vec4(0,0,0,0);
 
-	if (distanceToPoint > pointLight.range)
-		return vec4(0,0,0,0);
+	if (distanceToPoint < pointLight.range)
+	{
+		float attenuation = dot(vec3(pow(distanceToPoint, 2), distanceToPoint, 1), pointLight.attenuation) + 0.00001f;
+		light += calcLight(pointLight.color, -lightDirection, pointLight.intensity, normal) / attenuation;
+	}
 
-	float attenuation     = distanceToPoint * pointLight.attenuation.x * pointLight.attenuation.x +
-	                        distanceToPoint * pointLight.attenuation.y + 
-	                        pointLight.attenuation.z +
-	                        0.0001f;
-
-	return calcLight(pointLight.color, -lightDirection, pointLight.intensity / attenuation, normal);
+	return light;
 }
 
 

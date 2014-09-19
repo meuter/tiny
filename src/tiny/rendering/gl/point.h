@@ -2,6 +2,9 @@
 #define __TINY_RENDERING_GL_POINT_H__
 
 #include <tiny/core/camera.h>
+#include <algorithm>
+
+#include <iostream>
 
 #include "shaderprogram.h"
 #include "mesh.h"
@@ -10,14 +13,36 @@ namespace tiny { namespace rendering { namespace gl {
 
 	struct PointLight
 	{
-		PointLight() : color(1,1,1), intensity(0), position(0,0,0), attenuation(1,0,0), range(2) {}
-		PointLight(const core::vec3 &color, float intensity, const core::vec3 &position, const core::vec3 attenuation = core::vec3(1,0,0), float range = 6) 
-			: color(color), intensity(intensity), position(position), attenuation(attenuation), range(range) {}
+		PointLight() : color(1,1,1), intensity(0), position(0,0,0), attenuation(1,0,0) 
+		{
+			computeRange();
+		}
+
+		PointLight(const core::vec3 &color, float intensity, const core::vec3 &position, const core::vec3 attenuation = core::vec3(1,0,0))
+			: color(color), intensity(intensity), position(position), attenuation(attenuation)
+		{
+			computeRange();
+		}
+
+		void computeRange()
+		{			
+			float a = attenuation.x;
+			float b = attenuation.y;
+			float c = attenuation.z - 256 * intensity * std::max(std::max(color.x, color.y), color.z);
+
+			float delta = b*b - 4*a-c;
+
+			range  = (-b + sqrt(delta)) / 2*a;
+
+			std::cout << "range = " << range << std::endl;
+
+			// range = 100;
+		}
 
 		core::vec3 color;
 		float intensity;
 		core::vec3 position;
-		core::vec3 attenuation;
+		core::vec3 attenuation;	
 		float range;
 	};
 
