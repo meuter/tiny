@@ -5,39 +5,25 @@
 
 namespace tiny { namespace core {
 
-Window::Window() : mSDLWindow(NULL), mGLContext(NULL), mIsOpen(false)
+Window::Window() : mHandle(NULL), mIsOpen(false)
 {
 
 }
 
-Window::Window(int width, int height, std::string title) 
-	: mSDLWindow(NULL), mGLContext(NULL), mHeight(height), mWidth(width), mIsOpen(true)
+Window::Window(int width, int height, std::string title) : mHandle(NULL), mHeight(height), mWidth(width), mIsOpen(true)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
 
-	mSDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+	mHandle = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 
-	if (mSDLWindow == NULL)
+	if (mHandle == NULL)
 		throw std::runtime_error("could not create window");
-
-	mGLContext = SDL_GL_CreateContext(mSDLWindow);
-
-	if (mGLContext == NULL)
-		throw std::runtime_error("could not create GL context");
-
-	glewExperimental = GL_TRUE; 
-	if (GLEW_OK != glewInit())
-		throw std::runtime_error("could not initiazlie GLEW");
-
-	glClearColor(0,0,0,1);
 }
 
-Window::Window(Window &&other) 
-	: mSDLWindow(other.mSDLWindow), mGLContext(other.mGLContext), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
+Window::Window(Window &&other) : mHandle(other.mHandle), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
 {
-	other.mSDLWindow = NULL;
-	other.mGLContext = NULL;
+	other.mHandle = NULL;
 }
 
 Window::~Window() 
@@ -49,43 +35,30 @@ Window &Window::operator=(Window &&other)
 {
 	destroy();
 
-	mSDLWindow = other.mSDLWindow;
-	mGLContext = other.mGLContext;
+	mHandle = other.mHandle;
 	mHeight    = other.mHeight;
 	mWidth     = other.mWidth;
 
-	other.mSDLWindow = NULL;
-	other.mGLContext = NULL;
+	other.mHandle = NULL;
 	return (*this);
 }
 
-void Window::vsync(bool onoff)
-{
-	SDL_GL_SetSwapInterval(onoff ? 1 : 0);
-}
 
 void Window::clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Window::clear(float r, float g, float b, float a)
-{
-	glClearColor(r,g,b,a);
-	clear();
-}
-
 void Window::swap()
 {
-	SDL_GL_SwapWindow(mSDLWindow);
+	SDL_GL_SwapWindow(mHandle);
 }
 
 void Window::destroy()
 {
-	if (mSDLWindow != NULL)
+	if (mHandle != NULL)
 	{
-		SDL_GL_DeleteContext(mGLContext);
-		SDL_DestroyWindow(mSDLWindow);
+		SDL_DestroyWindow(mHandle);
 		SDL_Quit();
 	}	
 }

@@ -11,6 +11,9 @@
 
 #include <iostream>
 
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
+
 using namespace tiny::rendering::gl;
 using namespace tiny::core;
 using namespace tiny::math;
@@ -85,10 +88,64 @@ public:
 
 };
 
-
-class GLContext
+class Context : public boost::noncopyable
 {
-public:	
+public:
+
+	Context() : mHandle(NULL) {}
+
+	Context(Context &&other) : mHandle(other.mHandle)
+	{
+		other.release();
+	}
+
+	Context(Window &window) : mHandle(NULL)
+	{
+		mHandle = SDL_GL_CreateContext(window.handle());
+		if (mHandle == NULL)
+			throw std::runtime_error("could not create GL context");
+
+		glewExperimental = GL_TRUE; 
+		if (GLEW_OK != glewInit())
+			throw std::runtime_error("could not initiazlie GLEW");
+
+		glClearColor(0,0,0,1);
+	}
+
+	Context &operator=(Context &&other)
+	{
+		destroy();
+		mHandle = other.mHandle;
+		other.release();
+		return (*this);
+	}
+
+	void destroy()
+	{
+		if (mHandle)
+			SDL_GL_DeleteContext(mHandle);
+	}
+
+	void release()
+	{
+		mHandle = NULL;
+	}
+
+
+	void clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void vsync(bool onoff)
+	{
+		SDL_GL_SetSwapInterval(onoff ? 1 : 0);
+	}
+
+	std::string version() const
+	{
+		return (char *)glGetString(GL_VERSION);
+	}
 
 	void enableBlending()
 	{
@@ -126,13 +183,19 @@ public:
 	void disableDepthTest()
 	{
 		glDisable(GL_DEPTH_TEST);
-	}
+	}	
+
+private:	
+
+	void *mHandle;
 };
 
 
 class Renderer
 {
 public:	
+
+	Renderer(Context &context) : mContext(context) {}
 
 	void init()
 	{
@@ -157,13 +220,10 @@ public:
 private:
 	AmbientShader mAmbientShader;
 	DirectionalLightShader mDirectionalShader;
-	GLContext mContext;
+	Context &mContext;
 
 	std::vector<DirectionalLight> mDirectionalLights;
 };
-
-
-
 
 
 
@@ -171,10 +231,11 @@ class MyGame : public Game
 {
 public:
 
-	MyGame(Window &&window) : Game(std::move(window)) {	}
+	MyGame(Window &&window) : Game(std::move(window)), mContext(this->window()), mRenderer(mContext) {}
 
 	void init()
 	{
+		std::cout << "using OpenGL version " << mContext.version() << std::endl;
 
 		mMeshes.push_back(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
 		mMeshes.back().moveTo(0,-2,0);
@@ -192,7 +253,7 @@ public:
 		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1)));
 		mRenderer.addDirectionalLight(DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1)));
 
- 		window().vsync(false);				
+ 	 	mContext.vsync(false);				
 	}
 
 
@@ -225,8 +286,9 @@ public:
 	}
 
 private:	
-	FPSCounter mFPSCounter;
+	Context mContext;
 	Renderer mRenderer;
+	FPSCounter mFPSCounter;
 	Camera mCamera; 
 
 	std::vector<Mesh> mMeshes;

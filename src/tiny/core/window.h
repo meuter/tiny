@@ -25,20 +25,19 @@ namespace tiny { namespace core {
 		inline float aspect() const { return (float)mWidth/(float)mHeight; }		
 		inline ivec2 center() const { return ivec2(mWidth/2, mHeight/2); }
 
-		void vsync(bool onoff);
 		void clear();
-		void clear(float r, float g, float b, float a);
 		void swap();
 
 		bool isOpen() { return mIsOpen; }
 		void close()  { mIsOpen = false; }
 
+		SDL_Window *handle() const { return mHandle; }
+
 	protected:
 		void destroy();
 
 	private:
-		SDL_Window *mSDLWindow;
-		void *mGLContext;
+		SDL_Window *mHandle;
 		int mHeight, mWidth;
 		int mIsOpen;
 	};

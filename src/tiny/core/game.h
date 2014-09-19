@@ -26,8 +26,8 @@ namespace tiny { namespace core {
 		void start() { mEngine.start(); }
 		void stop()  { mEngine.stop();  }
 
-		inline Window &window() { return mWindow; }
-		inline Inputs &inputs() { return mInputs; }
+		inline Window &window()   { return mWindow; }
+		inline Inputs &inputs()   { return mInputs; }
 
 	private:
 		Window mWindow;
