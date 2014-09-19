@@ -38,3 +38,4 @@ testgame
 src/tiny/rendering/gl/shaderprogram.o
 src/tiny/rendering/gl/shader.o
 src/tiny/contrib/tiny_obj_loader.o
+src/tiny/rendering/gl/mesh.o

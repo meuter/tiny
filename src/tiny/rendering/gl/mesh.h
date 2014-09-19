@@ -2,17 +2,19 @@
 #define __TINY_CORE_MESH_H__
 
 #include <GL/glew.h>
-#include <tiny/core/types.h>
 #include <vector>
 #include <string>
+
+#include <tiny/core/types.h>
 #include <tiny/core/transformable.h>
 #include <tiny/contrib/tiny_obj_loader.h>
-#include "gl/material.h"
-#include "gl/vertexarray.h"
-#include "gl/vertexbuffer.h"
-#include "gl/indexbuffer.h"
 
-namespace tiny { namespace rendering {
+#include "material.h"
+#include "vertexarray.h"
+#include "vertexbuffer.h"
+#include "indexbuffer.h"
+
+namespace tiny { namespace rendering { namespace gl {
 
 	class Mesh : public core::Transformable
 	{
@@ -41,17 +43,17 @@ namespace tiny { namespace rendering {
 		void unload();
 		void draw() const;
 
-		const gl::Material &material() const { return mMaterial; }
+		const Material &material() const { return mMaterial; }
 
 	private:	
-		gl::Material mMaterial;
-		gl::VertexArray mVertexArray;
-		gl::VertexBuffer mPositions;
-		gl::VertexBuffer mTexcoords;
-		gl::VertexBuffer mNormals;
-		gl::IndexBuffer mIndices;
+		Material mMaterial;
+		VertexArray mVertexArray;
+		VertexBuffer mPositions;
+		VertexBuffer mTexcoords;
+		VertexBuffer mNormals;
+		IndexBuffer mIndices;
 	};
 
-}}
+}}}
 
 #endif

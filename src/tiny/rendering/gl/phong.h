@@ -8,12 +8,9 @@ namespace tiny { namespace core {
 	class Camera;
 }}
 
-namespace tiny { namespace rendering {
-	class Mesh;
-}}
-
 namespace tiny { namespace rendering { namespace gl {
 	
+	class Mesh;
 	class Material;
 
 	struct BaseLight

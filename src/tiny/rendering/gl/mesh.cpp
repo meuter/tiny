@@ -1,11 +1,13 @@
-#include "mesh.h"
-#include "gl/shaderprogram.h"
 #include <stdexcept>
 #include <fstream>
 #include <iostream>
-#include "../utils/strutils.h"
 
-namespace tiny { namespace rendering {
+#include <tiny/utils/strutils.h>
+
+#include "mesh.h"
+#include "shaderprogram.h"
+
+namespace tiny { namespace rendering { namespace gl {
 
 Mesh Mesh::fromFile(const std::string &objFilename)
 {
@@ -42,7 +44,7 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 Mesh Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilename)
 {
 	Mesh result = Mesh::fromFile(objFilname);
-	result.mMaterial = gl::Material::fromFile(mtlFilename);
+	result.mMaterial = Material::fromFile(mtlFilename);
 	return result;
 }
 
@@ -65,5 +67,5 @@ void Mesh::draw() const
 	mVertexArray.unbind();
 }
 
-}}
+}}}
 	

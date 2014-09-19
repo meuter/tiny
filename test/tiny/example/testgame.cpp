@@ -1,4 +1,4 @@
-#include <tiny/rendering/mesh.h>
+#include <tiny/rendering/gl/mesh.h>
 #include <tiny/rendering/gl/material.h>
 #include <tiny/rendering/gl/shaderprogram.h>
 #include <tiny/rendering/gl/shader.h>
@@ -11,7 +11,6 @@
 
 #include <iostream>
 
-using namespace tiny::rendering;
 using namespace tiny::rendering::gl;
 using namespace tiny::core;
 using namespace tiny::math;
@@ -51,15 +50,15 @@ public:
 
 	DirectionalLightShader() : ShaderProgram(ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs")) {}
 
-	void setUniform(const std::string &uniform, const gl::BaseLight &lightSource)
+	void setUniform(const std::string &uniform, const BaseLight &lightSource)
 	{
 		setUniform(uniform + ".color",     lightSource.color);
 		setUniform(uniform + ".intensity", lightSource.intensity);
 	}
 
-	void setUniform(const std::string &uniform, const gl::DirectionalLight &directionalLight)
+	void setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 	{
-		setUniform(uniform + ".base",     dynamic_cast<const gl::BaseLight&>(directionalLight));
+		setUniform(uniform + ".base",     dynamic_cast<const BaseLight&>(directionalLight));
 		setUniform(uniform + ".direction", directionalLight.direction);
 	}
 
@@ -72,7 +71,7 @@ public:
 		setUniform(uniform + ".shininess", material.shininess());
 	}
 
-	void draw(Camera &camera, Mesh &mesh, gl::DirectionalLight &directionalLight)
+	void draw(Camera &camera, Mesh &mesh, DirectionalLight &directionalLight)
 	{
 		use();
 		setUniform("M",   mesh.modelMatrix());
@@ -153,8 +152,8 @@ public:
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 
-		mWhiteSun = gl::DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1));
-		mBlueMoon = gl::DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1));
+		mWhiteSun = DirectionalLight(vec3(1,1,1), 2.0f, vec3(1,-1,1));
+		mBlueMoon = DirectionalLight(vec3(0,1,0), 1.0f, vec3(-1,-1,-1));
 
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
@@ -251,7 +250,7 @@ private:
 	Camera mCamera; 
 	FPSCounter mFPSCounter;
 	std::vector<Mesh> mMeshes;
-	gl::DirectionalLight mWhiteSun, mBlueMoon;
+	DirectionalLight mWhiteSun, mBlueMoon;
 	GLContext mContext;
 };
 

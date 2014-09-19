@@ -1,9 +1,10 @@
-#include "shaderprogram.h"
-#include "../mesh.h"
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
 #include <utility>
+
+#include "shaderprogram.h"
+#include "mesh.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
