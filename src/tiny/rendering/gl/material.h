@@ -70,24 +70,22 @@ namespace tiny { namespace rendering { namespace gl {
 			mEmission  = core::vec3(material.emission);
 			mShininess = material.shininess;
 
-			if (!material.ambient_texname.empty())
-				mAmbientMap = gl::Texture::fromFile(material.ambient_texname);
-
-			if (!material.specular_texname.empty())
-				mSpecularMap = gl::Texture::fromFile(material.specular_texname);
-
-			if (!material.normal_texname.empty())
-				mNormalMap = gl::Texture::fromFile(material.normal_texname);
-	
 			if (!material.diffuse_texname.empty())
 				mTexture = gl::Texture::fromFile(material.diffuse_texname);
+			else
+			{
+				unsigned char white[1024];
+				memset(white, 0xFF, sizeof(white));
+				mTexture = Texture(white, 16,16);
+			}
+
 		}
 
 
 	private:
 		core::vec3 mAmbient, mDiffuse, mSpecular, mEmission;
 		float mShininess;
-		gl::Texture mAmbientMap, mSpecularMap, mNormalMap, mTexture;
+		gl::Texture mTexture;
 
 	};
 

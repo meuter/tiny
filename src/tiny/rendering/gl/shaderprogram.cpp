@@ -92,7 +92,9 @@ void ShaderProgram::setUniform(const std::string &uniform, const core::mat4 &val
 
 void ShaderProgram::setUniform(const std::string &uniform, const Material &material)
 {
-	setUniform(uniform + ".texture",   material.texture().bind(0));
+	material.texture().bind(0);
+
+	setUniform(uniform + ".texture",   0);
 	setUniform(uniform + ".ambient",   material.ambient());
 	setUniform(uniform + ".diffuse",   material.diffuse());
 	setUniform(uniform + ".specular",  material.specular());
