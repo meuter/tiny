@@ -11,8 +11,6 @@ namespace tiny { namespace rendering { namespace gl {
 
 Mesh Mesh::fromFile(const std::string &objFilename)
 {
-	Mesh result;
-
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 
@@ -27,18 +25,16 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 	if (materials.size() != 1)
 		throw std::runtime_error("more than one material found in '"+objFilename+"'");
 
-	auto &mesh = shapes[0].mesh;
-	unsigned int nVertices = mesh.positions.size()/3;
+	auto &meshData = shapes[0].mesh;
+	unsigned int nVertices = meshData.positions.size()/3;
 
-	while (mesh.normals.size()/3 < nVertices)
-		mesh.normals.emplace_back(0);	
+	while (meshData.normals.size()/3 < nVertices)
+		meshData.normals.emplace_back(0);	
 
-	while (mesh.texcoords.size()/2 < nVertices)
-		mesh.texcoords.emplace_back(0);	
+	while (meshData.texcoords.size()/2 < nVertices)
+		meshData.texcoords.emplace_back(0);	
 
-	result.load(mesh);
-
-	return result;
+	return Mesh(meshData);
 }
 
 Mesh Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilename)
@@ -48,23 +44,28 @@ Mesh Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilena
 	return result;
 }
 
-void Mesh::load(const tinyobj::mesh_t &mesh) 
+Mesh::Mesh(const tinyobj::mesh_t &meshData) 
 {
-	mVertexArray.bind();
-	{
-		mPositions.load(AttributeLocation::POSITION, mesh.positions, 3);
-		mTexcoords.load(AttributeLocation::TEXCOORD, mesh.texcoords, 2);
-		mNormals.load(AttributeLocation::NORMAL, mesh.normals, 3);
-		mIndices.load(mesh.indices);
-	}
-	mVertexArray.unbind();
+	glGenVertexArraysAPPLE(1, &mHandle);
+	if (mHandle == 0)
+		throw std::runtime_error("could not create vertex array");
+
+	glBindVertexArrayAPPLE(mHandle);
+	mAttributes[POSITION].loadAttribute(POSITION, meshData.positions, 3);
+	mAttributes[TEXCOORD].loadAttribute(TEXCOORD, meshData.texcoords, 2);
+	mAttributes[ NORMAL ].loadAttribute(NORMAL, meshData.normals, 3);
+	mIndices.loadIndices(meshData.indices);
 }
 
 void Mesh::draw() const
 {
-	mVertexArray.bind();
+	glBindVertexArrayAPPLE(mHandle);
 	glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-	mVertexArray.unbind();
+}
+
+void Mesh::destroy(GLuint handle)
+{
+	glDeleteVertexArrays(1, &handle);
 }
 
 }}}

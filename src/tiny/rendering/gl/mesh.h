@@ -10,9 +10,7 @@
 #include <tiny/contrib/tiny_obj_loader.h>
 
 #include "material.h"
-#include "vertexarray.h"
-#include "vertexbuffer.h"
-#include "indexbuffer.h"
+#include "bufferobject.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -28,30 +26,29 @@ namespace tiny { namespace rendering { namespace gl {
 			POSITION,
 			TEXCOORD,
 			NORMAL,
+			N_ATTRIBUTES,
 		};
 
-		Mesh() = default;
-		Mesh(const Mesh &other) = delete;
+		Mesh(const tinyobj::mesh_t &meshData);
 		Mesh(Mesh &&mesh) = default;
 		
 		virtual ~Mesh() = default;
 
-		Mesh &operator=(const Mesh &mesh) = delete;
 		Mesh &operator=(Mesh &&other) = default;
 
-		void load(const tinyobj::mesh_t &mesh);
-		void unload();
 		void draw() const;
 
 		const Material &material() const { return mMaterial; }
 
-	private:	
+	protected:
+		static void destroy(GLuint handle);
+
+	private:
 		Material mMaterial;
-		VertexArray mVertexArray;
-		VertexBuffer mPositions;
-		VertexBuffer mTexcoords;
-		VertexBuffer mNormals;
-		IndexBuffer mIndices;
+		BufferObject mAttributes[N_ATTRIBUTES];
+		BufferObject mIndices;
+		Handle<GLuint, destroy> mHandle;
+
 	};
 
 }}}
