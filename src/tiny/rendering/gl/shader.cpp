@@ -7,48 +7,6 @@ namespace tiny { namespace rendering { namespace gl {
 
 Shader Shader::fromFile(GLenum shaderType, const std::string filename)
 {
-	auto shader = Shader(shaderType);
-	shader.loadFile(filename);
-	shader.compile();
-	return shader;
-}
-
-Shader::Shader(GLenum shaderType) : mHandle(glCreateShader(shaderType))
-{
-	if (mHandle == 0)
-		throw std::runtime_error("could not create shader");
-}
-
-Shader::Shader(Shader &&other) : mHandle(other.handle())
-{
-	other.release();
-}
-
-Shader::~Shader()
-{
-	destroy();
-}
-
-Shader &Shader::operator=(Shader &&other)
-{
-	destroy();
-	mHandle = other.handle();
-	other.release();
-
-	return (*this);
-}
-
-void Shader::load(const std::string &shaderSource)
-{
-	const GLchar *sources[] = { shaderSource.c_str() };
-	const GLint   lengths[] = { static_cast<GLint>(shaderSource.length()) };
-
-	glShaderSource(mHandle, 1, sources, lengths);
-}
-
-
-void Shader::loadFile(const std::string &filename)
-{
 	std::ifstream fileStream(filename.c_str());
 
 	if (fileStream.fail())
@@ -57,13 +15,19 @@ void Shader::loadFile(const std::string &filename)
 	std::stringstream buffer;
 	buffer << fileStream.rdbuf();
 
-	load(buffer.str());
+	return Shader(shaderType, buffer.str());
 }
 
-void Shader::compile() 
+Shader::Shader(GLenum shaderType, const std::string &shaderText) : mHandle(glCreateShader(shaderType))
 {
 	GLint success;
+	const GLchar *sources[] = { shaderText.c_str() };
+	const GLint   lengths[] = { static_cast<GLint>(shaderText.length()) };
 
+	if (mHandle == 0)
+		throw std::runtime_error("could not create shader");
+
+	glShaderSource(mHandle, 1, sources, lengths);
 	glCompileShader(mHandle);
 	glGetShaderiv(mHandle, GL_COMPILE_STATUS, &success);
 
@@ -75,15 +39,9 @@ void Shader::compile()
 	}
 }
 
-void Shader::release()
+void Shader::destroy(GLuint handle)
 {
-	mHandle = 0;
-}
-
-void Shader::destroy()
-{
-	if (mHandle)
-		glDeleteShader(mHandle);
+	glDeleteShader(handle);
 }
 
 

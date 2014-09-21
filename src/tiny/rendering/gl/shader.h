@@ -3,34 +3,29 @@
 
 #include <GL/glew.h>
 #include <string>
-#include <boost/noncopyable.hpp>
+#include "handle.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
-	class Shader : boost::noncopyable
+	class Shader
 	{
 	public:
 		static Shader fromFile(GLenum shaderType, const std::string filename);
 
-		Shader(GLenum shaderType);
-		Shader(Shader &&other);
+		Shader(GLenum shaderType, const std::string &shaderText);
+		Shader(Shader &&other) = default;
 
-		virtual ~Shader();
+		virtual ~Shader() = default;
 
-		Shader &operator=(Shader &&other);
-
-		void load(const std::string &shaderSource);
-		void loadFile(const std::string &filename);
-		void compile();
+		Shader &operator=(Shader &&other) = default;
 
 		inline GLuint handle() const { return mHandle; }
 
 	protected:	
-		void release();
-		void destroy();
+		static void destroy(GLuint handle);
 
 	private:
-		GLuint mHandle;
+		Handle<GLuint, destroy> mHandle;
 	};
 
 }}}
