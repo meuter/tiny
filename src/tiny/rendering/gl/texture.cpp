@@ -17,7 +17,7 @@ Texture Texture::fromFile(const std::string &filename)
 	if (pixels == NULL)
 		throw std::runtime_error("could not load texture file '"+filename+"'");
 
-    Texture result(pixels, width, height);
+    auto result = Texture(pixels, width, height);
 
 	stbi_image_free(pixels);
 

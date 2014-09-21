@@ -4,28 +4,29 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
-#include <boost/noncopyable.hpp>
 #include <tiny/core/types.h>
 
 #include "shader.h"
+#include "handle.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
 	class Material;
 
-	class ShaderProgram : boost::noncopyable
+	class ShaderProgram 
 	{
 	public:
 		static ShaderProgram fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename);
 
 		ShaderProgram();
-		ShaderProgram(ShaderProgram &&other);
-		virtual ~ShaderProgram();
+		ShaderProgram(ShaderProgram &&other) = default;
+		virtual ~ShaderProgram() = default;
 
-		ShaderProgram &operator=(ShaderProgram &&other);
+		ShaderProgram &operator=(ShaderProgram &&other) = default;
 
-		void addShader(Shader &&shader);
+		void add(Shader &&shader);
 		void link();
+		void use();		
 
 		void setUniform(const std::string &uniform, float value);
 		void setUniform(const std::string &uniform, const core::vec2 &value);
@@ -37,17 +38,15 @@ namespace tiny { namespace rendering { namespace gl {
 		GLint getUniformLocation(const std::string &uniform) const;
 		GLint getAttributeLocation(const std::string &attribute) const;
 
-		void use();		
 
 	protected:
 		void bindAttributeLocations();
-		void checkProgramError(GLenum linkingStage);
-		void release();
-		void destroy();
+		void check(GLenum linkingStage);
+
+		static void destroy(GLuint handle);
 
 	private:
-		GLuint mHandle;
-		std::vector<Shader> mShaders;
+		Handle<GLuint, destroy> mHandle;
 	};
 
 }}}

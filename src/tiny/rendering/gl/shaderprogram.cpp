@@ -11,9 +11,9 @@ namespace tiny { namespace rendering { namespace gl {
 
 ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
 {
-	auto result = ShaderProgram();
-	result.addShader(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
-	result.addShader(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
+	ShaderProgram result;
+	result.add(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
+	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
 	result.link();
 	return result;
 }
@@ -24,29 +24,9 @@ ShaderProgram::ShaderProgram() : mHandle(glCreateProgram())
 		throw std::runtime_error("could not create shader program");
 }
 
-ShaderProgram::ShaderProgram(ShaderProgram &&other) : mHandle(other.mHandle), mShaders(std::move(other.mShaders))
-{
-	other.release();
-}
-
-ShaderProgram::~ShaderProgram()
-{
-	destroy();
-}
-
-ShaderProgram &ShaderProgram::operator=(ShaderProgram &&other)
-{
-	destroy();
-	mHandle  = other.mHandle;
-	mShaders = std::move(other.mShaders);
-	other.release();
-	return (*this);
-}
-
-void ShaderProgram::addShader(Shader &&shader)
+void ShaderProgram::add(Shader &&shader)
 {	
 	glAttachShader(mHandle, shader.handle());
-	mShaders.push_back(std::move(shader));
 }
 
 void ShaderProgram::link()
@@ -54,10 +34,10 @@ void ShaderProgram::link()
 	bindAttributeLocations();
 
 	glLinkProgram(mHandle);
-	checkProgramError(GL_LINK_STATUS);
+	check(GL_LINK_STATUS);
 
 	glValidateProgram(mHandle);
-	checkProgramError(GL_VALIDATE_STATUS);
+	check(GL_VALIDATE_STATUS);
 }
 
 void ShaderProgram::use()
@@ -101,8 +81,6 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 	setUniform(uniform + ".shininess", material.shininess());
 }
 
-
-
 void ShaderProgram::bindAttributeLocations()
 {
 	glBindAttribLocation(mHandle, Mesh::POSITION, "position");
@@ -120,17 +98,7 @@ GLint ShaderProgram::getUniformLocation(const std::string &uniform) const
 	return location;
 }
 
-GLint ShaderProgram::getAttributeLocation(const std::string &attribute) const
-{
-	GLint result = glGetAttribLocation(mHandle, attribute.c_str());
-
-	if (result == -1)
-		throw std::runtime_error("could not get attribute location for attribute '" + attribute + "'");
-
-	return result;
-}
-
-void ShaderProgram::checkProgramError(GLenum linkingStage)
+void ShaderProgram::check(GLenum linkingStage)
 {
 	GLint success;
 
@@ -140,25 +108,13 @@ void ShaderProgram::checkProgramError(GLenum linkingStage)
 	{
 		char errorMessage[1024];
 		glGetProgramInfoLog(mHandle, sizeof(errorMessage), NULL, errorMessage);
-
 		throw std::runtime_error("shader program error:\n" + std::string(errorMessage));
 	}
-
 }
 
-void ShaderProgram::release()
+void ShaderProgram::destroy(GLuint handle)
 {
-	mHandle = 0;
-}
-
-void ShaderProgram::destroy()
-{
-	if (mHandle != 0)
-	{
-		for (Shader &shader : mShaders)
-			glDetachShader(mHandle, shader.handle());
-		glDeleteProgram(mHandle);
-	}
+	glDeleteProgram(handle);
 }
 
 }}}
