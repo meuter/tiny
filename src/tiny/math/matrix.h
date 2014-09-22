@@ -290,6 +290,15 @@ namespace tiny { namespace math {
         return accumulator;
     }
 
+    template<typename scalar, size_t N>
+    scalar max(const vector<scalar,N> &m)  
+    {
+        auto result = m(0);
+        for (size_t i = 1; i < N; ++i)
+            result = std::max(result, m(i));
+        return result;
+    }
+
     template<typename scalar, size_t L, size_t C>
     matrix<scalar,C,L> transposed(const matrix<scalar,L,C> &m)
     {

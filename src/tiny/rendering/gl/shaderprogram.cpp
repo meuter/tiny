@@ -6,6 +6,7 @@
 #include "shaderprogram.h"
 #include "mesh.h"
 #include "material.h"
+#include "light.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -79,6 +80,22 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 	setUniform(uniform + ".diffuse",   material.diffuse());
 	setUniform(uniform + ".specular",  material.specular());
 	setUniform(uniform + ".shininess", material.shininess());
+}
+
+void ShaderProgram::setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
+{
+	setUniform(uniform + ".color",     directionalLight.color());
+	setUniform(uniform + ".intensity", directionalLight.intensity());
+	setUniform(uniform + ".direction", directionalLight.direction());
+}
+
+void ShaderProgram::setUniform(const std::string &uniform, const PointLight &pointLight)
+{
+	setUniform(uniform + ".color",       pointLight.color());
+	setUniform(uniform + ".intensity",   pointLight.intensity());
+	setUniform(uniform + ".position",    pointLight.position());
+	setUniform(uniform + ".attenuation", pointLight.attenuation());
+	setUniform(uniform + ".range",       pointLight.range());
 }
 
 void ShaderProgram::bindAttributeLocations()

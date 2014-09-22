@@ -409,3 +409,12 @@ TEST(slerp, can_be_used_on_float2)
 
     EXPECT_EQ(float2(4,-5),slerp(start,end,0.5f));
 }
+
+TEST(max, can_be_used_to_compute_the_max_component)
+{
+
+    float3 v(-5,3,8);
+
+    EXPECT_EQ(8, max(v));
+
+}

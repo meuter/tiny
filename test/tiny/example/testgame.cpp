@@ -1,9 +1,6 @@
 #include <tiny/rendering/gl/mesh.h>
-#include <tiny/rendering/gl/scene.h>
 #include <tiny/rendering/gl/material.h>
-#include <tiny/rendering/gl/shaderprogram.h>
-#include <tiny/rendering/gl/shader.h>
-#include <tiny/rendering/gl/phong.h>
+#include <tiny/rendering/gl/renderer.h>
 #include <tiny/rendering/gl/context.h>
 
 #include <tiny/core/game.h>
@@ -26,9 +23,13 @@ public:
 
 	void init()
 	{
-		mScene.add(Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
-		mScene.add(Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).moveTo(0,4,0);
-		mScene.add(Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
+		mGround = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
+		mGround.moveTo(0,-2,0);
+
+		mBox = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
+		mBox.moveTo(0,4,0);
+
+		mSphere = Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl");
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mCamera.moveTo(0,0,5);
@@ -57,7 +58,9 @@ public:
 
 	void render()
 	{
-		mRenderer.render(mCamera, mScene);
+		mRenderer.render(mCamera, mGround);
+		mRenderer.render(mCamera, mSphere);
+		mRenderer.render(mCamera, mBox);
 		mFPSCounter.render();
 	}
 
@@ -74,10 +77,10 @@ public:
 
 private:	
 	Context mContext;
-	PhongRenderer mRenderer;
+	Mesh mBox, mSphere, mGround;
+	Renderer mRenderer;
 	FPSCounter mFPSCounter;
-	Camera mCamera; 
-	Scene mScene;
+	Camera mCamera;
 };
 
 
