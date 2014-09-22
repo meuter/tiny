@@ -4,7 +4,6 @@
 
 namespace tiny { namespace core {
 
-
 void Game::start()
 {
 	if (mIsRunning)

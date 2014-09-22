@@ -51,14 +51,14 @@ public:
 		if (shouldStop())
 			stop();
 
-		mFPSCounter.update(dt);
+		mFPSCounter.update(t, dt);
 		mCamera.update(window(), inputs(), dt);
 	}
 
 	void render()
 	{
 		mRenderer.render(mCamera, mScene);
-		mFPSCounter.newFrame();
+		mFPSCounter.render();
 	}
 
 	bool shouldStop()

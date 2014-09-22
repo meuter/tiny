@@ -1,14 +1,12 @@
 #ifndef __TINY_CORE_GAME_H__
 #define __TINY_CORE_GAME_H__
 
-#include <boost/noncopyable.hpp>
-
 #include "inputs.h"
 #include "window.h"
 
 namespace tiny { namespace core {
 
-	class Game : public boost::noncopyable
+	class Game 
 	{
 	public:
 		Game(Window &&window) : mWindow(std::move(window)){}
@@ -27,9 +25,10 @@ namespace tiny { namespace core {
 		inline Window &window()   { return mWindow; }
 		inline Inputs &inputs()   { return mInputs; }
 
-	private:
+	protected:
 		void run();
 
+	private:
 		Window mWindow;
 		Inputs mInputs;
 		bool mIsRunning;

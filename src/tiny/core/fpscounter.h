@@ -11,7 +11,12 @@ namespace tiny { namespace core {
 	public:
 		FPSCounter() : nFrames(0), sinceLastFrame(0.0) {}
 
-		void update(sec dt)
+		void init()
+		{
+					
+		}
+
+		void update(sec t, sec dt)
 		{
 			sinceLastFrame += dt;
 			if( sinceLastFrame > sec(1))
@@ -22,7 +27,7 @@ namespace tiny { namespace core {
 			}
 		}
 
-		void newFrame()
+		void render()
 		{
 			nFrames++;
 		}
