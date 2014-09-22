@@ -11,7 +11,13 @@ namespace tiny { namespace core {
 		static const vec3 X_AXIS, Y_AXIS, Z_AXIS;
 
 		Transformable();
+		Transformable(const Transformable &other) = default;
+		Transformable(Transformable &&other) = default;
+
 		virtual ~Transformable() = default;
+
+		Transformable &operator=(const Transformable &other) = default;
+		Transformable &operator=(Transformable &&other) = default;
 
 		inline void move(const vec3 &direction, float amount)    { mPosition += amount * direction; } 
 		inline void moveTo(const vec3 &position)                 { mPosition = position; } 
@@ -35,9 +41,9 @@ namespace tiny { namespace core {
 		inline vec3 forward()         const                      { return mRotation.rotate( Z_AXIS); }
 		inline vec3 backward()        const                      { return mRotation.rotate(-Z_AXIS); }
 
-		inline const vec3 &position() const                      { return mPosition; }
-		inline const vec3 &scaling()  const                      { return mScaling; }
-		inline const quat &rotation() const                      { return mRotation; }
+		inline vec3 position()        const                      { return mPosition; }
+		inline vec3 scaling()         const                      { return mScaling; }
+		inline quat rotation()        const                      { return mRotation; }
 
 		mat4 modelMatrix()            const;
 		mat4 translationMatrix()      const;
