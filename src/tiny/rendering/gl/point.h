@@ -33,10 +33,6 @@ namespace tiny { namespace rendering { namespace gl {
 			float delta = b*b - 4*a-c;
 
 			range  = (-b + sqrt(delta)) / 2*a;
-
-			std::cout << "range = " << range << std::endl;
-
-			// range = 100;
 		}
 
 		core::vec3 color;

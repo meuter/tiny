@@ -29,6 +29,7 @@ namespace tiny { namespace rendering { namespace gl {
 			N_ATTRIBUTES,
 		};
 
+		Mesh() = default;
 		Mesh(const tinyobj::mesh_t &meshData);
 		Mesh(Mesh &&mesh) = default;
 		
