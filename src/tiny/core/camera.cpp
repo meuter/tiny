@@ -26,11 +26,11 @@ void Camera::lookAt(float x, float y, float z)
 void Camera::lookAt(const vec3 target) 
 {
 	// FIXME: probably not working as intended
-	vec3 newForward = normalize(target - mPosition);
+	vec3 newForward = normalize(target - position());
 	vec3 newLeft    = normalize(cross(up(), newForward));
 	vec3 newUp      = normalize(cross(newForward, newLeft));
 
-	mRotation = quat(newForward, newUp);
+	rotateTo(quat(newForward, newUp));
 }
 
 const mat4 &Camera::projectionMatrix() const
@@ -42,8 +42,8 @@ mat4 Camera::viewMatrix() const
 {
 	Transformable reverse;
 
-	reverse.rotateTo(mRotation.conjugate());
-	reverse.moveTo(-mPosition);
+	reverse.rotateTo(rotation().conjugate());
+	reverse.moveTo(-position());
 
 	return reverse.rotationMatrix() * reverse.translationMatrix();
 }
