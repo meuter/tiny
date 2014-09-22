@@ -18,38 +18,51 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Renderer(Context &context) : mContext(context) 
 		{
-			mAmbientShader     = ShaderProgram::fromFiles("res/shaders/ambient.vs", "res/shaders/ambient.fs");
-			mDirectionalShader = ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs");
-			mPointShader       = ShaderProgram::fromFiles("res/shaders/point.vs", "res/shaders/point.fs");
+			mAmbientLightShader     = ShaderProgram::fromFiles("res/shaders/ambient.vs",     "res/shaders/ambient.fs");
+			mDirectionalLightShader = ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs");
+			mPointLightShader       = ShaderProgram::fromFiles("res/shaders/point.vs",       "res/shaders/point.fs");
+			mSpotLightShader        = ShaderProgram::fromFiles("res/shaders/spot.vs",        "res/shaders/spot.fs");
 		}
 
 		void ambientPass(const core::Camera &camera, const Mesh &mesh)
 		{
-			mAmbientShader.use();
-			mAmbientShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mAmbientShader.setUniform("material", mesh.material());
+			mAmbientLightShader.use();
+			mAmbientLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			mAmbientLightShader.setUniform("material", mesh.material());
 			mesh.draw();
 		}
 
 		void directionalLightPass(const core::Camera &camera, const Mesh &mesh, const DirectionalLight &directionalLight)
 		{
-			mDirectionalShader.use();
-			mDirectionalShader.setUniform("M",   mesh.modelMatrix());
-			mDirectionalShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mDirectionalShader.setUniform("material", mesh.material());
-			mDirectionalShader.setUniform("directionalLight", directionalLight);
-			mDirectionalShader.setUniform("eyePos", camera.position());
+			mDirectionalLightShader.use();
+			mDirectionalLightShader.setUniform("M",   mesh.modelMatrix());
+			mDirectionalLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			mDirectionalLightShader.setUniform("material", mesh.material());
+			mDirectionalLightShader.setUniform("directionalLight", directionalLight);
+			mDirectionalLightShader.setUniform("eyePos", camera.position());
 			mesh.draw();
 		}
 
 		void pointLightPass(const core::Camera &camera, const Mesh &mesh, const PointLight &pointLight)
 		{
-			mPointShader.use();
-			mPointShader.setUniform("M",   mesh.modelMatrix());
-			mPointShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mPointShader.setUniform("material", mesh.material());
-			mPointShader.setUniform("pointLight", pointLight);
-			mPointShader.setUniform("eyePos", camera.position());
+			mPointLightShader.use();
+			mPointLightShader.setUniform("M",   mesh.modelMatrix());
+			mPointLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			mPointLightShader.setUniform("material", mesh.material());
+			mPointLightShader.setUniform("pointLight", pointLight);
+			mPointLightShader.setUniform("eyePos", camera.position());
+			mesh.draw();
+		}
+
+
+		void spotLightPass(const core::Camera &camera, const Mesh &mesh, const SpotLight &spotLight)
+		{
+			mSpotLightShader.use();
+			mSpotLightShader.setUniform("M",   mesh.modelMatrix());
+			mSpotLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			mSpotLightShader.setUniform("material", mesh.material());
+			mSpotLightShader.setUniform("spotLight", spotLight);
+			mSpotLightShader.setUniform("eyePos", camera.position());
 			mesh.draw();
 		}
 
@@ -69,6 +82,11 @@ namespace tiny { namespace rendering { namespace gl {
 			mPointLights.push_back(pointLight);
 		}
 
+		void addSpotLight(const SpotLight &spotLight)
+		{
+			mSpotLights.push_back(spotLight);
+		}
+
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
 			ambientPass(camera, mesh);		
@@ -79,14 +97,18 @@ namespace tiny { namespace rendering { namespace gl {
 
 				for (const auto &pointLight : mPointLights)
 					pointLightPass(camera, mesh, pointLight);
+
+				for (const auto &spotLight : mSpotLights)
+					spotLightPass(camera, mesh, spotLight);
 			}
 			mContext.disableBlending();
 		}
 
 	private:
-		ShaderProgram mAmbientShader, mDirectionalShader, mPointShader;
+		ShaderProgram mAmbientLightShader, mDirectionalLightShader, mPointLightShader, mSpotLightShader;
 		std::vector<DirectionalLight> mDirectionalLights;
 		std::vector<PointLight> mPointLights;
+		std::vector<SpotLight> mSpotLights;
 		Context &mContext;
 	};
 

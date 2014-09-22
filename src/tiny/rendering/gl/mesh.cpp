@@ -9,7 +9,7 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-Mesh Mesh::fromFile(const std::string &objFilename)
+Mesh Mesh::fromFile(const std::string &objFilename, int shape)
 {
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -19,13 +19,13 @@ Mesh Mesh::fromFile(const std::string &objFilename)
 	if (!error.empty())
 		throw std::runtime_error("could not load '"+objFilename+"':" + error);
 
-	if (shapes.size() != 1)
-		throw std::runtime_error("more than one mesh found in '"+objFilename+"'");
+	if (shape >= shapes.size())
+		throw std::runtime_error("could not find shape "+std::to_string(shape)+" in '"+objFilename+"'");
 
 	if (materials.size() != 1)
 		throw std::runtime_error("more than one material found in '"+objFilename+"'");
 
-	auto &meshData = shapes[0].mesh;
+	auto &meshData = shapes[shape].mesh;
 	unsigned int nVertices = meshData.positions.size()/3;
 
 	while (meshData.normals.size()/3 < nVertices)
@@ -53,7 +53,7 @@ Mesh::Mesh(const tinyobj::mesh_t &meshData)
 	glBindVertexArrayAPPLE(mHandle);
 	mAttributes[POSITION].loadAttribute(POSITION, meshData.positions, 3);
 	mAttributes[TEXCOORD].loadAttribute(TEXCOORD, meshData.texcoords, 2);
-	mAttributes[ NORMAL ].loadAttribute(NORMAL, meshData.normals, 3);
+	mAttributes[NORMAL].loadAttribute(NORMAL, meshData.normals, 3);
 	mIndices.loadIndices(meshData.indices);
 }
 

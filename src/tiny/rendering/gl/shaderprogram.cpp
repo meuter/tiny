@@ -82,21 +82,33 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 	setUniform(uniform + ".shininess", material.shininess());
 }
 
+void ShaderProgram::setUniform(const std::string &uniform, const AmbientLight &ambientLight)
+{
+	setUniform(uniform + ".color",     ambientLight.color());
+	setUniform(uniform + ".intensity", ambientLight.intensity());
+}
+
 void ShaderProgram::setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 {
-	setUniform(uniform + ".color",     directionalLight.color());
-	setUniform(uniform + ".intensity", directionalLight.intensity());
+	setUniform(uniform, dynamic_cast<const AmbientLight&>(directionalLight));
 	setUniform(uniform + ".direction", directionalLight.direction());
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const PointLight &pointLight)
 {
-	setUniform(uniform + ".color",       pointLight.color());
-	setUniform(uniform + ".intensity",   pointLight.intensity());
+	setUniform(uniform, dynamic_cast<const AmbientLight&>(pointLight));
 	setUniform(uniform + ".position",    pointLight.position());
 	setUniform(uniform + ".attenuation", pointLight.attenuation());
 	setUniform(uniform + ".range",       pointLight.range());
 }
+
+void ShaderProgram::setUniform(const std::string &uniform, const SpotLight &spotLight)
+{
+	setUniform(uniform, dynamic_cast<const PointLight&>(spotLight));
+	setUniform(uniform + ".direction", spotLight.direction());
+	setUniform(uniform + ".cutoff",    spotLight.cutoff());
+}
+
 
 void ShaderProgram::bindAttributeLocations()
 {

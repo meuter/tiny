@@ -1,12 +1,15 @@
 #version 120
 
-struct PointLight
+struct SpotLight
 {
 	vec3 color;
-	float intensity;
 	vec3 position;
 	vec3 attenuation;
+	vec3 direction;
+
+	float intensity;
 	float range;
+	float cutoff;
 };
 
 struct Material
@@ -19,7 +22,7 @@ struct Material
 };
 
 uniform Material material;
-uniform PointLight pointLight;
+uniform SpotLight spotLight;
 uniform vec3 eyePos;
 
 varying vec2 fragTexcoord;
@@ -52,7 +55,7 @@ vec4 calcLight(vec3 color, vec3 direction, float intensity, vec3 normal)
 	return diffuseLight + specularLight;
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 normal)
+vec4 calcPointLight(SpotLight pointLight, vec3 normal)
 {
 	vec3  lightDirection  = fragWorldPosition - pointLight.position;
 	float distanceToPoint = length(lightDirection);
@@ -67,11 +70,28 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal)
 	return light;
 }
 
+vec4 calcSpotLight(SpotLight spotLight, vec3 normal)
+{
+	vec3 lightDirection = normalize(fragWorldPosition - spotLight.position);
+	float spotFactor = dot(lightDirection, spotLight.direction);
+
+	vec4 light = vec4(0,0,0,0);
+
+	if (spotFactor > spotLight.cutoff)
+	{
+		float fadeFactor = 1.0f - ((1.0f - spotFactor) / (1.0f - spotLight.cutoff));
+		light += fadeFactor * calcPointLight(spotLight, normal);
+	}
+
+
+	return light;
+}
+
 
 void main()
 {
 	vec4 color = vec4(material.diffuse, 1);
-	vec4 light = calcPointLight(pointLight, fragNormal);
+	vec4 light = calcSpotLight(spotLight, fragNormal);
 	vec4 texel = texture2D(material.texture, fragTexcoord);
 
 	gl_FragColor = color * texel * light;

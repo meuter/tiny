@@ -18,7 +18,7 @@ namespace tiny { namespace rendering { namespace gl {
 	{
 	public:
 
-		static Mesh fromFile(const std::string &objFilname);
+		static Mesh fromFile(const std::string &objFilname, int shape = 0);
 		static Mesh fromFiles(const std::string &objFilname, const std::string &mtlFilename);
 
 		enum AttributeLocation : GLuint
@@ -40,6 +40,7 @@ namespace tiny { namespace rendering { namespace gl {
 		void draw() const;
 
 		const Material &material() const { return mMaterial; }
+		void setMaterial(Material &&material) { mMaterial = std::move(material); }
 
 	protected:
 		static void destroy(GLuint handle);
