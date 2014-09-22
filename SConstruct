@@ -20,7 +20,7 @@ env.Library("tiny", Split("""
 
 	src/tiny/core/transformable.cpp
 	src/tiny/core/inputs.cpp
-	src/tiny/core/engine.cpp
+	src/tiny/core/game.cpp
 	src/tiny/core/window.cpp
 	src/tiny/core/camera.cpp
 

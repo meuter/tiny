@@ -1,49 +1,33 @@
-#include "engine.h"
-#include "stopwatch.h"
 #include "game.h"
+#include "stopwatch.h"
 #include <thread>
-
 
 namespace tiny { namespace core {
 
-Engine::Engine(Game &game) : mGame(game), mIsRunning(false)
+
+void Game::start()
 {
-
-}
-
-Engine::~Engine()
-{
-
-}
-
-void Engine::start()
-{
-	if (isRunning())
+	if (mIsRunning)
 		return;
 
 	mIsRunning = true;
-	mGame.init();
+	init();
 	run();
 }
 
-bool Engine::isRunning() const
-{
-	return mIsRunning;
-}
-
-void Engine::stop()
+void Game::stop()
 {
 	mIsRunning = false;
 }
 
-void Engine::run()
+void Game::run()
 {
 	const auto dt = sec(1.0/5000.0);
 	auto t = sec(0);
 	auto stopwatch = Stopwatch();
 	auto unprocessedTime = sec(0);
 
-	while (isRunning())
+	while (mIsRunning)
 	{
 		unprocessedTime += stopwatch.lap();
 
@@ -55,15 +39,15 @@ void Engine::run()
 			
 		while (unprocessedTime >= dt)
 		{
-			mGame.inputs().refresh();
-			mGame.update(t, dt);
+			mInputs.refresh();
+			update(t, dt);
 			unprocessedTime -= dt;			
 			t += dt;
 		}
 
-		mGame.window().clear();
-		mGame.render();				
-		mGame.window().swap();
+		mWindow.clear();
+		render();				
+		mWindow.swap();
 	}
 }
 

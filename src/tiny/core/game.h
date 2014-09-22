@@ -3,17 +3,15 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "engine.h"
 #include "inputs.h"
 #include "window.h"
-
 
 namespace tiny { namespace core {
 
 	class Game : public boost::noncopyable
 	{
 	public:
-		Game(Window &&window) : mWindow(std::move(window)), mEngine(*this) {}
+		Game(Window &&window) : mWindow(std::move(window)){}
 		Game(Game &&other) = default;
 		virtual ~Game() {}
 
@@ -23,16 +21,18 @@ namespace tiny { namespace core {
 		virtual void update(sec t, sec dt) {}
 		virtual void render()              {}
 
-		void start() { mEngine.start(); }
-		void stop()  { mEngine.stop();  }
+		void start();
+		void stop();
 
 		inline Window &window()   { return mWindow; }
 		inline Inputs &inputs()   { return mInputs; }
 
 	private:
+		void run();
+
 		Window mWindow;
 		Inputs mInputs;
-		Engine mEngine;
+		bool mIsRunning;
 	};
 
 }}
