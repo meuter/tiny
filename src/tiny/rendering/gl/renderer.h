@@ -101,7 +101,12 @@ namespace tiny { namespace rendering { namespace gl {
 		void setAmbientLight(const vec3 &color, float intensity)
 		{
 			mAmbientLight.mColor = color;
+			mAmbientLight.mDirection = vec3(0,0,0);
+			mAmbientLight.mPosition = vec3(0,0,0);
+			mAmbientLight.mAttenuation = vec3(0,0,1);
 			mAmbientLight.mIntensity = intensity;
+			mAmbientLight.mCutoff = -1.0f;
+			mAmbientLight.mCutoffExponent = 0.0f;
 		}
 
 		void render(const core::Camera &camera, const Mesh &mesh)

@@ -25,37 +25,36 @@ struct LightSource
 	float cutoff, cutoffExponent;
 };
 
-vec4 computeMaterialColor(Material material, vec2 texcoord)
-{
-	return vec4(material.diffuse, 1) * texture2D(material.texture, texcoord);
-}
-
-vec4 computeBaseLight(LightSource light)
-{
-	return vec4(light.color,1) * light.intensity;
-}
 
 vec4 computeAmbientLight(LightSource light, Material material, vec2 texcoord)
 {
-	return computeBaseLight(light) * computeMaterialColor(material, texcoord);
+	vec4 texel = texture2D(material.texture, texcoord);
+	vec3 diffuse  = material.diffuse;
+
+	return light.intensity * vec4(diffuse * light.color, 1) * texel;
 }
 
 vec4 computeSpotLight(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
 {
 	fragment.normal = normalize(fragment.normal);
 
-	float distanceToPoint = length(fragment.position - light.position);
-	vec3  lightDirection  = normalize(fragment.position - light.position);
-	float attenuation = dot(vec3(pow(distanceToPoint, 2), distanceToPoint, 1), light.attenuation) + 0.00001f;
-	float spotFactor = dot(lightDirection, light.direction); 
- 	float fadeFactor = step(light.cutoff, spotFactor) * pow(max(0.0f, spotFactor), light.cutoffExponent);
-	float cosTheta = dot(fragment.normal, -lightDirection);
-	float diffuseFactor   = max(0.0f, cosTheta);
+	vec3 lightDirection  = normalize(light.position - fragment.position);
 	vec3 directionToEye   = normalize(eyePosition - fragment.position);
-	vec3 reflectDirection = reflect(-lightDirection, fragment.normal);	
-	vec4 specularFactor = step(0, cosTheta) * vec4(material.specular, 1.0f) * pow(dot(directionToEye, reflectDirection), material.shininess);	
+	vec3 reflectDirection = reflect(lightDirection, fragment.normal);	
 
-	return fadeFactor / attenuation * (diffuseFactor + specularFactor) * computeAmbientLight(light, material, fragment.texcoord);
+	float distanceToPoint = length(light.position - fragment.position);
+	float attenuation = dot(vec3(pow(distanceToPoint, 2), distanceToPoint, 1), light.attenuation) + 0.00001f;
+	float spotFactor = -dot(lightDirection, light.direction); 
+ 	float fadeFactor = step(light.cutoff, spotFactor) * pow(max(0.0f, spotFactor), light.cutoffExponent);
+	float cosTheta = dot(fragment.normal, lightDirection);
+	float diffuseFactor = max(0.0f, cosTheta);
+	float specularFactor = step(0, cosTheta) * pow(dot(directionToEye, reflectDirection), material.shininess);	
+
+	vec4 texel = texture2D(material.texture, fragment.texcoord);
+	vec3 diffuse  = diffuseFactor * material.diffuse;
+	vec3 specular = specularFactor * material.specular;
+
+	return light.intensity * fadeFactor / attenuation * vec4((diffuse + specular) * light.color, 1) * texel;
 }
 
 
