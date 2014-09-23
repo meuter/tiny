@@ -1,9 +1,9 @@
 #version 120
 
-#include "lights.glsl"
+#include "light.glsl"
 
 uniform Material material;
-uniform LightSource directionalLight;
+uniform LightSource spotLight;
 uniform vec3 eyePos;
 
 varying vec3 fragPosition;
@@ -13,6 +13,6 @@ varying vec3 fragNormal;
 void main()
 {
 	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragNormal);
-	
-	gl_FragColor = computeDirectionalLight(directionalLight, material, fragment, eyePos);
+
+	gl_FragColor = computeSpotLight(spotLight, material, fragment, eyePos);
 }

@@ -1,6 +1,6 @@
 #version 120
 
-#include "lights.glsl"
+#include "light.glsl"
 
 uniform Material material;
 uniform LightSource ambientLight;
