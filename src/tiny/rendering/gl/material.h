@@ -31,8 +31,6 @@ namespace tiny { namespace rendering { namespace gl {
 
 			file.open(filename);
 
-
-
 			if (!file)
 				throw std::runtime_error("could not open '" + filename + "'");
 
@@ -57,17 +55,14 @@ namespace tiny { namespace rendering { namespace gl {
 		Material &operator=(Material &&other) = default;
 
 		inline const gl::Texture &texture() const { return mTexture; }
-		inline const core::vec3 &ambient()  const { return mAmbient; }
 		inline const core::vec3 &diffuse()  const { return mDiffuse; }
 		inline const core::vec3 &specular() const { return mSpecular; }
 		inline const float shininess()      const { return mShininess; }
 
 		void load(const tinyobj::material_t &material)
 		{
-			mAmbient   = core::vec3(material.ambient);
 			mDiffuse   = core::vec3(material.diffuse);
 			mSpecular  = core::vec3(material.specular);
-			mEmission  = core::vec3(material.emission);
 			mShininess = material.shininess;
 
 			if (!material.diffuse_texname.empty())
@@ -83,7 +78,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 
 	private:
-		core::vec3 mAmbient, mDiffuse, mSpecular, mEmission;
+		core::vec3 mDiffuse, mSpecular;
 		float mShininess;
 		gl::Texture mTexture;
 

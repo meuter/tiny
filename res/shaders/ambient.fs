@@ -1,5 +1,21 @@
 #version 120
 
+/*****************************************************************************/
+
+struct AmbientLight
+{
+	vec3 color;
+	float intensity;
+};
+
+
+vec4 calcAmbientLight(AmbientLight ambientLight)
+{
+	return vec4(ambientLight.color,1) * ambientLight.intensity;
+}
+
+/*****************************************************************************/
+
 struct Material
 {
 	sampler2D texture;
@@ -9,15 +25,22 @@ struct Material
 	float shininess;
 };
 
+vec4 calcMaterialColor(Material material, vec2 texcoord)
+{
+	return vec4(material.diffuse, 1) * texture2D(material.texture, texcoord);
+}
+
+/*****************************************************************************/
+
 uniform Material material;
+uniform AmbientLight ambientLight;
 
 varying vec2 fragTexcoord;
 
 void main()
 {
-	vec4 light = vec4(material.ambient, 1);
-	vec4 color = vec4(material.diffuse, 1);
-	vec4 texel = texture2D(material.texture, fragTexcoord);
+	vec4 light = calcAmbientLight(ambientLight);
+	vec4 color = calcMaterialColor(material, fragTexcoord);
 
-	gl_FragColor = color * texel * light;
+	gl_FragColor = color * light;
 }

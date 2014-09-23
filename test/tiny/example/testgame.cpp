@@ -39,17 +39,16 @@ public:
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
 
 		mRenderer.init();
+		mRenderer.setAmbientLight(AmbientLight(vec3(1,1,1), 0.3f));
+
 		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.0f, vec3(-1,-1,1)));
 		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.0f, vec3(1,-1,-1)));
-		// mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.5f, vec3(1,0,-1)));
-		// mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.5f, vec3(-1,0,1)));
 
-
-		// mRenderer.addPointLight(PointLight(vec3(1,0,0), 0.4f, vec3(1,-1.5f,1)));
-		// mRenderer.addPointLight(PointLight(vec3(0,1,0), 0.6f, vec3(2,-1.5f,2)));
-		// mRenderer.addPointLight(PointLight(vec3(0,0,1), 0.8f, vec3(3,-1.5f,3)));
+		mRenderer.addPointLight(PointLight(vec3(1,0,0), 0.4f, vec3(1,-1.5f,1)));
+		mRenderer.addPointLight(PointLight(vec3(0,1,0), 0.6f, vec3(2,-1.5f,2)));
+		mRenderer.addPointLight(PointLight(vec3(0,0,1), 0.8f, vec3(3,-1.5f,3)));
  
-		// mRenderer.addSpotLight(SpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1)));
+		mRenderer.addSpotLight(SpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1)));
 
  	 	mContext.vsync(false);				
 	}

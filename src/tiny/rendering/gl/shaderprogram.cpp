@@ -76,7 +76,6 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 	material.texture().bind(0);
 
 	setUniform(uniform + ".texture",   0);
-	setUniform(uniform + ".ambient",   material.ambient());
 	setUniform(uniform + ".diffuse",   material.diffuse());
 	setUniform(uniform + ".specular",  material.specular());
 	setUniform(uniform + ".shininess", material.shininess());
@@ -108,7 +107,6 @@ void ShaderProgram::setUniform(const std::string &uniform, const SpotLight &spot
 	setUniform(uniform + ".direction", spotLight.direction());
 	setUniform(uniform + ".cutoff",    spotLight.cutoff());
 }
-
 
 void ShaderProgram::bindAttributeLocations()
 {

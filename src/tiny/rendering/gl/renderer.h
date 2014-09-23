@@ -24,11 +24,12 @@ namespace tiny { namespace rendering { namespace gl {
 			mSpotLightShader        = ShaderProgram::fromFiles("res/shaders/spot.vs",        "res/shaders/spot.fs");
 		}
 
-		void ambientPass(const core::Camera &camera, const Mesh &mesh)
+		void ambientPass(const core::Camera &camera, const Mesh &mesh, const AmbientLight ambientLight)
 		{
 			mAmbientLightShader.use();
 			mAmbientLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mAmbientLightShader.setUniform("material", mesh.material());
+			mAmbientLightShader.setUniform("ambientLight", ambientLight);
 			mesh.draw();
 		}
 
@@ -87,9 +88,14 @@ namespace tiny { namespace rendering { namespace gl {
 			mSpotLights.push_back(spotLight);
 		}
 
+		void setAmbientLight(const AmbientLight &ambientLight)
+		{
+			mAmbientLight = ambientLight;
+		}
+
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
-			ambientPass(camera, mesh);		
+			ambientPass(camera, mesh, mAmbientLight);		
 			mContext.enableBlending();
 			{
 				for (const auto &directionalLight : mDirectionalLights)
@@ -109,6 +115,7 @@ namespace tiny { namespace rendering { namespace gl {
 		std::vector<DirectionalLight> mDirectionalLights;
 		std::vector<PointLight> mPointLights;
 		std::vector<SpotLight> mSpotLights;
+		AmbientLight mAmbientLight;
 		Context &mContext;
 	};
 
