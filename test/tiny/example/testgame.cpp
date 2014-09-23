@@ -26,31 +26,24 @@ public:
 		mGround = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
 		mGround.moveTo(0,-2,0);
 
-		for (int i = 0; i < 26; ++i)
-		{
-			Mesh face = Mesh::fromFile("res/models/rubics.obj", i);
-			face.setMaterial(Material::fromFile("res/models/rubics.mtl"));
-			face.moveTo(0,2,0);
-			mCube.push_back(std::move(face));
-		}
+		mBox = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
+		mBox.moveTo(0,4,0);
+
+		mSphere = Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl");
 
 		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
 		mCamera.moveTo(0,0,5);
 		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
 
 		mRenderer.init();
-		mRenderer.setAmbientLight(AmbientLight(vec3(1,1,1), 0.3f));
+		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.0f, vec3(1,-1,1)));
+		mRenderer.addDirectionalLight(DirectionalLight(vec3(0,1,0), 0.5f, vec3(-1,-1,-1)));
 
-		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.0f, vec3(-1,-1,1)));
-		mRenderer.addDirectionalLight(DirectionalLight(vec3(1,1,1), 1.0f, vec3(1,-1,-1)));
-
-		mRenderer.addPointLight(PointLight(vec3(1,0,0), 0.4f, vec3(1,-1.5f,1)));
-		mRenderer.addPointLight(PointLight(vec3(0,1,0), 0.6f, vec3(2,-1.5f,2)));
-		mRenderer.addPointLight(PointLight(vec3(0,0,1), 0.8f, vec3(3,-1.5f,3)));
+		mRenderer.addPointLight(PointLight(vec3(1,0,0), 0.4f, vec3(1,-1.0f,1)));
+		mRenderer.addPointLight(PointLight(vec3(0,1,0), 0.6f, vec3(2,-1.0f,2)));
+		mRenderer.addPointLight(PointLight(vec3(0,0,1), 0.8f, vec3(3,-1.0f,3)));
  
-		mRenderer.addSpotLight(SpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1)));
-
- 	 	mContext.vsync(false);				
+ 	 	mContext.vsync(false);			
 	}
 
 
@@ -65,9 +58,10 @@ public:
 
 	void render()
 	{
-		for (const auto &mesh: mCube)
-			mRenderer.render(mCamera, mesh);
 		mRenderer.render(mCamera, mGround);
+		mRenderer.render(mCamera, mBox);
+		mRenderer.render(mCamera, mSphere);
+
 		mFPSCounter.render();
 	}
 
@@ -87,8 +81,7 @@ private:
 	Renderer mRenderer;
 	FPSCounter mFPSCounter;
 	Camera mCamera;
-	std::vector<Mesh> mCube;
-	Mesh mGround;
+	Mesh mGround, mSphere, mBox;
 };
 
 

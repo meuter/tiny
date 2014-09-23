@@ -1,5 +1,7 @@
 #version 120
 
+#include "lights.glsl"
+
 struct SpotLight
 {
 	vec3 color;
@@ -10,15 +12,6 @@ struct SpotLight
 	float intensity;
 	float range;
 	float cutoff;
-};
-
-struct Material
-{
-	sampler2D texture;
-	vec3 ambient;
-	vec3 diffuse; 
-	vec3 specular;
-	float shininess;
 };
 
 uniform Material material;
@@ -90,9 +83,8 @@ vec4 calcSpotLight(SpotLight spotLight, vec3 normal)
 
 void main()
 {
-	vec4 color = vec4(material.diffuse, 1);
+	vec4 color = computeMaterialColor(material, fragTexcoord);
 	vec4 light = calcSpotLight(spotLight, fragNormal);
-	vec4 texel = texture2D(material.texture, fragTexcoord);
 
-	gl_FragColor = color * texel * light;
+	gl_FragColor = color * light;
 }

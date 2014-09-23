@@ -89,13 +89,13 @@ void ShaderProgram::setUniform(const std::string &uniform, const AmbientLight &a
 
 void ShaderProgram::setUniform(const std::string &uniform, const DirectionalLight &directionalLight)
 {
-	setUniform(uniform, dynamic_cast<const AmbientLight&>(directionalLight));
+	setUniform(uniform + ".base",      dynamic_cast<const AmbientLight&>(directionalLight));
 	setUniform(uniform + ".direction", directionalLight.direction());
 }
 
 void ShaderProgram::setUniform(const std::string &uniform, const PointLight &pointLight)
 {
-	setUniform(uniform, dynamic_cast<const AmbientLight&>(pointLight));
+	setUniform(uniform + ".base",        dynamic_cast<const AmbientLight&>(pointLight));
 	setUniform(uniform + ".position",    pointLight.position());
 	setUniform(uniform + ".attenuation", pointLight.attenuation());
 	setUniform(uniform + ".range",       pointLight.range());

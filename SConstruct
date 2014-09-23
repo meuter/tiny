@@ -54,6 +54,7 @@ test.Program("test/tiny/all", Split("""
 	test/tiny/math/quaternion_tests.cpp
 	test/tiny/math/trigo_tests.cpp
 	test/tiny/utils/strutils_tests.cpp
+	test/tiny/utils/include_tests.cpp
 	test/gtest/gmock-gtest-all.cc
 	test/gtest/gmock_main.cc
 """))
