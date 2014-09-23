@@ -2,7 +2,7 @@
 
 #include "lights.glsl"
 
-uniform Material  material;
+uniform Material material;
 uniform LightSource directionalLight;
 uniform vec3 eyePos;
 

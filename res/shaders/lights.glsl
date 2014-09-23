@@ -1,3 +1,4 @@
+
 struct Material
 {
 	sampler2D texture;
@@ -41,18 +42,16 @@ vec4 computeAmbientLight(LightSource light, Material material, vec2 texcoord)
 
 vec4 computeDiffuseAndSpecularLight(LightSource light, Material material, vec3 lightDirection, Fragment fragment, vec3 eyePosition)
 {
-	lightDirection  = normalize(lightDirection);
+	lightDirection  = lightDirection;
 	fragment.normal = normalize(fragment.normal);
 
-	float diffuseFactor = max(0.0f, dot(fragment.normal, lightDirection));
-
+	float cosTheta = dot(fragment.normal, lightDirection);
+	float diffuseFactor   = max(0.0f, cosTheta);
 	vec3 directionToEye   = normalize(eyePosition - fragment.position);
-	vec3 reflectDirection = normalize(reflect(lightDirection, fragment.normal));	
-	float specularFactor  = step(0, diffuseFactor) * max(0.0, pow(dot(directionToEye, reflectDirection), material.shininess));	
-		
-	vec4 totalLight = diffuseFactor + vec4(material.specular, 1.0f) * specularFactor;
+	vec3 reflectDirection = reflect(lightDirection, fragment.normal);	
+	vec4 specularFactor = step(0, cosTheta) * vec4(material.specular, 1.0f) * pow(dot(directionToEye, reflectDirection), material.shininess);	
 
-	return totalLight * computeBaseLight(light) * computeMaterialColor(material, fragment.texcoord);
+	return (diffuseFactor + specularFactor) * computeAmbientLight(light, material, fragment.texcoord);
 }
 
 vec4 computeDirectionalLight(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
@@ -62,8 +61,8 @@ vec4 computeDirectionalLight(LightSource light, Material material, Fragment frag
 
 vec4 computePointLight(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
 {
-	vec3  lightDirection  = fragment.position - light.position;
-	float distanceToPoint = length(lightDirection);
+	float distanceToPoint = length(fragment.position - light.position);
+	vec3  lightDirection  = normalize(fragment.position - light.position);
 	float attenuation = dot(vec3(pow(distanceToPoint, 2), distanceToPoint, 1), light.attenuation) + 0.00001f;
 
 	return computeDiffuseAndSpecularLight(light, material, -lightDirection, fragment, eyePosition) / attenuation;

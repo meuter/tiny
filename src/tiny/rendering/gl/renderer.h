@@ -110,6 +110,8 @@ namespace tiny { namespace rendering { namespace gl {
 			pointLight.mPosition = position;
 			pointLight.mDirection = vec3(0,0,0);
 			pointLight.mAttenuation = vec3(1,0,0);
+			pointLight.mCutoff = -1.0f;
+			pointLight.mCutoffExponent = 0.0f;
 
 			mPointLights.push_back(pointLight);
 		}
