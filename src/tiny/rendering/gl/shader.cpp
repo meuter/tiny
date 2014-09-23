@@ -5,6 +5,8 @@
 #include <regex>
 #include <tiny/utils/strutils.h>
 
+#include <iostream>
+
 namespace tiny { namespace rendering { namespace gl {
 
 std::string loadSource(const std::string &filename)

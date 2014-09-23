@@ -2,12 +2,12 @@
 
 #include "lights.glsl"
 
-uniform Material material;
+uniform Material  material;
+uniform BaseLight ambientLight;
 
 varying vec2 fragTexcoord;
-varying vec4 fragLight;
 
 void main()
 {
-	gl_FragColor = fragLight * computeMaterialColor(material, fragTexcoord);
+	gl_FragColor = computeAmbientLight(ambientLight, material, fragTexcoord);
 }

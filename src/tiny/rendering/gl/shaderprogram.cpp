@@ -103,7 +103,7 @@ void ShaderProgram::setUniform(const std::string &uniform, const PointLight &poi
 
 void ShaderProgram::setUniform(const std::string &uniform, const SpotLight &spotLight)
 {
-	setUniform(uniform, dynamic_cast<const PointLight&>(spotLight));
+	setUniform(uniform + ".point",     dynamic_cast<const PointLight&>(spotLight));
 	setUniform(uniform + ".direction", spotLight.direction());
 	setUniform(uniform + ".cutoff",    spotLight.cutoff());
 }

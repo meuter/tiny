@@ -14,8 +14,5 @@ void main()
 {
 	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragNormal);
 
-	vec4 color = computeMaterialColor(material, fragTexcoord);
-	vec4 light = computePointLight(pointLight, material, fragment, eyePos);
-
-	gl_FragColor = color * light;
+	gl_FragColor = computePointLight(pointLight, material, fragment, eyePos);
 }

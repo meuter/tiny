@@ -7,9 +7,9 @@ attribute vec3 normal;
 uniform mat4 M;
 uniform mat4 MVP;
 
+varying vec3 fragPosition;
 varying vec2 fragTexcoord;
 varying vec3 fragNormal;
-varying vec3 fragPosition;
 
 void main()
 {

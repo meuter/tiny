@@ -13,9 +13,6 @@ varying vec3 fragNormal;
 void main()
 {
 	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragNormal);
-
-	vec4 color = computeMaterialColor(material, fragTexcoord);
-	vec4 light = computeDirectionalLight(directionalLight, material, fragment, eyePos);
-
-	gl_FragColor = color * light;
+	
+	gl_FragColor = computeDirectionalLight(directionalLight, material, fragment, eyePos);
 }

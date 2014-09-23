@@ -33,15 +33,26 @@ struct PointLight
 	float range;
 };
 
+struct SpotLight
+{
+	PointLight point;
+	vec3 direction;
+	float cutoff;
+};
 
 vec4 computeMaterialColor(Material material, vec2 texcoord)
 {
 	return vec4(material.diffuse, 1) * texture2D(material.texture, texcoord);
 }
 
-vec4 computeAmbientLight(BaseLight light)
+vec4 computeBaseLight(BaseLight light)
 {
 	return vec4(light.color,1) * light.intensity;
+}
+
+vec4 computeAmbientLight(BaseLight light, Material material, vec2 texcoord)
+{
+	return computeBaseLight(light) * computeMaterialColor(material, texcoord);
 }
 
 vec4 computeDiffuseAndSpecularLight(BaseLight light, Material material, vec3 lightDirection, Fragment fragment, vec3 eyePosition)
@@ -55,7 +66,7 @@ vec4 computeDiffuseAndSpecularLight(BaseLight light, Material material, vec3 lig
 
 	if (diffuseFactor > 0)
 	{		
-		totalLight += vec4(light.color, 1.0f) * light.intensity * diffuseFactor;
+		totalLight += computeBaseLight(light) * diffuseFactor;
 
 		vec3 directionToEye = normalize(eyePosition - fragment.position);
 		vec3 reflectDirection = normalize(reflect(lightDirection, fragment.normal));	
@@ -66,7 +77,7 @@ vec4 computeDiffuseAndSpecularLight(BaseLight light, Material material, vec3 lig
 			totalLight += vec4(light.color, 1.0f) * vec4(material.specular, 1.0f) * specularFactor;
 	}
 
-	return totalLight;
+	return totalLight * computeMaterialColor(material, fragment.texcoord);
 }
 
 vec4 computeDirectionalLight(DirectionalLight light, Material material, Fragment fragment, vec3 eyePosition)
@@ -91,5 +102,18 @@ vec4 computePointLight(PointLight light, Material material, Fragment fragment, v
 }
 
 
+vec4 computeSpotLight(SpotLight spotLight, Material material, Fragment fragment, vec3 eyePos)
+{
+	vec3 lightDirection = normalize(fragment.position - spotLight.point.position);
+	float spotFactor = dot(lightDirection, spotLight.direction);
 
+	vec4 light = vec4(0,0,0,0);
 
+	if (spotFactor > spotLight.cutoff)
+	{
+		float fadeFactor = 1.0f - ((1.0f - spotFactor) / (1.0f - spotLight.cutoff));
+		light += fadeFactor * computePointLight(spotLight.point, material, fragment, eyePos);
+	}
+
+	return light;
+}
