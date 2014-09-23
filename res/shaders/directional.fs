@@ -2,8 +2,8 @@
 
 #include "lights.glsl"
 
-uniform Material material;
-uniform DirectionalLight directionalLight;
+uniform Material  material;
+uniform LightSource directionalLight;
 uniform vec3 eyePos;
 
 varying vec3 fragPosition;

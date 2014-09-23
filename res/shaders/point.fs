@@ -3,12 +3,12 @@
 #include "lights.glsl"
 
 uniform Material material;
-uniform PointLight pointLight;
+uniform LightSource pointLight;
 uniform vec3 eyePos;
 
+varying vec3 fragPosition;
 varying vec2 fragTexcoord;
 varying vec3 fragNormal;
-varying vec3 fragPosition;
 
 void main()
 {

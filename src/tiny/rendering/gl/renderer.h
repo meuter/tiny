@@ -14,57 +14,70 @@ namespace tiny { namespace rendering { namespace gl {
 
 	class Renderer
 	{
+		using vec3 = core::vec3;
 	public:	
 
 		Renderer(Context &context) : mContext(context) 
 		{
-			mAmbientLightShader     = ShaderProgram::fromFiles("res/shaders/ambient.vs",     "res/shaders/ambient.fs");
-			mDirectionalLightShader = ShaderProgram::fromFiles("res/shaders/directional.vs", "res/shaders/directional.fs");
-			mPointLightShader       = ShaderProgram::fromFiles("res/shaders/point.vs",       "res/shaders/point.fs");
-			mSpotLightShader        = ShaderProgram::fromFiles("res/shaders/spot.vs",        "res/shaders/spot.fs");
+			mAmbientLightShader     = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/ambient.fs");
+			mDirectionalLightShader = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/directional.fs");
+			mPointLightShader       = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/point.fs");
+			mSpotLightShader        = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/spot.fs");
 		}
 
-		void ambientPass(const core::Camera &camera, const Mesh &mesh, const AmbientLight ambientLight)
+		void ambientPass(const core::Camera &camera, const Mesh &mesh)
 		{
 			mAmbientLightShader.use();
 			mAmbientLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mAmbientLightShader.setUniform("material", mesh.material());
-			mAmbientLightShader.setUniform("ambientLight", ambientLight);
+			mAmbientLightShader.setUniform("ambientLight", mAmbientLight);
 			mesh.draw();
 		}
 
-		void directionalLightPass(const core::Camera &camera, const Mesh &mesh, const DirectionalLight &directionalLight)
+		void directionalLightPass(const core::Camera &camera, const Mesh &mesh)
 		{
 			mDirectionalLightShader.use();
 			mDirectionalLightShader.setUniform("M",   mesh.modelMatrix());
 			mDirectionalLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mDirectionalLightShader.setUniform("material", mesh.material());
-			mDirectionalLightShader.setUniform("directionalLight", directionalLight);
 			mDirectionalLightShader.setUniform("eyePos", camera.position());
-			mesh.draw();
+
+			for (const auto &directionalLight: mDirectionalLights)
+			{
+				mDirectionalLightShader.setUniform("directionalLight", directionalLight);
+				mesh.draw();
+			}
 		}
 
-		void pointLightPass(const core::Camera &camera, const Mesh &mesh, const PointLight &pointLight)
+		void pointLightPass(const core::Camera &camera, const Mesh &mesh)
 		{
 			mPointLightShader.use();
 			mPointLightShader.setUniform("M",   mesh.modelMatrix());
 			mPointLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mPointLightShader.setUniform("material", mesh.material());
-			mPointLightShader.setUniform("pointLight", pointLight);
 			mPointLightShader.setUniform("eyePos", camera.position());
-			mesh.draw();
+
+			for (const auto &pointLight : mPointLights)
+			{
+				mPointLightShader.setUniform("pointLight", pointLight);
+				mesh.draw();
+			}
 		}
 
 
-		void spotLightPass(const core::Camera &camera, const Mesh &mesh, const SpotLight &spotLight)
+		void spotLightPass(const core::Camera &camera, const Mesh &mesh)
 		{
 			mSpotLightShader.use();
 			mSpotLightShader.setUniform("M",   mesh.modelMatrix());
 			mSpotLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mSpotLightShader.setUniform("material", mesh.material());
-			mSpotLightShader.setUniform("spotLight", spotLight);
 			mSpotLightShader.setUniform("eyePos", camera.position());
-			mesh.draw();
+
+			for (const auto &spotLight : mSpotLights)
+			{
+				mSpotLightShader.setUniform("spotLight", spotLight);
+				mesh.draw();
+			}
 		}
 
 		void init()
@@ -73,49 +86,71 @@ namespace tiny { namespace rendering { namespace gl {
 			mContext.enableDepthTest();
 		}
 
-		void addDirectionalLight(const DirectionalLight &directionalLight)
+		void addDirectionalLight(const vec3 &color, float intensity, const vec3 &direction)		
 		{
+			LightSource directionalLight;
+
+			directionalLight.mColor = color;
+			directionalLight.mDirection = normalize(direction);
+			directionalLight.mPosition = -normalize(direction) * 1.5e11f;
+			directionalLight.mAttenuation = vec3(0,0,1);
+			directionalLight.mIntensity = intensity;
+			directionalLight.mCutoff = -1.0f;
+			directionalLight.mCutoffExponent = 0.0f;
+
 			mDirectionalLights.push_back(directionalLight);
 		}
 
-		void addPointLight(const PointLight &pointLight)
+		void addPointLight(const vec3 &color, float intensity, const vec3 &position)
 		{
+			LightSource pointLight;
+
+			pointLight.mColor = color;
+			pointLight.mIntensity = intensity;
+			pointLight.mPosition = position;
+			pointLight.mDirection = vec3(0,0,0);
+			pointLight.mAttenuation = vec3(1,0,0);
+
 			mPointLights.push_back(pointLight);
 		}
 
-		void addSpotLight(const SpotLight &spotLight)
+		void addSpotLight(const vec3 &color, float intensity, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent)
 		{
+			LightSource spotLight;
+
+			spotLight.mColor = color;
+			spotLight.mIntensity = intensity;
+			spotLight.mPosition = position;
+			spotLight.mDirection = normalize(direction);
+			spotLight.mAttenuation = vec3(1,0,0);
+			spotLight.mCutoff = cutoff;
+			spotLight.mCutoffExponent = cutoffExponent;
+
 			mSpotLights.push_back(spotLight);
 		}
 
-		void setAmbientLight(const AmbientLight &ambientLight)
+		void setAmbientLight(const vec3 &color, float intensity)
 		{
-			mAmbientLight = ambientLight;
+			mAmbientLight.mColor = color;
+			mAmbientLight.mIntensity = intensity;
 		}
 
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
-			ambientPass(camera, mesh, mAmbientLight);		
+			ambientPass(camera, mesh);		
 			mContext.enableBlending();
 			{
-				for (const auto &directionalLight : mDirectionalLights)
-					directionalLightPass(camera, mesh, directionalLight);
-
-				for (const auto &pointLight : mPointLights)
-					pointLightPass(camera, mesh, pointLight);
-
-				for (const auto &spotLight : mSpotLights)
-					spotLightPass(camera, mesh, spotLight);
+				directionalLightPass(camera, mesh);
+				pointLightPass(camera, mesh);
+				spotLightPass(camera, mesh);
 			}
 			mContext.disableBlending();
 		}
 
 	private:
 		ShaderProgram mAmbientLightShader, mDirectionalLightShader, mPointLightShader, mSpotLightShader;
-		std::vector<DirectionalLight> mDirectionalLights;
-		std::vector<PointLight> mPointLights;
-		std::vector<SpotLight> mSpotLights;
-		AmbientLight mAmbientLight;
+		std::vector<LightSource> mDirectionalLights, mPointLights, mSpotLights;
+		LightSource mAmbientLight;
 		Context &mContext;
 	};
 

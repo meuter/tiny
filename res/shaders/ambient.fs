@@ -3,7 +3,7 @@
 #include "lights.glsl"
 
 uniform Material  material;
-uniform BaseLight ambientLight;
+uniform LightSource ambientLight;
 
 varying vec2 fragTexcoord;
 

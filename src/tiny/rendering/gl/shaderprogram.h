@@ -12,10 +12,7 @@
 namespace tiny { namespace rendering { namespace gl {
 
 	class Material;
-	class AmbientLight;
-	class DirectionalLight;
-	class PointLight;
-	class SpotLight;
+	class LightSource;
 
 	class ShaderProgram 
 	{
@@ -38,10 +35,7 @@ namespace tiny { namespace rendering { namespace gl {
 		void setUniform(const std::string &uniform, const core::vec4 &value);
 		void setUniform(const std::string &uniform, const core::mat4 &value);
 		void setUniform(const std::string &uniform, const Material &material);
-		void setUniform(const std::string &uniform, const AmbientLight &ambientLight);
-		void setUniform(const std::string &uniform, const DirectionalLight &directionalLight);
-		void setUniform(const std::string &uniform, const PointLight &pointLight);
-		void setUniform(const std::string &uniform, const SpotLight &pointLight);
+		void setUniform(const std::string &uniform, const LightSource &ambientLight);
 
 		GLint getUniformLocation(const std::string &uniform) const;
 		GLint getAttributeLocation(const std::string &attribute) const;

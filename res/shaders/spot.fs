@@ -2,13 +2,13 @@
 
 #include "lights.glsl"
 
-uniform SpotLight spotLight;
+uniform LightSource spotLight;
 uniform Material material;
 uniform vec3 eyePos;
 
+varying vec3 fragPosition;
 varying vec2 fragTexcoord;
 varying vec3 fragNormal;
-varying vec3 fragPosition;
 
 void main()
 {
