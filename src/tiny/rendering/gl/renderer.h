@@ -19,32 +19,25 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Renderer(Context &context) : mContext(context) 
 		{
-			mAmbientLightShader     = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/ambient.fs");
 			mLightShader = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/light.fs");
 		}
 
-		void ambientPass(const core::Camera &camera, const Mesh &mesh)
-		{
-			mAmbientLightShader.use();
-			mAmbientLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mAmbientLightShader.setUniform("material", mesh.material());
-			mAmbientLightShader.setUniform("ambientLight", mAmbientLight);
-			mesh.draw();
-		}
-
-		void spotLightPass(const core::Camera &camera, const Mesh &mesh)
+		void render(const core::Camera &camera, const Mesh &mesh)
 		{
 			mLightShader.use();
 			mLightShader.setUniform("M",   mesh.modelMatrix());
 			mLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
 			mLightShader.setUniform("material", mesh.material());
-			mLightShader.setUniform("eyePos", camera.position());
+			mLightShader.setUniform("eyePosition", camera.position());
+			mLightShader.setUniform("ambientLight", mAmbientLight);
 
-			for (const auto &spotLight : mLightSources)
-			{
-				mLightShader.setUniform("spotLight", spotLight);
-				mesh.draw();
-			}
+			for (size_t i = 0; i < 10; i++)
+				mLightShader.setUniform("lightSources["+std::to_string(i)+"].intensity", 0);
+
+			for (size_t i = 0; i < mLightSources.size(); i++)
+				mLightShader.setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
+
+			mesh.draw();
 		}
 
 		void init()
@@ -85,17 +78,17 @@ namespace tiny { namespace rendering { namespace gl {
 
 		void addSpotLight(const vec3 &color, float intensity, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent)
 		{
-			LightSource spotLight;
+			LightSource lightSource;
 
-			spotLight.mColor = color;
-			spotLight.mIntensity = intensity;
-			spotLight.mPosition = position;
-			spotLight.mDirection = normalize(direction);
-			spotLight.mAttenuation = vec3(1,0,0);
-			spotLight.mCutoff = cutoff;
-			spotLight.mCutoffExponent = cutoffExponent;
+			lightSource.mColor = color;
+			lightSource.mIntensity = intensity;
+			lightSource.mPosition = position;
+			lightSource.mDirection = normalize(direction);
+			lightSource.mAttenuation = vec3(1,0,0);
+			lightSource.mCutoff = cutoff;
+			lightSource.mCutoffExponent = cutoffExponent;
 
-			mLightSources.push_back(spotLight);
+			mLightSources.push_back(lightSource);
 		}
 
 		void setAmbientLight(const vec3 &color, float intensity)
@@ -107,14 +100,6 @@ namespace tiny { namespace rendering { namespace gl {
 			mAmbientLight.mIntensity = intensity;
 			mAmbientLight.mCutoff = -1.0f;
 			mAmbientLight.mCutoffExponent = 0.0f;
-		}
-
-		void render(const core::Camera &camera, const Mesh &mesh)
-		{
-			ambientPass(camera, mesh);		
-			mContext.enableBlending();
-			spotLightPass(camera, mesh);
-			mContext.disableBlending();
 		}
 
 	private:
