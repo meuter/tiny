@@ -32,7 +32,7 @@ void Game::run()
 
 		if (unprocessedTime < dt)
 		{
-			std::this_thread::sleep_for(msec(2));
+			std::this_thread::sleep_for(msec(20));
 			continue;
 		}
 			

@@ -40,3 +40,4 @@ src/tiny/rendering/gl/shader.o
 src/tiny/contrib/tiny_obj_loader.o
 src/tiny/rendering/gl/mesh.o
 src/tiny/core/game.o
+src/tiny/rendering/lightsource.o

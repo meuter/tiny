@@ -8,7 +8,7 @@
 #include "material.h"
 #include "mesh.h"
 #include "context.h"
-#include "light.h"
+#include "../lightsource.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -59,58 +59,22 @@ namespace tiny { namespace rendering { namespace gl {
 
 		void addDirectionalLight(const vec3 &color, float intensity, const vec3 &direction)		
 		{
-			LightSource directionalLight;
-
-			directionalLight.mColor = color;
-			directionalLight.mDirection = normalize(direction);
-			directionalLight.mPosition = -normalize(direction) * 1.5e11f;
-			directionalLight.mAttenuation = vec3(0,0,1);
-			directionalLight.mIntensity = intensity;
-			directionalLight.mCutoff = -1.0f;
-			directionalLight.mCutoffExponent = 0.0f;
-
-			mLightSources.push_back(directionalLight);
+			mLightSources.push_back(LightSource::directional(color, intensity, direction));
 		}
 
 		void addPointLight(const vec3 &color, float intensity, const vec3 &position)
 		{
-			LightSource pointLight;
-
-			pointLight.mColor = color;
-			pointLight.mIntensity = intensity;
-			pointLight.mPosition = position;
-			pointLight.mDirection = vec3(0,0,0);
-			pointLight.mAttenuation = vec3(1,0,0);
-			pointLight.mCutoff = -1.0f;
-			pointLight.mCutoffExponent = 0.0f;
-
-			mLightSources.push_back(pointLight);
+			mLightSources.push_back(LightSource::point(color, intensity, position));
 		}
 
 		void addSpotLight(const vec3 &color, float intensity, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent)
 		{
-			LightSource lightSource;
-
-			lightSource.mColor = color;
-			lightSource.mIntensity = intensity;
-			lightSource.mPosition = position;
-			lightSource.mDirection = normalize(direction);
-			lightSource.mAttenuation = vec3(1,0,0);
-			lightSource.mCutoff = cutoff;
-			lightSource.mCutoffExponent = cutoffExponent;
-
-			mLightSources.push_back(lightSource);
+			mLightSources.push_back(LightSource::spot(color, intensity, position, direction, cutoff, cutoffExponent));
 		}
 
 		void setAmbientLight(const vec3 &color, float intensity)
 		{
-			mAmbientLight.mColor = color;
-			mAmbientLight.mDirection = vec3(0,0,0);
-			mAmbientLight.mPosition = vec3(0,0,0);
-			mAmbientLight.mAttenuation = vec3(0,0,1);
-			mAmbientLight.mIntensity = intensity;
-			mAmbientLight.mCutoff = -1.0f;
-			mAmbientLight.mCutoffExponent = 0.0f;
+			mAmbientLight = LightSource::ambient(color, intensity);
 		}
 
 	private:

@@ -9,10 +9,13 @@
 #include "shader.h"
 #include "handle.h"
 
-namespace tiny { namespace rendering { namespace gl {
+namespace tiny { namespace rendering { 
+
+	class LightSource;
+	
+	namespace gl {
 
 	class Material;
-	class LightSource;
 
 	class ShaderProgram 
 	{

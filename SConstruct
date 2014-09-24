@@ -26,6 +26,7 @@ env.Library("tiny", Split("""
 
 	src/tiny/utils/strutils.cpp
 
+	src/tiny/rendering/lightsource.cpp
 	src/tiny/rendering/gl/mesh.cpp
 	src/tiny/rendering/gl/shaderprogram.cpp
 	src/tiny/rendering/gl/shader.cpp
