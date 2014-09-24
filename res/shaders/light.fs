@@ -4,8 +4,11 @@
 
 uniform Material material;
 uniform LightSource ambientLight;
-uniform LightSource lightSources[16];
-uniform vec3 eyePosition;
+
+#if MAX_LIGHT_SOURCES > 0
+	uniform LightSource lightSources[MAX_LIGHT_SOURCES];
+	uniform vec3 eyePosition;
+#endif
 
 varying vec3 fragPosition;
 varying vec2 fragTexcoord;
@@ -16,11 +19,10 @@ void main()
 	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragNormal);
 	vec4 color = computeAmbientLight(ambientLight, material, fragment);
 
-	for (int i = 0; i < 16; i++)
-	{
-		if (lightSources[i].intensity > 0)
-			color += computeSpotLight(lightSources[i], material, fragment, eyePosition);
-	}
+#if MAX_LIGHT_SOURCES > 0
+	for (int i = 0; i < MAX_LIGHT_SOURCES; i++)
+		color += computeLightSource(lightSources[i], material, fragment, eyePosition);
+#endif
 
 	gl_FragColor = color;
 }

@@ -17,7 +17,9 @@ namespace tiny { namespace rendering { namespace gl {
 	class ShaderProgram 
 	{
 	public:
-		static ShaderProgram fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename);
+		using Constants = std::map<std::string, std::string>;
+
+		static ShaderProgram fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename, Constants constants=Constants());
 
 		ShaderProgram();
 		ShaderProgram(ShaderProgram &&other) = default;

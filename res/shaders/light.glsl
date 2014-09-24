@@ -33,7 +33,7 @@ vec4 computeAmbientLight(LightSource light, Material material, Fragment fragment
 	return light.intensity * vec4(diffuse * light.color, 1) * texel;
 }
 
-vec4 computeSpotLight(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
+vec4 computeLightSource(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
 {
 	fragment.normal = normalize(fragment.normal);
 

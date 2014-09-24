@@ -10,11 +10,13 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
+using Constants = Shader::Constants;
+
+ShaderProgram ShaderProgram::fromFiles(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename, Constants constants)
 {
 	ShaderProgram result;
-	result.add(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename));
-	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename));
+	result.add(Shader::fromFile(GL_VERTEX_SHADER,   vertexShaderFilename, constants));
+	result.add(Shader::fromFile(GL_FRAGMENT_SHADER, fragmentShaderFilename, constants));
 	result.link();
 	return result;
 }

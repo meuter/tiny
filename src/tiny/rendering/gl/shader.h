@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <map>
 #include "handle.h"
 
 namespace tiny { namespace rendering { namespace gl {
@@ -10,7 +11,9 @@ namespace tiny { namespace rendering { namespace gl {
 	class Shader
 	{
 	public:
-		static Shader fromFile(GLenum shaderType, const std::string filename);
+		using Constants = std::map<std::string, std::string>;
+		
+		static Shader fromFile(GLenum shaderType, const std::string filename, Constants constants = Constants());
 
 		Shader(GLenum shaderType, const std::string &shaderText);
 		Shader(Shader &&other) = default;

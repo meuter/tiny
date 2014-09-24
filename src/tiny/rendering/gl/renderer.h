@@ -19,23 +19,33 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Renderer(Context &context) : mContext(context) 
 		{
-			mLightShader = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/light.fs");
+			ShaderProgram::Constants constants;
+
+			for (size_t i = 0; i < mLightShaders.size(); ++i)
+			{
+				constants["MAX_LIGHT_SOURCES"] = std::to_string(i);
+				mLightShaders[i] = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/light.fs", constants);
+			}
 		}
 
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
-			mLightShader.use();
-			mLightShader.setUniform("M",   mesh.modelMatrix());
-			mLightShader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mLightShader.setUniform("material", mesh.material());
-			mLightShader.setUniform("eyePosition", camera.position());
-			mLightShader.setUniform("ambientLight", mAmbientLight);
+			int n = mLightSources.size();
 
-			for (size_t i = 0; i < 10; i++)
-				mLightShader.setUniform("lightSources["+std::to_string(i)+"].intensity", 0);
+			if (n > mLightShaders.size())
+				throw std::runtime_error("to many lights");
+
+			mLightShaders[n].use();
+			mLightShaders[n].setUniform("M",   mesh.modelMatrix());
+			mLightShaders[n].setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			mLightShaders[n].setUniform("material", mesh.material());
+			mLightShaders[n].setUniform("ambientLight", mAmbientLight);
+
+			if (n > 0)
+				mLightShaders[n].setUniform("eyePosition", camera.position());
 
 			for (size_t i = 0; i < mLightSources.size(); i++)
-				mLightShader.setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
+				mLightShaders[n].setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
 
 			mesh.draw();
 		}
@@ -103,7 +113,8 @@ namespace tiny { namespace rendering { namespace gl {
 		}
 
 	private:
-		ShaderProgram mAmbientLightShader, mLightShader;
+		ShaderProgram mAmbientLightShader;
+		std::array<ShaderProgram, 64> mLightShaders;
 		std::vector<LightSource> mLightSources;
 		LightSource mAmbientLight;
 		Context &mContext;

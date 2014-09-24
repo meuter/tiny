@@ -9,9 +9,13 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-std::string loadSource(const std::string &filename)
+using Constants = Shader::Constants;
+
+std::string loadSource(const std::string &filename, Constants constants)
 {
 	static const std::regex includeMatcher("#include[\t ]+\"([a-zA-z\\.]+)\"[\t ]*");
+	static const std::regex versionMatcher("#version[\t ]+[0-9]+");
+	static const Constants noConstants;
 	std::ifstream fileStream(filename.c_str());
 	std::stringstream result;
 	std::smatch match;
@@ -22,19 +26,25 @@ std::string loadSource(const std::string &filename)
 		throw std::runtime_error("could not open " + filename);
 
 	while (getline(fileStream, line))
-	{
+	{		
 		if (regex_match(line, match, includeMatcher))
-			result << loadSource(path + match[1].str());
-		else			
+			result << loadSource(path + match[1].str(), noConstants);
+		else
 			result << line << std::endl;
+
+		if (regex_match(line, versionMatcher))
+		{
+			for (auto &pair: constants)
+				result << "#define " << pair.first << " " << pair.second << std::endl;			
+		}
 	}
 
 	return result.str();
 }
 
-Shader Shader::fromFile(GLenum shaderType, const std::string filename)
+Shader Shader::fromFile(GLenum shaderType, const std::string filename, Constants constants)
 {
-	return Shader(shaderType, loadSource(filename));
+	return Shader(shaderType, loadSource(filename, constants));
 }
 
 Shader::Shader(GLenum shaderType, const std::string &shaderText) : mHandle(glCreateShader(shaderType))
