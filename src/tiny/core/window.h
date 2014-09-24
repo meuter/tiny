@@ -14,12 +14,13 @@ namespace tiny { namespace core {
 	public:
 		enum Backend : uint32_t 
 		{
+			NONE,
 			OPENGL,
 			SOFTWARE,
 		};
 
 		Window();
-		Window(int width, int height, std::string title, Backend backend=OPENGL);
+		Window(int width, int height, std::string title, Backend backend);
 		Window(const Window &other) = delete;
 		Window(Window &&window);
 		virtual ~Window();

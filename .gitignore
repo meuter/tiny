@@ -43,3 +43,5 @@ src/tiny/core/game.o
 src/tiny/rendering/lightsource.o
 test/tiny/example/testsw.o
 testsw
+test/tiny/example/testgl.o
+testgl

@@ -2,46 +2,60 @@
 #include <tiny/core/window.h>
 #include <tiny/core/inputs.h>
 #include <tiny/core/types.h>
+#include <tiny/core/game.h>
+#include <tiny/core/fpscounter.h>
+
 #include <tiny/rendering/sw/framebuffer.h>
 
 using namespace tiny::core;
 using namespace tiny::rendering::sw;
 
-bool shouldQuit(const Inputs &inputs)
+class MyGame : public Game
 {
-	if (inputs.isWindowCloseRequested())
-		return true;
+public:	
+	MyGame(Window &&window) : Game(std::move(window)), mScreen(this->window()) {}
 
-	if (inputs.isKeyHeld(Key::KEY_LEFT_CMD) && inputs.isKeyPressed(Key::KEY_Z))
-		return true;
+	void init()
+	{
+	
+	}
 
-	return false;
-}
 
+	void update(sec t, sec dt)
+	{
+		if (shouldStop())
+			stop();
 
-void putpixel(byte *pixels, int x, int y, byte r, byte g, byte b)
-{
-	Framebuffer(pixels, 1900,1080).putpixel(x,y, vec3(0,1,0));
-}
+		mFPSCounter.update(t, dt);
+	}
+
+	void render()
+	{
+	    for (int i = 0; i < 100; ++i)
+			mScreen.putpixel(50, i, vec3(0,1,0));
+
+		mFPSCounter.render();
+	}
+
+	bool shouldStop()
+	{
+		if (inputs().isWindowCloseRequested())
+			return true;
+
+		if (inputs().isKeyHeld(Key::KEY_LEFT_CMD) && inputs().isKeyPressed(Key::KEY_Z))
+			return true;
+
+		return false;
+	}
+
+private:	
+	Framebuffer mScreen;
+	FPSCounter mFPSCounter;
+};
+
 
 int main()
 {
-	Window window(1900,1080, "Software Rendering", Window::SOFTWARE);
-	Framebuffer buffer(window);
-	Inputs inputs;
-	bool quit;
-
-
-	do
-	{
-		inputs.refresh();
-		window.clear();
-
-	    for (int i = 0; i < 100; ++i)
-			buffer.putpixel(50, i, vec3(0,1,0));
-
-		window.swap();
-	}
-	while (!shouldQuit(inputs));
-
+	MyGame(Window(1900,1080, "Software Rendering", Window::SOFTWARE)).start();
+	return EXIT_SUCCESS;
 }

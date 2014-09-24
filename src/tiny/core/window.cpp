@@ -5,7 +5,7 @@
 
 namespace tiny { namespace core {
 
-Window::Window() : mHandle(NULL), mIsOpen(false)
+Window::Window() : mHandle(NULL), mIsOpen(false), mBackend(NONE)
 {
 
 }
@@ -23,7 +23,7 @@ Window::Window(int width, int height, std::string title, Backend backend) : mHan
 		throw std::runtime_error("could not create window");
 }
 
-Window::Window(Window &&other) : mHandle(other.mHandle), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen)
+Window::Window(Window &&other) : mHandle(other.mHandle), mHeight(other.mHeight), mWidth(other.mWidth), mIsOpen(other.mIsOpen), mBackend(other.mBackend)
 {
 	other.mHandle = NULL;
 }
@@ -37,9 +37,10 @@ Window &Window::operator=(Window &&other)
 {
 	destroy();
 
-	mHandle = other.mHandle;
-	mHeight    = other.mHeight;
-	mWidth     = other.mWidth;
+	mHandle   = other.mHandle;
+	mHeight   = other.mHeight;
+	mWidth    = other.mWidth;
+	mBackend  = other.mBackend;
 
 	other.mHandle = NULL;
 	return (*this);
@@ -47,7 +48,12 @@ Window &Window::operator=(Window &&other)
 
 byte *Window::pixels() const
 {
-	return (byte*)SDL_GetWindowSurface(mHandle)->pixels;
+	byte *pixels = (byte *)SDL_GetWindowSurface(mHandle)->pixels;
+
+	if (pixels == NULL)
+		throw std::runtime_error("could not get pixels");
+
+	return pixels;
 }
 
 void Window::clear()

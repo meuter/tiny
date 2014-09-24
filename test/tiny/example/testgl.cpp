@@ -93,6 +93,6 @@ private:
 
 int main(int argc, char **argv)
 {
-	MyGame(Window(1900, 1200, "MyGame")).start();
+	MyGame(Window(1900, 1200, "MyGame", Window::OPENGL)).start();
 	return EXIT_SUCCESS;
 }
