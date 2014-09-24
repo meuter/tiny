@@ -43,6 +43,10 @@ example.Program("testgame", Split("""
 	test/tiny/example/testgame.cpp
 """));
 
+example.Program("testsw", Split("""
+	test/tiny/example/testsw.cpp
+"""));
+
 test = env.Clone()
 test.MergeFlags("-Itest/gtest")
 test.MergeFlags("-L. -ltiny")

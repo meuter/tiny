@@ -10,12 +10,14 @@ Window::Window() : mHandle(NULL), mIsOpen(false)
 
 }
 
-Window::Window(int width, int height, std::string title) : mHandle(NULL), mHeight(height), mWidth(width), mIsOpen(true)
+Window::Window(int width, int height, std::string title, Backend backend) : mHandle(NULL), mHeight(height), mWidth(width), mIsOpen(true), mBackend(backend)
 {
+	uint32_t flags = mBackend == OPENGL ? SDL_WINDOW_OPENGL : 0;
+
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		throw std::runtime_error("could not initialize SDL");
 
-	mHandle = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+	mHandle = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
 
 	if (mHandle == NULL)
 		throw std::runtime_error("could not create window");
@@ -43,15 +45,30 @@ Window &Window::operator=(Window &&other)
 	return (*this);
 }
 
+byte *Window::pixels() const
+{
+	return (byte*)SDL_GetWindowSurface(mHandle)->pixels;
+}
 
 void Window::clear()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (mBackend == OPENGL)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	else
+	{
+		SDL_Surface *surface = SDL_GetWindowSurface(mHandle);
+		SDL_FillRect(surface, NULL, 0x00000000);
+	}
 }
 
 void Window::swap()
 {
-	SDL_GL_SwapWindow(mHandle);
+	if (mBackend == OPENGL)
+		SDL_GL_SwapWindow(mHandle);
+	else
+		SDL_UpdateWindowSurface(mHandle);
 }
 
 void Window::destroy()

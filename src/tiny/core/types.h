@@ -4,6 +4,7 @@
 #include <tiny/math/matrix.h>
 #include <tiny/math/quaternion.h>
 #include <tiny/math/trigo.h>
+#include <cstdint>
 #include <chrono>
 
 namespace tiny { namespace core {
@@ -31,9 +32,11 @@ namespace tiny { namespace core {
 	using ivec3 = tiny::math::vector<int, 3>;
 	using ivec4 = tiny::math::vector<int, 4>;
 
-	using bvec2 = tiny::math::vector<bool, 2>;
-	using bvec3 = tiny::math::vector<bool, 3>;
-	using bvec4 = tiny::math::vector<bool, 4>;
+	using bvec2 = tiny::math::vector<uint8_t, 2>;
+	using bvec3 = tiny::math::vector<uint8_t, 3>;
+	using bvec4 = tiny::math::vector<uint8_t, 4>;
+
+	using byte = uint8_t;
 
 	using quat = tiny::math::quaternion<float>;
 

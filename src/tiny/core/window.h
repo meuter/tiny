@@ -5,14 +5,21 @@
 #include "types.h"
 
 struct SDL_Window;
+struct SDL_Surface;
 
 namespace tiny { namespace core {
 
 	class Window 
 	{
 	public:
+		enum Backend : uint32_t 
+		{
+			OPENGL,
+			SOFTWARE,
+		};
+
 		Window();
-		Window(int width, int height, std::string title);
+		Window(int width, int height, std::string title, Backend backend=OPENGL);
 		Window(const Window &other) = delete;
 		Window(Window &&window);
 		virtual ~Window();
@@ -33,6 +40,8 @@ namespace tiny { namespace core {
 
 		SDL_Window *handle() const { return mHandle; }
 
+		byte *pixels() const;
+
 	protected:
 		void destroy();
 
@@ -40,6 +49,7 @@ namespace tiny { namespace core {
 		SDL_Window *mHandle;
 		int mHeight, mWidth;
 		int mIsOpen;
+		Backend mBackend;
 	};
 
 }}
