@@ -13,15 +13,20 @@ namespace tiny { namespace core {
 
 		void init()
 		{
-					
+			nAverage = 0;	
+			nSample = 0;
 		}
 
 		void update(sec t, sec dt)
 		{
 			sinceLastFrame += dt;
-			if( sinceLastFrame > sec(1))
+			if( sinceLastFrame > sec(1) )
 			{
-				std::cout << nFrames << " FPS" << std::endl;
+				nAverage = (nAverage*nSample + nFrames) / (nSample+1);
+				++ nSample;
+
+				std::cout << nFrames << " FPS (" << nAverage << " FPS avg.)" << std::endl;
+
 				nFrames = 0;
 				sinceLastFrame = sec(0);
 			}
@@ -33,8 +38,10 @@ namespace tiny { namespace core {
 		}
 
 	private:
-		int nFrames;	
+		int nFrames;
+		int nAverage, nSample;
 		sec sinceLastFrame;
+
 	};
 
 }}
