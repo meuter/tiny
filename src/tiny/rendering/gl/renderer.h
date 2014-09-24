@@ -17,37 +17,38 @@ namespace tiny { namespace rendering { namespace gl {
 		using vec3 = core::vec3;
 	public:	
 
-		Renderer(Context &context) : mContext(context) 
-		{
-			ShaderProgram::Constants constants;
-
-			for (size_t i = 0; i < mLightShaders.size(); ++i)
-			{
-				constants["MAX_LIGHT_SOURCES"] = std::to_string(i);
-				mLightShaders[i] = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/light.fs", constants);
-			}
-		}
-
+		Renderer(Context &context) : mContext(context) {}
+		
 		void render(const core::Camera &camera, const Mesh &mesh)
 		{
-			int n = mLightSources.size();
+			ShaderProgram &shader = getShader(mLightSources.size());
 
-			if (n > mLightShaders.size())
-				throw std::runtime_error("to many lights");
+			shader.use();
+			shader.setUniform("M",   mesh.modelMatrix());
+			shader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
+			shader.setUniform("material", mesh.material());
+			shader.setUniform("ambientLight", mAmbientLight);
 
-			mLightShaders[n].use();
-			mLightShaders[n].setUniform("M",   mesh.modelMatrix());
-			mLightShaders[n].setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			mLightShaders[n].setUniform("material", mesh.material());
-			mLightShaders[n].setUniform("ambientLight", mAmbientLight);
-
-			if (n > 0)
-				mLightShaders[n].setUniform("eyePosition", camera.position());
+			if (mLightSources.size() > 0)
+				shader.setUniform("eyePosition", camera.position());
 
 			for (size_t i = 0; i < mLightSources.size(); i++)
-				mLightShaders[n].setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
+				shader.setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
 
 			mesh.draw();
+		}
+
+		ShaderProgram &getShader(int lightSourceCount)
+		{
+			if (mLightShaders.find(lightSourceCount) == mLightShaders.end())
+			{
+				ShaderProgram::Constants constants;
+
+				constants["MAX_LIGHT_SOURCES"] = std::to_string(lightSourceCount);
+				mLightShaders[lightSourceCount] = ShaderProgram::fromFiles("res/shaders/light.vs", "res/shaders/light.fs", constants);
+			}
+
+			return mLightShaders[lightSourceCount];
 		}
 
 		void init()
@@ -114,7 +115,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 	private:
 		ShaderProgram mAmbientLightShader;
-		std::array<ShaderProgram, 64> mLightShaders;
+		std::map<int,ShaderProgram> mLightShaders;
 		std::vector<LightSource> mLightSources;
 		LightSource mAmbientLight;
 		Context &mContext;

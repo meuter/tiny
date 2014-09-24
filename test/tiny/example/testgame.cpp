@@ -39,7 +39,7 @@ public:
 
 		mRenderer.setAmbientLight(vec3(1,1,1), 0.2f);
 
-		mRenderer.addDirectionalLight(vec3(1,1,1), 1.0f, vec3(1,-1,1));
+		mRenderer.addDirectionalLight(vec3(1,1,1), 0.7f, vec3(1,-1,1));
 		mRenderer.addDirectionalLight(vec3(0,1,0), 0.5f, vec3(-1,-1,-1));
 
 		mRenderer.addPointLight(vec3(1,0,0), 0.4f, vec3(1,-1.5f,1));
