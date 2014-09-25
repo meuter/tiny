@@ -20,17 +20,15 @@ struct LightSource
 	vec3 position;
 	vec3 attenuation;
 
-	float intensity;
 	float cutoff, cutoffExponent;
 };
 
 
-vec4 computeAmbientLight(LightSource light, Material material, Fragment fragment)
+vec4 computeAmbientLight(vec3 ambientLight, Material material, Fragment fragment)
 {
 	vec4 texel = texture2D(material.texture, fragment.texcoord);
-	vec3 diffuse  = material.diffuse;
 
-	return light.intensity * vec4(diffuse * light.color, 1) * texel;
+	return vec4(material.diffuse * ambientLight, 1) * texel;
 }
 
 vec4 computeLightSource(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
@@ -51,7 +49,7 @@ vec4 computeLightSource(LightSource light, Material material, Fragment fragment,
 
 	vec4 texel = texture2D(material.texture, fragment.texcoord);
 	vec3 diffuse  = diffuseFactor * material.diffuse;
-	vec3 specular = specularFactor * material.specular;
+	vec3 specular = specularFactor * material.specular;	
 
-	return light.intensity * fadeFactor / attenuation * vec4((diffuse + specular) * light.color, 1) * texel;
+	return (fadeFactor / attenuation) * vec4((diffuse + specular) * light.color, 1) * texel;
 }

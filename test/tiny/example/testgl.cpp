@@ -2,6 +2,7 @@
 #include <tiny/rendering/gl/material.h>
 #include <tiny/rendering/gl/renderer.h>
 #include <tiny/rendering/gl/context.h>
+#include <tiny/rendering/lightsource.h>
 
 #include <tiny/core/game.h>
 #include <tiny/core/fpscounter.h>
@@ -11,9 +12,52 @@
 #include <iostream>
 
 using namespace tiny::rendering::gl;
+using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
+
+class Scene
+{
+public:
+
+	LightSource &addLight(const std::string &name, const LightSource &light)
+	{
+		return (mLightSources[name] = light);
+	}
+
+	Mesh &addMesh(const std::string &name, Mesh &&mesh)
+	{
+		return (mMeshes[name] = std::move(mesh));
+	}
+
+	Mesh &getMesh(const std::string &name)
+	{
+		auto hit = mMeshes.find(name);
+
+		if (hit == mMeshes.end())
+			throw std::runtime_error("mesh not found");
+
+		return hit->second;
+	}
+
+	Camera &setCamera(const Camera &camera)
+	{
+		mCamera = camera;
+		return mCamera;
+	}
+
+	vec3 &setAmbient(const vec3 &color)
+	{
+		mAmbient = color;
+		return mAmbient;
+	}
+
+	std::map<std::string, LightSource> mLightSources;
+	std::map<std::string, Mesh> mMeshes;
+	Camera mCamera;
+	vec3 mAmbient;
+};
 
 class MyGame : public Game
 {
@@ -23,31 +67,30 @@ public:
 
 	void init()
 	{
-		mGround = Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl");
-		mGround.moveTo(0,-2,0);
 
-		mBox = Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl");
-		mBox.moveTo(0,4,0);
+		mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
+		mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).moveTo(0,4,0);
+		mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
 
-		mSphere = Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl");
+		mScene.setAmbient(vec3(1,1,1) * 0.2f);
+		mScene.setCamera(Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f)).moveTo(0,0,7).aimAt(0,0,0);
 
-		mCamera = Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f);
-		mCamera.moveTo(0,0,7);
-		mCamera.rotateTo(Transformable::Y_AXIS, toRadian(180));
+		mScene.addLight("d1", LightSource::directional(vec3(1,1,1) * 0.7f, vec3(1,-1,1)));
+		mScene.addLight("d2", LightSource::directional(vec3(0,1,0) * 0.5f, vec3(-1,-1,-1)));
+
+		mScene.addLight("p1", LightSource::point(vec3(1,0,0) * 0.4f, vec3(1,-1.5f,1)));
+		mScene.addLight("p2", LightSource::point(vec3(0,1,0) * 0.6f, vec3(2,-1.5f,2)));
+		mScene.addLight("p3", LightSource::point(vec3(0,0,1) * 0.6f, vec3(3,-1.5f,3)));
+
+		mScene.addLight("s1", LightSource::spot(vec3(1,1,0) * 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10));
+		mScene.addLight("s2", LightSource::spot(vec3(0,1,1) * 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10));
 
 		mRenderer.init();
 
-		mRenderer.setAmbientLight(vec3(1,1,1), 0.2f);
+		mRenderer.setAmbientLight(mScene.mAmbient);
 
-		mRenderer.addDirectionalLight(vec3(1,1,1), 0.7f, vec3(1,-1,1));
-		mRenderer.addDirectionalLight(vec3(0,1,0), 0.5f, vec3(-1,-1,-1));
-
-		mRenderer.addPointLight(vec3(1,0,0), 0.4f, vec3(1,-1.5f,1));
-		mRenderer.addPointLight(vec3(0,1,0), 0.6f, vec3(2,-1.5f,2));
-		mRenderer.addPointLight(vec3(0,0,1), 0.6f, vec3(3,-1.5f,3));
-
-		mRenderer.addSpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10);
-		mRenderer.addSpotLight(vec3(0,1,1), 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10);
+		for (const auto &light: mScene.mLightSources)
+			mRenderer.add(light.second);
 
  	 	mContext.vsync(false);			
 	}
@@ -59,14 +102,14 @@ public:
 			stop();
 
 		mFPSCounter.update(t, dt);
-		mCamera.update(window(), inputs(), dt);
+		mScene.mCamera.update(window(), inputs(), dt);
 	}
 
 	void render()
 	{
-		mRenderer.render(mCamera, mGround);
-		mRenderer.render(mCamera, mBox);
-		mRenderer.render(mCamera, mSphere);
+		mRenderer.render(mScene.mCamera, mScene.getMesh("ground"));
+		mRenderer.render(mScene.mCamera, mScene.getMesh("box"));
+		mRenderer.render(mScene.mCamera, mScene.getMesh("sphere"));
 
 		mFPSCounter.render();
 	}
@@ -86,8 +129,7 @@ private:
 	Context mContext;
 	Renderer mRenderer;
 	FPSCounter mFPSCounter;
-	Camera mCamera;
-	Mesh mGround, mSphere, mBox;
+	Scene mScene;
 };
 
 

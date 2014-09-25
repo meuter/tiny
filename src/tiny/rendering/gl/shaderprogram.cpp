@@ -86,11 +86,9 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 void ShaderProgram::setUniform(const std::string &uniform, const LightSource &light)
 {
 	setUniform(uniform + ".color",          light.color());
-	setUniform(uniform + ".intensity",      light.intensity());
-	setUniform(uniform + ".direction",      light.direction());
 	setUniform(uniform + ".position",       light.position());
+	setUniform(uniform + ".direction",      light.forward());
 	setUniform(uniform + ".attenuation",    light.attenuation());
-	setUniform(uniform + ".direction",      light.direction());
 	setUniform(uniform + ".cutoff",         light.cutoff());
 	setUniform(uniform + ".cutoffExponent", light.cutoffExponent());
 }

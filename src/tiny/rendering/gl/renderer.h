@@ -57,31 +57,21 @@ namespace tiny { namespace rendering { namespace gl {
 			mContext.enableDepthTest();
 		}
 
-		void addDirectionalLight(const vec3 &color, float intensity, const vec3 &direction)		
+		void setAmbientLight(const vec3 &color)
 		{
-			mLightSources.push_back(LightSource::directional(color, intensity, direction));
+			mAmbientLight = color;
 		}
 
-		void addPointLight(const vec3 &color, float intensity, const vec3 &position)
+		void add(const LightSource &light)
 		{
-			mLightSources.push_back(LightSource::point(color, intensity, position));
-		}
-
-		void addSpotLight(const vec3 &color, float intensity, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent)
-		{
-			mLightSources.push_back(LightSource::spot(color, intensity, position, direction, cutoff, cutoffExponent));
-		}
-
-		void setAmbientLight(const vec3 &color, float intensity)
-		{
-			mAmbientLight = LightSource::ambient(color, intensity);
+			mLightSources.emplace_back(light);
 		}
 
 	private:
 		ShaderProgram mAmbientLightShader;
 		std::map<int,ShaderProgram> mLightShaders;
 		std::vector<LightSource> mLightSources;
-		LightSource mAmbientLight;
+		vec3 mAmbientLight;
 		Context &mContext;
 	};
 

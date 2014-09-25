@@ -3,7 +3,7 @@
 #include "light.glsl"
 
 uniform Material material;
-uniform LightSource ambientLight;
+uniform vec3 ambientLight;
 
 #if MAX_LIGHT_SOURCES > 0
 	uniform LightSource lightSources[MAX_LIGHT_SOURCES];

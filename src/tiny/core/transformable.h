@@ -19,46 +19,20 @@ namespace tiny { namespace core {
 		Transformable &operator=(const Transformable &other) = default;
 		Transformable &operator=(Transformable &&other) = default;
 
-		inline void move(const vec3 &direction, float amount)    { mPosition += amount * direction; } 
-		inline void moveTo(const vec3 &position)                 { mPosition = position; } 
-		inline void moveTo(float x, float y, float z)            { mPosition = vec3(x,y,z); } 
+		inline Transformable &move(const vec3 &direction, float amount)    { mPosition += amount * direction; return (*this); } 
+		inline Transformable &moveTo(const vec3 &position)                 { mPosition = position; return (*this); } 
+		inline Transformable &moveTo(float x, float y, float z)            { mPosition = vec3(x,y,z); return (*this); } 
 
-		inline void rotate(const vec3 axis, const rad &angle)    { rotate(quat(axis, angle)); } 
-		inline void rotate(const quat &rotation)                 { mRotation = normalize(rotation * mRotation); } 
-		inline void rotateTo(const vec3 axis, const rad &angle)  { rotateTo(quat(axis, angle)); } 
-		inline void rotateTo(const quat &rotation)               { mRotation = normalize(rotation); } 
+		inline Transformable &rotate(const vec3 axis, const rad &angle)    { return rotate(quat(axis, angle));  } 
+		inline Transformable &rotate(const quat &rotation)                 { mRotation = normalize(rotation * mRotation); return (*this); } 
+		inline Transformable &rotateTo(const vec3 axis, const rad &angle)  { return rotateTo(quat(axis, angle)); } 
+		inline Transformable &rotateTo(const quat &rotation)               { mRotation = normalize(rotation); return (*this); } 
 
-		inline void scale(float factor)                          { scale(factor, factor, factor); } 
-		inline void scale(const vec3 &factors)                   { scale(factors.x, factors.y, factors.z); } 
-		inline void scale(float fx, float fy, float fz)          { mScaling.x *= fx; mScaling.y *= fy; mScaling.z *= fz; } 
-		inline void scaleTo(const vec3 &scale)                   { mScaling = scale; } 
-		inline void scaleTo(float sx, float sy, float sz)        { mScaling = vec3(sx, sy, sz); } 
-
-
-		void aimAt(float x, float y, float z)
-		{
-			aimAt(vec3(x,y,z));
-		}
-
-		void aimAt(const vec3 &target) 
-		{	
-			vec3 newForward = normalize(target - position());
-			vec3 newRight   = normalize(cross(up(), newForward));
-			vec3 newUp      = normalize(cross(newForward, newRight));
-
-			rotateTo(quat(newForward, newUp));	
-		}
-
-		void alignWith(const vec3 direction)
-		{
-			Transformable t;
-
-			t.moveTo(-direction);
-			t.aimAt(0,0,0);
-
-			rotateTo(t.rotation());
-		}
-
+		inline Transformable &scale(float factor)                          { return scale(factor, factor, factor); } 
+		inline Transformable &scale(const vec3 &factors)                   { return scale(factors.x, factors.y, factors.z); } 
+		inline Transformable &scale(float fx, float fy, float fz)          { mScaling.x *= fx; mScaling.y *= fy; mScaling.z *= fz; return (*this); } 
+		inline Transformable &scaleTo(const vec3 &scale)                   { mScaling = scale; return (*this); } 
+		inline Transformable &scaleTo(float sx, float sy, float sz)        { mScaling = vec3(sx, sy, sz); return (*this); } 
 
 		inline vec3 left()            const                      { return mRotation.rotate( X_AXIS); }
 		inline vec3 right()           const                      { return mRotation.rotate(-X_AXIS); }
@@ -70,6 +44,10 @@ namespace tiny { namespace core {
 		inline vec3 position()        const                      { return mPosition; }
 		inline vec3 scaling()         const                      { return mScaling; }
 		inline quat rotation()        const                      { return mRotation; }
+
+		inline Transformable &aimAt(float x, float y, float z)             { return aimAt(vec3(x,y,z)); }
+		Transformable &aimAt(const vec3 &target);
+		Transformable &alignWith(const vec3 direction);
 
 		mat4 modelMatrix()            const;
 		mat4 translationMatrix()      const;

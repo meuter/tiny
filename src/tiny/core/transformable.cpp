@@ -11,6 +11,28 @@ Transformable::Transformable() : mScaling(1,1,1), mPosition(0,0,0), mRotation(0,
 {
 }
 
+
+Transformable &Transformable::aimAt(const vec3 &target) 
+{	
+	vec3 newForward = normalize(target - position());
+	vec3 newRight   = normalize(cross(up(), newForward));
+	vec3 newUp      = normalize(cross(newForward, newRight));
+
+	return rotateTo(quat(newForward, newUp));	
+
+}
+
+Transformable &Transformable::alignWith(const vec3 direction)
+{
+	Transformable t;
+
+	t.moveTo(-direction);
+	t.aimAt(0,0,0);
+
+	return rotateTo(t.rotation());
+}
+
+
 mat4 Transformable::modelMatrix() const
 {
 	return translationMatrix() * rotationMatrix() * scalingMatrix();
