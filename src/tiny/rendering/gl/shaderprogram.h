@@ -5,20 +5,22 @@
 #include <string>
 #include <vector>
 #include <tiny/core/types.h>
+#include <tiny/core/lightsource.h>
 
 #include "shader.h"
 #include "handle.h"
 
-namespace tiny { namespace rendering { 
-
-	class LightSource;
-	
-	namespace gl {
+namespace tiny { namespace rendering { namespace gl {
 
 	class Material;
 
 	class ShaderProgram 
 	{
+		using LightSource = core::LightSource;
+		using vec2 = core::vec2;
+		using vec3 = core::vec3;
+		using vec4 = core::vec4;
+		using mat4 = core::mat4;
 	public:
 		using Constants = std::map<std::string, std::string>;
 
@@ -35,16 +37,15 @@ namespace tiny { namespace rendering {
 		void use();		
 
 		void setUniform(const std::string &uniform, float value);
-		void setUniform(const std::string &uniform, const core::vec2 &value);
-		void setUniform(const std::string &uniform, const core::vec3 &value);
-		void setUniform(const std::string &uniform, const core::vec4 &value);
-		void setUniform(const std::string &uniform, const core::mat4 &value);
+		void setUniform(const std::string &uniform, const vec2 &value);
+		void setUniform(const std::string &uniform, const vec3 &value);
+		void setUniform(const std::string &uniform, const vec4 &value);
+		void setUniform(const std::string &uniform, const mat4 &value);
 		void setUniform(const std::string &uniform, const Material &material);
 		void setUniform(const std::string &uniform, const LightSource &ambientLight);
 
 		GLint getUniformLocation(const std::string &uniform) const;
 		GLint getAttributeLocation(const std::string &attribute) const;
-
 
 	protected:
 		void bindAttributeLocations();

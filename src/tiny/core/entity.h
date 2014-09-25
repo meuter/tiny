@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-namespace tiny {namespace core {
+namespace tiny { namespace core {
 
 	class Game;
 
@@ -14,19 +14,19 @@ namespace tiny {namespace core {
 		Entity(Entity &&other) = default;
 		Entity(const Entity &other) = delete;
 
+		virtual ~Entity() = default;
+
+		Entity &operator=(Entity &&entity) = default;
+		Entity &operator=(const Entity &entity) = delete;
+
 		template<typename T>
-		T &add(T &&t) 
-		{ 
-			mComponents.emplace_back(new Wrapper<T>(std::move(t)));
-			return dynamic_cast<Wrapper<T> *>(mComponents.back().get())->data;
-		}
+		void add(T &&t) { mComponents.emplace_back(new Wrapper<T>(std::move(t))); }
 
 		void init()                            { for (auto &component: mComponents) component->init(); }
 		void render()                          { for (auto &component: mComponents) component->render(); }
 		void update(Game &game, sec t, sec dt) { for (auto &component: mComponents) component->update(game, t, dt); }
 
 	private:	
-
 		struct Component
 		{
 			virtual ~Component() = default;

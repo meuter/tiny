@@ -23,10 +23,10 @@ env.Library("tiny", Split("""
 	src/tiny/core/game.cpp
 	src/tiny/core/window.cpp
 	src/tiny/core/camera.cpp
+	src/tiny/core/lightsource.cpp
 
 	src/tiny/utils/strutils.cpp
 
-	src/tiny/rendering/lightsource.cpp
 	src/tiny/rendering/gl/mesh.cpp
 	src/tiny/rendering/gl/shaderprogram.cpp
 	src/tiny/rendering/gl/shader.cpp

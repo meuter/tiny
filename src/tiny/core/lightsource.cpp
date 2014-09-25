@@ -1,6 +1,6 @@
 #include "lightsource.h"
 
-namespace tiny { namespace rendering { 
+namespace tiny { namespace core { 
 
 const core::vec3 LightSource::NO_ATTENUATION(0,0,1);
 const core::vec3 LightSource::STANDARD_ATTENUATION(1,0,0);

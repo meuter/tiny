@@ -13,7 +13,7 @@ namespace tiny { namespace core {
 	class Game 
 	{
 	public:	
-		Game(Window &&window) : mWindow(std::move(window)){}
+		Game(Window &&window) : mWindow(std::move(window)), mIsRunning(false) {}
 		Game(Game &&other) = default;
 		virtual ~Game() {}
 
@@ -28,7 +28,9 @@ namespace tiny { namespace core {
 
 		inline const Window &window() const { return mWindow; }
 		inline const Inputs &inputs() const { return mInputs; }
-		inline const Entity &root()   const { return mRoot; }
+
+		template<typename T>
+		void add(T &&t) { mRoot.add(std::move(t)); }
 
 	protected:
 		void run();

@@ -11,42 +11,35 @@
 using namespace tiny::core;
 using namespace tiny::rendering::sw;
 
+
+
 class MyComponent 
 {
 public:	
 	MyComponent(Framebuffer &screen) : mScreen(screen) {}
 
-	void init()   {}
+	void init() {}
+	void update(Game &g, sec t, sec dt) {}
+
 	void render()
 	{
 	    for (int i = 0; i < 100; ++i)
 			mScreen.putpixel(50, i, vec3(0,1,0));
 	}
-
-	void update(Game &g, sec t, sec dt) {}
-
 private:
 	Framebuffer &mScreen;
-};
-
-class MyGame : public Game
-{
-public:	
-	MyGame(Window &&window) : Game(std::move(window)), mScreen(this->window())
-	{
-		root().add(FPSCounter());
-		root().add(WindowControl());
-		root().add(MyComponent(mScreen));
-	}
-
-private:	
-	Framebuffer mScreen;
-	FPSCounter mFPSCounter;
 };
 
 
 int main()
 {
-	MyGame(Window(1900,1080, "Software Rendering", Window::SOFTWARE)).start();
+	Game game(Window(1900,1080, "Software Rendering", Window::SOFTWARE));
+	Framebuffer screen(game.window());
+
+	game.add(FPSCounter());
+	game.add(WindowControl());
+	game.add(MyComponent(screen));
+	game.start();
+	
 	return EXIT_SUCCESS;
 }

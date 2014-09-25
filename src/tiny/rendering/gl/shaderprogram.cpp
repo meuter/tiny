@@ -1,12 +1,10 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
-#include <utility>
 
 #include "shaderprogram.h"
 #include "mesh.h"
 #include "material.h"
-#include "../lightsource.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -83,7 +81,7 @@ void ShaderProgram::setUniform(const std::string &uniform, const Material &mater
 	setUniform(uniform + ".shininess", material.shininess());
 }
 
-void ShaderProgram::setUniform(const std::string &uniform, const LightSource &light)
+void ShaderProgram::setUniform(const std::string &uniform, const core::LightSource &light)
 {
 	setUniform(uniform + ".color",          light.color());
 	setUniform(uniform + ".position",       light.position());

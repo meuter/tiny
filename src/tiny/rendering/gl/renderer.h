@@ -3,12 +3,12 @@
 
 #include <tiny/core/types.h>
 #include <tiny/core/camera.h>
+#include <tiny/core/lightsource.h>
 
 #include "shaderprogram.h"
 #include "material.h"
 #include "mesh.h"
 #include "context.h"
-#include "../lightsource.h"
 #include "scene.h"
 
 #include <tiny/core/game.h>
@@ -20,6 +20,7 @@ namespace tiny { namespace rendering { namespace gl {
 		using vec3 = core::vec3;
 		using sec = core::sec;
 		using Game = core::Game;
+		using LightSource = core::LightSource;
 	public:	
 
 		Renderer(Context &context, Scene &scene) : mContext(context), mScene(scene) {}

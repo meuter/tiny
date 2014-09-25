@@ -1,11 +1,11 @@
 #ifndef __TINY_RENDERING_GL_LIGHTSOURCE_H__
 #define __TINY_RENDERING_GL_LIGHTSOURCE_H__
 
-#include <tiny/core/transformable.h>
+#include "transformable.h"
 
-namespace tiny { namespace rendering {
+namespace tiny { namespace core {
 
-	class LightSource : public core::Transformable
+	class LightSource : public Transformable
 	{		
 		using vec3 = core::vec3;
 		using quat = core::quat;

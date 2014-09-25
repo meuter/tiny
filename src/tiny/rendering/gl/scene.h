@@ -1,12 +1,14 @@
 #ifndef __TINY_RENDERING_GL_SCENE_H__
 #define __TINY_RENDERING_GL_SCENE_H__
 
-#include "../lightsource.h"
-#include "mesh.h"
-#include <tiny/core/camera.h>
-#include <string>
 #include <functional>
+#include <string>
 #include <map>
+
+#include <tiny/core/camera.h>
+#include <tiny/core/lightsource.h>
+
+#include "mesh.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -15,6 +17,7 @@ class Scene
 {
 	using vec3 = core::vec3;
 	using Camera = core::Camera;
+	using LightSource = core::LightSource;
 public:
 
 	Scene() = default;
