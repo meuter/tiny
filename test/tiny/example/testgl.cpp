@@ -68,8 +68,8 @@ public:
 	void init()
 	{
 
-		mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
-		mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).moveTo(0,4,0);
+		mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
+		mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"));
 		mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
 
 		mScene.setAmbient(vec3(1,1,1) * 0.2f);
@@ -85,10 +85,13 @@ public:
 		mScene.addLight("s1", LightSource::spot(vec3(1,1,0) * 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10));
 		mScene.addLight("s2", LightSource::spot(vec3(0,1,1) * 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10));
 
+		mScene.getMesh("sphere").attachTo(mScene.getMesh("ground")).moveTo(0,2,0);
+		mScene.getMesh("box").attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
+		mScene.getMesh("ground").moveTo(0,-2,0);
+
+
 		mRenderer.init();
-
 		mRenderer.setAmbientLight(mScene.mAmbient);
-
 		for (const auto &light: mScene.mLightSources)
 			mRenderer.add(light.second);
 

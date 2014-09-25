@@ -7,7 +7,7 @@ const vec3 Transformable::Y_AXIS(0,1,0);
 const vec3 Transformable::Z_AXIS(0,0,1);
 
 
-Transformable::Transformable() : mScaling(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1) 
+Transformable::Transformable() : mScaling(1,1,1), mPosition(0,0,0), mRotation(0,0,0,1), mParent(nullptr)
 {
 }
 
@@ -19,7 +19,6 @@ Transformable &Transformable::aimAt(const vec3 &target)
 	vec3 newUp      = normalize(cross(newForward, newRight));
 
 	return rotateTo(quat(newForward, newUp));	
-
 }
 
 Transformable &Transformable::alignWith(const vec3 direction)
@@ -35,7 +34,7 @@ Transformable &Transformable::alignWith(const vec3 direction)
 
 mat4 Transformable::modelMatrix() const
 {
-	return translationMatrix() * rotationMatrix() * scalingMatrix();
+	return parentMatrix() * translationMatrix() * rotationMatrix() * scalingMatrix();
 }
 
 mat4 Transformable::translationMatrix() const
@@ -74,5 +73,16 @@ mat4 Transformable::rotationMatrix() const
 	};
 }
 
+mat4 Transformable::parentMatrix() const
+{
+	static const mat4 identity {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f,		
+	};
+
+	return mParent ? mParent->modelMatrix() : identity;
+}
 
 }}
