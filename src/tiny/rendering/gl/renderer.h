@@ -9,6 +9,7 @@
 #include "mesh.h"
 #include "context.h"
 #include "../lightsource.h"
+#include "scene.h"
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -19,24 +20,39 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Renderer(Context &context) : mContext(context) {}
 		
-		void render(const core::Camera &camera, const Mesh &mesh)
+		void init()
 		{
-			ShaderProgram &shader = getShader(mLightSources.size());
+			mContext.enableBackfaceCulling();
+			mContext.enableDepthTest();
+		}
+
+		void render(const Scene &scene)
+		{
+			size_t nLights = scene.lightSourceCount(), currentLight = 0;
+
+			ShaderProgram &shader = getShader(nLights);
 
 			shader.use();
-			shader.setUniform("M",   mesh.modelMatrix());
-			shader.setUniform("MVP", camera.projectionMatrix() * camera.viewMatrix() * mesh.modelMatrix());
-			shader.setUniform("material", mesh.material());
-			shader.setUniform("ambientLight", mAmbientLight);
+			shader.setUniform("ambientLight", scene.ambientLight());
 
-			if (mLightSources.size() > 0)
-				shader.setUniform("eyePosition", camera.position());
+			if (nLights > 0) 
+				shader.setUniform("eyePosition", scene.camera().position());
 
-			for (size_t i = 0; i < mLightSources.size(); i++)
-				shader.setUniform("lightSources["+std::to_string(i)+"]", mLightSources[i]);
+			scene.forAll([&](const LightSource &light) 
+			{
+			 	shader.setUniform("lightSources["+std::to_string(currentLight++)+"]", light);
+			});
 
-			mesh.draw();
+			scene.forAll([&](const Mesh &mesh)
+			{
+			 	shader.setUniform("M",   mesh.modelMatrix());
+			 	shader.setUniform("MVP", scene.camera().projectionMatrix() * scene.camera().viewMatrix() * mesh.modelMatrix());
+			 	shader.setUniform("material", mesh.material());
+			 	mesh.draw();
+			});
 		}
+
+	protected:	
 
 		ShaderProgram &getShader(int lightSourceCount)
 		{
@@ -51,27 +67,9 @@ namespace tiny { namespace rendering { namespace gl {
 			return mLightShaders[lightSourceCount];
 		}
 
-		void init()
-		{
-			mContext.enableBackfaceCulling();
-			mContext.enableDepthTest();
-		}
-
-		void setAmbientLight(const vec3 &color)
-		{
-			mAmbientLight = color;
-		}
-
-		void add(const LightSource &light)
-		{
-			mLightSources.emplace_back(light);
-		}
 
 	private:
-		ShaderProgram mAmbientLightShader;
 		std::map<int,ShaderProgram> mLightShaders;
-		std::vector<LightSource> mLightSources;
-		vec3 mAmbientLight;
 		Context &mContext;
 	};
 

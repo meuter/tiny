@@ -2,6 +2,7 @@
 #include <tiny/rendering/gl/material.h>
 #include <tiny/rendering/gl/renderer.h>
 #include <tiny/rendering/gl/context.h>
+#include <tiny/rendering/gl/scene.h>
 #include <tiny/rendering/lightsource.h>
 
 #include <tiny/core/game.h>
@@ -16,61 +17,122 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
-
-class Scene
+class KeyboardControl
 {
 public:
+	KeyboardControl(Inputs &inputs, Transformable &controlled) : mInputs(inputs), mControlled(controlled) {}
+	virtual ~KeyboardControl() = default;
 
-	LightSource &addLight(const std::string &name, const LightSource &light)
+	void init() {}
+
+	void update(sec t, sec dt)
 	{
-		return (mLightSources[name] = light);
+		float amount = dt.count() * 10;
+
+		if (mInputs.isKeyHeld(Key::KEY_UP))
+			mControlled.move(mControlled.forward(), amount);
+		if (mInputs.isKeyHeld(Key::KEY_DOWN))
+			mControlled.move(mControlled.backward(), amount);
+		if (mInputs.isKeyHeld(Key::KEY_LEFT))
+			mControlled.move(mControlled.left(), amount);
+		if (mInputs.isKeyHeld(Key::KEY_RIGHT))
+			mControlled.move(mControlled.right(), amount);
+		if (mInputs.isKeyHeld(Key::KEY_PAGEUP))
+			mControlled.move(mControlled.up(), amount);
+		if (mInputs.isKeyHeld(Key::KEY_PAGEDOWN))
+			mControlled.move(mControlled.down(), amount);	
 	}
 
-	Mesh &addMesh(const std::string &name, Mesh &&mesh)
-	{
-		return (mMeshes[name] = std::move(mesh));
-	}
+	void render() {}
 
-	Mesh &getMesh(const std::string &name)
-	{
-		auto hit = mMeshes.find(name);
-
-		if (hit == mMeshes.end())
-			throw std::runtime_error("mesh not found");
-
-		return hit->second;
-	}
-
-	Camera &setCamera(const Camera &camera)
-	{
-		mCamera = camera;
-		return mCamera;
-	}
-
-	vec3 &setAmbient(const vec3 &color)
-	{
-		mAmbient = color;
-		return mAmbient;
-	}
-
-	std::map<std::string, LightSource> mLightSources;
-	std::map<std::string, Mesh> mMeshes;
-	Camera mCamera;
-	vec3 mAmbient;
+private:
+	Inputs &mInputs;
+	Transformable &mControlled;
 };
+
+class MouseControl
+{
+public:
+	MouseControl(Inputs &inputs, Window &window, Transformable &controlled) : mInputs(inputs), mWindow(window), mControlled(controlled) {}
+	virtual ~MouseControl() = default;
+
+	void update(sec t, sec dt)
+	{
+		const float sensitivity = 0.005f;
+
+		if (mInputs.isMouseReleased(MouseButton::MIDDLE))
+		{
+			mInputs.showMouseCursor(true);		
+		}
+		else if (mInputs.isMousePressed(MouseButton::MIDDLE))
+		{
+			mInputs.showMouseCursor(false);
+			mInputs.setMousePosition(mWindow.center());
+		}
+		else if (mInputs.isMouseHeld(MouseButton::MIDDLE))
+		{
+	 		auto dpos = mWindow.center() - mInputs.getMousePosition();
+
+			if (dpos.x != 0)
+				mControlled.rotate(mControlled.up(), rad{dpos.x * sensitivity});
+
+			if (dpos.y != 0)
+				mControlled.rotate(mControlled.right(), rad{dpos.y * sensitivity});
+
+			if (dpos.x != 0 || dpos.y != 0)
+				mInputs.setMousePosition(mWindow.center());
+		}
+	}
+
+	void render() {}
+
+private:
+	Inputs &mInputs;
+	Window &mWindow;
+	Transformable &mControlled;
+};
+
+class WindowControl
+{
+public:	
+	WindowControl(Inputs &inputs, Game &game) : mInputs(inputs), mGame(game) {}
+	virtual ~WindowControl() = default;
+
+	void init() {}
+	void update(sec t, sec dt)
+	{
+		if (mInputs.isWindowCloseRequested())
+			mGame.stop();
+
+		if (mInputs.isKeyHeld(Key::KEY_LEFT_CMD) && mInputs.isKeyPressed(Key::KEY_Z))
+			mGame.stop();
+	}
+	void render();
+
+private:
+	Inputs &mInputs;
+	Game &mGame;
+};
+
+
+
 
 class MyGame : public Game
 {
 public:
 
-	MyGame(Window &&window) : Game(std::move(window)), mContext(this->window()), mRenderer(mContext) {}
+	MyGame(Window &&window) 
+		: Game(std::move(window)),
+		  mContext(this->window()), 
+		  mRenderer(mContext),
+		  mWindowControl(this->inputs(), *this)
+		   {}
 
 	void init()
 	{
-
-		mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"));
-		mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"));
-		mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"));
+		mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
+		mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
+		mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl")).attachTo(mScene.getMesh("ground")).moveTo(0,2,0);
 
 		mScene.setAmbient(vec3(1,1,1) * 0.2f);
 		mScene.setCamera(Camera::withPerspective(toRadian(70), window().aspect(), 0.01f, 1000.0f)).moveTo(0,0,7).aimAt(0,0,0);
@@ -85,15 +147,10 @@ public:
 		mScene.addLight("s1", LightSource::spot(vec3(1,1,0) * 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10));
 		mScene.addLight("s2", LightSource::spot(vec3(0,1,1) * 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10));
 
-		mScene.getMesh("sphere").attachTo(mScene.getMesh("ground")).moveTo(0,2,0);
-		mScene.getMesh("box").attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
-		mScene.getMesh("ground").moveTo(0,-2,0);
-
-
 		mRenderer.init();
-		mRenderer.setAmbientLight(mScene.mAmbient);
-		for (const auto &light: mScene.mLightSources)
-			mRenderer.add(light.second);
+
+		mCameraKeyboardControl.reset(new KeyboardControl(inputs(), mScene.camera()));
+		mCameraMouseControl.reset(new MouseControl(inputs(), window(), mScene.camera()));
 
  	 	mContext.vsync(false);			
 	}
@@ -101,38 +158,27 @@ public:
 
 	void update(sec t, sec dt)
 	{
-		if (shouldStop())
-			stop();
-
+		mWindowControl.update(t, dt);
 		mFPSCounter.update(t, dt);
-		mScene.mCamera.update(window(), inputs(), dt);
+		mCameraKeyboardControl->update(t, dt);
+		mCameraMouseControl->update(t, dt);
 	}
 
 	void render()
 	{
-		mRenderer.render(mScene.mCamera, mScene.getMesh("ground"));
-		mRenderer.render(mScene.mCamera, mScene.getMesh("box"));
-		mRenderer.render(mScene.mCamera, mScene.getMesh("sphere"));
-
+		mRenderer.render(mScene);
 		mFPSCounter.render();
 	}
 
-	bool shouldStop()
-	{
-		if (inputs().isWindowCloseRequested())
-			return true;
-
-		if (inputs().isKeyHeld(Key::KEY_LEFT_CMD) && inputs().isKeyPressed(Key::KEY_Z))
-			return true;
-
-		return false;
-	}
 
 private:	
 	Context mContext;
 	Renderer mRenderer;
 	FPSCounter mFPSCounter;
+	std::unique_ptr<KeyboardControl> mCameraKeyboardControl;
+	std::unique_ptr<MouseControl> mCameraMouseControl;
 	Scene mScene;
+	WindowControl mWindowControl;
 };
 
 

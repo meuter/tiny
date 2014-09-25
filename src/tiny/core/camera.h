@@ -5,8 +5,6 @@
 
 #include "types.h"
 #include "transformable.h"
-#include "window.h"
-#include "inputs.h"
 
 namespace tiny { namespace core {
 
@@ -19,8 +17,6 @@ namespace tiny { namespace core {
 		Camera(const mat4 &projection) : mProjection(projection) {}
 
 		virtual ~Camera() = default;
-
-		void update(Window &window, Inputs &inputs, sec dt);
 
 		const mat4 &projectionMatrix() const;
 		mat4 viewMatrix()              const;
