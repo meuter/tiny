@@ -10,9 +10,7 @@ namespace tiny { namespace core {
 		using vec3 = core::vec3;
 		using quat = core::quat;
 	public:	
-		static const vec3 NO_ATTENUATION;
-		static const vec3 STANDARD_ATTENUATION;
-		
+
 		LightSource() = default;
 		LightSource(const vec3 &color, const vec3 &position = vec3(0,0,0), const vec3 &direction = vec3(1,1,1));
 

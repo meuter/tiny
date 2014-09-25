@@ -12,74 +12,66 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-
-class Scene
-{
-	using vec3 = core::vec3;
-	using Camera = core::Camera;
-	using LightSource = core::LightSource;
-public:
-
-	Scene() = default;
-	Scene(Scene &&other) = default;
-	Scene(const Scene &other) = delete;
-
-	virtual ~Scene() = default;
-
-	Scene &operator=(Scene &&other) = default;
-	Scene &operator=(const Scene &other) = delete;
-
-	LightSource &addLight(const std::string &name)
+	class Scene
 	{
-		return mLightSources[name];
-	}
+		using vec3 = core::vec3;
+		using Camera = core::Camera;
+		using LightSource = core::LightSource;
+	public:
 
-	Mesh &addMesh(const std::string &name)
-	{
-		return mMeshes[name];
-	}
+		Scene() = default;
+		Scene(Scene &&other) = default;
+		Scene(const Scene &other) = delete;
 
-	Mesh &getMesh(const std::string &name)
-	{
-		auto hit = mMeshes.find(name);
+		virtual ~Scene() = default;
 
-		if (hit == mMeshes.end())
-			throw std::runtime_error("mesh not found");
+		Scene &operator=(Scene &&other) = default;
+		Scene &operator=(const Scene &other) = delete;
 
-		return hit->second;
-	}
+		LightSource &addLight(const std::string &name)	{ return mLightSources[name]; }
+		Mesh        &addMesh(const std::string &name)	{ return mMeshes[name];	}
 
-	vec3 &setAmbient(const vec3 &color)
-	{
-		mAmbient = color;
-		return mAmbient;
-	}
+		Mesh &getMesh(const std::string &name)
+		{
+			auto hit = mMeshes.find(name);
 
-	void forAll(std::function<void(const Mesh &)> processMesh) const 
-	{
-		for (const auto &pair: mMeshes)
-			processMesh(pair.second);
-	}
+			if (hit == mMeshes.end())
+				throw std::runtime_error("mesh not found");
 
-	void forAll(std::function<void(const LightSource &)> processLightSource) const 
-	{
-		for (const auto &pair: mLightSources)
-			processLightSource(pair.second);
-	}
+			return hit->second;
+		}
 
-	inline size_t lightSourceCount() const { return mLightSources.size(); }
-	inline size_t meshCount() const { return mMeshes.size(); }
-	inline vec3   ambientLight() const { return mAmbient; }
+		vec3 &setAmbient(const vec3 &color)
+		{
+			mAmbient = color;
+			return mAmbient;
+		}
 
-	inline Camera &camera() { return mCamera; }
-	inline const Camera &camera() const { return mCamera; }
+		void forAll(std::function<void(const Mesh &)> processMesh) const 
+		{
+			for (const auto &pair: mMeshes)
+				processMesh(pair.second);
+		}
 
-private:	
-	std::map<std::string, LightSource> mLightSources;
-	std::map<std::string, Mesh> mMeshes;
-	vec3 mAmbient;
-	Camera mCamera;
-};
+		void forAll(std::function<void(const LightSource &)> processLightSource) const 
+		{
+			for (const auto &pair: mLightSources)
+				processLightSource(pair.second);
+		}
+
+		inline size_t lightSourceCount() const { return mLightSources.size(); }
+		inline size_t meshCount() const { return mMeshes.size(); }
+		inline vec3   ambientLight() const { return mAmbient; }
+
+		inline Camera &camera() { return mCamera; }
+		inline const Camera &camera() const { return mCamera; }
+
+	private:	
+		std::map<std::string, LightSource> mLightSources;
+		std::map<std::string, Mesh> mMeshes;
+		vec3 mAmbient;
+		Camera mCamera;
+	};
 
 }}}
 
