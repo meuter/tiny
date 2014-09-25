@@ -17,12 +17,15 @@ int main(int argc, char **argv)
 	mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"))
 		.moveTo(0,-2,0);
 	mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"))
-		.attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
-	mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl")).attachTo(mScene.getMesh("ground"))
+		.attachTo(mScene.getMesh("ground"))
+		.moveTo(0,6,0);
+	mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl"))
+		.attachTo(mScene.getMesh("ground"))
 		.moveTo(0,2,0);
 
 	mScene.setAmbient(vec3(1,1,1) * 0.2f);
-	mScene.setCamera(Camera::withPerspective(toRadian(70), mGame.window().aspect(), 0.01f, 1000.0f)).moveTo(0,0,7).aimAt(0,0,0);
+	mScene.setCamera(Camera::withPerspective(toRadian(70), mGame.window().aspect(), 0.01f, 1000.0f)).moveTo(0,0,7)
+		.aimAt(0,0,0);
 
 	mScene.addLight("d1", LightSource::directional(vec3(1,1,1) * 0.7f, vec3(1,-1,1)));
 	mScene.addLight("d2", LightSource::directional(vec3(0,1,0) * 0.5f, vec3(-1,-1,-1)));
