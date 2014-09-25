@@ -4,6 +4,8 @@ This project is my own "tiny" take on _thebennybox_'s 3D game engine tutorial se
 
 https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
 
+It is written entirely in C++11 with SDL/Glew/OpenGL. It was so far only compiled with clang v3.5 and tested on an iMac with an ATI Radeon HD6970M.
+
 # Example
 
 ```c++
