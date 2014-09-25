@@ -1,17 +1,22 @@
 #include <gtest/gtest.h>
 #include <tiny/math/quaternion.h>
+#include <tiny/math/matrix.h>
 #include <tiny/math/trigo.h>
 
 using namespace tiny::math;
 
 using quat = tiny::math::quaternion<float>;
+using vec3 = float3;
+
+const float3 xAxis(1,0,0), yAxis(0,1,0), zAxis(0,0,1);
+
 
 TEST(quaternion, can_be_declared)
 {
 	quat q;
 	quat r(1,2,3,4);
 
-	float3 axis(1,0,0);
+	vec3 axis(1,0,0);
 	quat s(axis, toRadian(45));
 }
 
@@ -29,8 +34,6 @@ TEST(quaternion, can_be_multiplied_together)
 
 TEST(quaternion, can_be_used_to_rotate_3d_vectors)
 {
-	float3 xAxis(1,0,0), yAxis(0,1,0), zAxis(0,0,1);
-
 	EXPECT_EQ(-xAxis, quat(yAxis, toRadian(180)).rotate(xAxis));
 	EXPECT_EQ(-3*xAxis, quat(yAxis, toRadian(180)).rotate(3*xAxis));
 	EXPECT_EQ(yAxis, quat(zAxis, toRadian(90)).rotate(xAxis));

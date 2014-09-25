@@ -40,14 +40,23 @@ namespace tiny { namespace core {
 			aimAt(vec3(x,y,z));
 		}
 
-		void aimAt(const vec3 target) 
-		{
-			// FIXME: probably not working as intended
+		void aimAt(const vec3 &target) 
+		{	
 			vec3 newForward = normalize(target - position());
-			vec3 newLeft    = normalize(cross(up(), newForward));
-			vec3 newUp      = normalize(cross(newForward, newLeft));
+			vec3 newRight   = normalize(cross(up(), newForward));
+			vec3 newUp      = normalize(cross(newForward, newRight));
 
-			rotateTo(quat(newForward, newUp));
+			rotateTo(quat(newForward, newUp));	
+		}
+
+		void alignWith(const vec3 direction)
+		{
+			Transformable t;
+
+			t.moveTo(-direction);
+			t.aimAt(0,0,0);
+
+			rotateTo(t.rotation());
 		}
 
 

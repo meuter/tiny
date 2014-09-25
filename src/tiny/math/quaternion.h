@@ -28,28 +28,56 @@ namespace tiny { namespace math {
 			(*this) *= sin(angle/2.0);
 			w = cos(angle/2.0);
 		}
-		quaternion(const mat4 &m)
-		{
-			w = std::sqrt(std::max(0.0f, 1.0f+m(0,0)+m(1,1)+m(2,2))) / 2;
-			x = std::sqrt(std::max(0.0f, 1.0f+m(0,0)-m(1,1)-m(2,2))) / 2;
-			y = std::sqrt(std::max(0.0f, 1.0f-m(0,0)+m(1,1)-m(2,2))) / 2;
-			z = std::sqrt(std::max(0.0f, 1.0f-m(0,0)-m(1,1)+m(2,2))) / 2;
 
-			x = std::copysign(x, m(2,1)-m(1,2));
-			y = std::copysign(y, m(0,2)-m(2,0));
-			z = std::copysign(z, m(1,0)-m(0,1));
+		quaternion(const mat3 &m)
+		{
+			float t = trace(m);
+			
+			if(t > 0)
+			{
+				float s = 0.5f / sqrtf(t + 1.0f);
+				w = 0.25f / s;
+				x = (m(1,2) - m(2,1)) * s;
+				y = (m(2,0) - m(0,2)) * s;
+				z = (m(0,1) - m(1,0)) * s;
+			}
+			else if(m(0,0) > m(1,1) && m(0,0) > m(2,2))
+			{
+				float s = 2.0f * sqrtf(1.0f + m(0,0) - m(1,1) - m(2,2));
+				w = (m(1,2) - m(2,1)) / s;
+				x = 0.25f * s;
+				y = (m(1,0) + m(0,1)) / s;
+				z = (m(2,0) + m(0,2)) / s;
+			}
+			else if(m(1,1) > m(2,2))
+			{
+				float s = 2.0f * sqrtf(1.0f + m(1,1) - m(0,0) - m(2,2));
+				w = (m(2,0) - m(0,2)) / s;
+				x = (m(1,0) + m(0,1)) / s;
+				y = 0.25f * s;
+				z = (m(2,1) + m(1,2)) / s;
+			}
+			else
+			{
+				float s = 2.0f * sqrtf(1.0f + m(2,2) - m(1,1) - m(0,0));
+				w = (m(0,1) - m(1,0)) / s;
+				x = (m(2,0) + m(0,2)) / s;
+				y = (m(1,2) + m(2,1)) / s;
+				z = 0.25f * s;
+			}
+			
+			(*this) = normalize(*this);
 		}
 
 		quaternion(const vec3 &forward, const vec3 &up)
-		{
+		{		
 			vec3 left = normalize(cross(up, forward));
 
-			mat4 m =
+			mat3 m =
 			{
-				left.x,    left.y,    left.z,   0.0f,
-				up.x,      up.y,      up.z,      0.0f,
-				forward.x, forward.y, forward.z, 0.0f,
-				0.0f,      0.0f,      0.0f,      0.1f
+				left.x,    left.y,    left.z, 
+				up.x,      up.y,      up.z,   
+				forward.x, forward.y, forward.z, 
 			};
 
 			(*this) = quaternion(m);

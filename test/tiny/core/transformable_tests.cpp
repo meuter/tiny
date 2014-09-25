@@ -215,3 +215,19 @@ TEST(Transformable_objects, have_a_rotation_matrix_to_move_from_model_space_to_w
 	EXPECT_EQ(rInWorldSpace, (model.rotationMatrix() * vec4(rInModelSpace,1)).xyz());
 }
 
+TEST(Transformable_objects, can_be_aligned_with_direction_using_alignWith)
+{
+	Transformable t;
+
+	t.moveTo(5,5,5);
+
+	vec3 direction(1,0,-1);
+
+	t.alignWith(direction);
+
+	EXPECT_EQ(normalize(direction), t.forward());
+	EXPECT_EQ(vec3(5,5,5), t.position());
+}
+
+
+

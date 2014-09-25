@@ -18,7 +18,7 @@ namespace tiny { namespace rendering {
 		LightSource() = default;
 
 		inline core::vec3 color()          const { return mColor; }
-		inline core::vec3 direction()      const { return mDirection; }
+		inline core::vec3 direction()      const { return forward(); }
 		inline core::vec3 attenuation()    const { return mAttenuation; }	
 		inline float      intensity()      const { return mIntensity; }
 		inline float      cutoff()         const { return mCutoff; }
@@ -26,7 +26,6 @@ namespace tiny { namespace rendering {
 
 	private:	
 		core::vec3 mColor;
-		core::vec3 mDirection;
 		core::vec3 mAttenuation;	
 		float mIntensity;		
 		float mCutoff;

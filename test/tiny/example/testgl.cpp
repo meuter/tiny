@@ -46,8 +46,8 @@ public:
 		mRenderer.addPointLight(vec3(0,1,0), 0.6f, vec3(2,-1.5f,2));
 		mRenderer.addPointLight(vec3(0,0,1), 0.6f, vec3(3,-1.5f,3));
 
-		mRenderer.addSpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 5);
-		mRenderer.addSpotLight(vec3(0,1,1), 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 5);
+		mRenderer.addSpotLight(vec3(1,1,0), 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10);
+		mRenderer.addSpotLight(vec3(0,1,1), 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10);
 
  	 	mContext.vsync(false);			
 	}
