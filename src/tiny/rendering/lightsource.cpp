@@ -6,9 +6,10 @@ namespace tiny { namespace rendering {
 	{
 		LightSource directionalLight;
 
+		directionalLight.moveTo(-normalize(direction) * 1.5e11f);
+
 		directionalLight.mColor          = color;
 		directionalLight.mDirection      = normalize(direction);
-		directionalLight.mPosition       = -normalize(direction) * 1.5e11f;
 		directionalLight.mAttenuation    = vec3(0,0,1);
 		directionalLight.mIntensity      = intensity;
 		directionalLight.mCutoff         = -1.0f;
@@ -21,9 +22,10 @@ namespace tiny { namespace rendering {
 	{
 		LightSource pointLight;
 
+		pointLight.moveTo(position);
+
 		pointLight.mColor          = color;
 		pointLight.mIntensity      = intensity;
-		pointLight.mPosition       = position;
 		pointLight.mDirection      = vec3(0,0,0);
 		pointLight.mAttenuation    = vec3(1,0,0);
 		pointLight.mCutoff         = -1.0f;
@@ -36,9 +38,10 @@ namespace tiny { namespace rendering {
 	{
 		LightSource spotLight;
 
+		spotLight.moveTo(position);
+
 		spotLight.mColor          = color;
 		spotLight.mIntensity      = intensity;
-		spotLight.mPosition       = position;
 		spotLight.mDirection      = normalize(direction);
 		spotLight.mAttenuation    = vec3(1,0,0);
 		spotLight.mCutoff         = cutoff;
@@ -51,9 +54,10 @@ namespace tiny { namespace rendering {
 	{
 		LightSource ambientLight;
 
+		ambientLight.moveTo(vec3(0,0,0));
+		
 		ambientLight.mColor = color;
 		ambientLight.mDirection = vec3(0,0,0);
-		ambientLight.mPosition = vec3(0,0,0);
 		ambientLight.mAttenuation = vec3(0,0,1);
 		ambientLight.mIntensity = intensity;
 		ambientLight.mCutoff = -1.0f;
