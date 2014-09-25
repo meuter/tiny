@@ -46,3 +46,4 @@ testsw
 test/tiny/example/testgl.o
 testgl
 src/tiny/core/lightsource.o
+src/tiny/rendering/gl/renderer.o
