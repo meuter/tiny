@@ -10,31 +10,12 @@ void Game::start()
 		return;
 
 	mIsRunning = true;
-	init();
 	run();
 }
 
 void Game::stop()
 {
 	mIsRunning = false;
-}
-
-void Game::init() 
-{
-	for (auto &component : mComponents)
-		component->init();
-}
-
-void Game::update(sec t, sec dt) 
-{
-	for (auto &component : mComponents)
-		component->update(*this, t, dt);
-}
-
-void Game::render() 
-{
-	for (auto &component : mComponents)
-		component->render();
 }
 
 void Game::run()
@@ -44,10 +25,12 @@ void Game::run()
 	auto stopwatch = Stopwatch();
 	auto unprocessedTime = sec(0);
 
+	mRoot.init();
+
 	while (mIsRunning)
 	{
 		unprocessedTime += stopwatch.lap();
-
+		
 		if (unprocessedTime < dt)
 		{
 			std::this_thread::sleep_for(msec(20));
@@ -57,13 +40,13 @@ void Game::run()
 		while (unprocessedTime >= dt)
 		{
 			mInputs.refresh();
-			update(t, dt);
+			mRoot.update(*this, t, dt);
 			unprocessedTime -= dt;			
 			t += dt;
 		}
 
 		mWindow.clear();
-		render();				
+		mRoot.render();				
 		mWindow.swap();
 	}
 }

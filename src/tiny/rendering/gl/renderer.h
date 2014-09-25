@@ -1,5 +1,5 @@
-#ifndef __TINY_RENDERING_GL_PHONG_H__
-#define __TINY_RENDERING_GL_PHONG_H__
+#ifndef __TINY_RENDERING_GL_RENDERER_H__
+#define __TINY_RENDERING_GL_RENDERER_H__
 
 #include <tiny/core/types.h>
 #include <tiny/core/camera.h>
@@ -15,9 +15,11 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-	class Renderer : public core::Game::Component
+	class Renderer 
 	{
 		using vec3 = core::vec3;
+		using sec = core::sec;
+		using Game = core::Game;
 	public:	
 
 		Renderer(Context &context, Scene &scene) : mContext(context), mScene(scene) {}
@@ -27,6 +29,8 @@ namespace tiny { namespace rendering { namespace gl {
 			mContext.enableBackfaceCulling();
 			mContext.enableDepthTest();
 		}
+
+		void update(Game &game, sec t, sec dt)	{}
 
 		void render()
 		{

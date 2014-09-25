@@ -1,17 +1,20 @@
 #ifndef __TINY_CORE_CONTROLS_H__
 #define __TINY_CORE_CONTROLS_H__
 
-#include "game.h"
+
 #include "transformable.h"
+#include "game.h"
 
 namespace tiny { namespace core {
 
-	class WindowControl : public Game::Component
+	class WindowControl 
 	{
 	public:	
 		WindowControl()  {}
 		virtual ~WindowControl() = default;
 
+		void init()   {}
+		void render() {}
 		void update(Game &game, sec t, sec dt)
 		{
 			if (game.inputs().isWindowCloseRequested())
@@ -22,12 +25,14 @@ namespace tiny { namespace core {
 		}
 	};
 
-	class KeyboardControl : public Game::Component
+	class KeyboardControl 
 	{
 	public:
 		KeyboardControl(Transformable &controlled) : mControlled(controlled) {}
 		virtual ~KeyboardControl() = default;
 
+		void init()   {}
+		void render() {}
 		void update(Game &game, sec t, sec dt)
 		{
 			float amount = dt.count() * 10;
@@ -50,12 +55,14 @@ namespace tiny { namespace core {
 		Transformable &mControlled;
 	};
 
-	class MouseControl : public Game::Component
+	class MouseControl 
 	{
 	public:
 		MouseControl(Transformable &controlled) : mControlled(controlled) {}
 		virtual ~MouseControl() = default;
 
+		void init()   {}
+		void render() {}
 		void update(Game &game, sec t, sec dt)
 		{
 			const float sensitivity = 0.005f;
@@ -83,8 +90,6 @@ namespace tiny { namespace core {
 					game.inputs().setMousePosition(game.window().center());
 			}
 		}
-
-		void render() {}
 
 	private:
 		Transformable &mControlled;

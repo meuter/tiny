@@ -2,11 +2,12 @@
 #define __TINY_CORE_FPS_COUNTER_H__
 
 #include <iostream>
+#include "types.h"
 #include "game.h"
 
 namespace tiny { namespace core {
 
-	class FPSCounter : public Game::Component
+	class FPSCounter
 	{
 	public:
 		FPSCounter() : nFrames(0), mSinceLastFrame(0.0) {}

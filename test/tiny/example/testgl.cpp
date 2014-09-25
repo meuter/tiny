@@ -41,18 +41,17 @@ public:
 		mScene.addLight("s2", LightSource::spot(vec3(0,1,1) * 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10));
 
  	 	mContext.vsync(false);			
-
- 	 	addComponent(new FPSCounter());
- 	 	addComponent(new WindowControl());
- 	 	addComponent(new KeyboardControl(mScene.camera()));
- 	 	addComponent(new MouseControl(mScene.camera()));
- 	 	addComponent(new Renderer(mContext, mScene));
+ 	 
+ 	 	root().add(FPSCounter());
+ 	 	root().add(WindowControl());
+ 	 	root().add(KeyboardControl(mScene.camera()));
+ 	 	root().add(MouseControl(mScene.camera()));
+ 	 	root().add(Renderer(mContext, mScene));
 	}
 
 private:	
 	Context mContext;
 	Scene mScene;
-
 };
 
 
