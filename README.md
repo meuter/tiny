@@ -14,9 +14,12 @@ int main(int argc, char **argv)
 	Context mContext(mGame.window());
 	Scene mScene;
 
-	mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl")).moveTo(0,-2,0);
-	mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl")).attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
-	mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl")).attachTo(mScene.getMesh("ground")).moveTo(0,2,0);
+	mScene.addMesh("ground", Mesh::fromFiles("res/models/ground.obj", "res/models/ground.mtl"))
+		.moveTo(0,-2,0);
+	mScene.addMesh("box",    Mesh::fromFiles("res/models/box.obj", "res/models/box.mtl"))
+		.attachTo(mScene.getMesh("ground")).moveTo(0,6,0);
+	mScene.addMesh("sphere", Mesh::fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_smooth.mtl")).attachTo(mScene.getMesh("ground"))
+		.moveTo(0,2,0);
 
 	mScene.setAmbient(vec3(1,1,1) * 0.2f);
 	mScene.setCamera(Camera::withPerspective(toRadian(70), mGame.window().aspect(), 0.01f, 1000.0f)).moveTo(0,0,7).aimAt(0,0,0);
