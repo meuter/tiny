@@ -17,61 +17,56 @@ using namespace tiny::rendering;
 using namespace tiny::core;
 using namespace tiny::math;
 
-class KeyboardControl
+class KeyboardControl : public Game::Component
 {
 public:
-	KeyboardControl(Inputs &inputs, Transformable &controlled) : mInputs(inputs), mControlled(controlled) {}
+	KeyboardControl(Transformable &controlled) : mControlled(controlled) {}
 	virtual ~KeyboardControl() = default;
 
-	void init() {}
-
-	void update(sec t, sec dt)
+	void update(Game &game, sec t, sec dt)
 	{
 		float amount = dt.count() * 10;
 
-		if (mInputs.isKeyHeld(Key::KEY_UP))
+		if (game.inputs().isKeyHeld(Key::KEY_UP))
 			mControlled.move(mControlled.forward(), amount);
-		if (mInputs.isKeyHeld(Key::KEY_DOWN))
+		if (game.inputs().isKeyHeld(Key::KEY_DOWN))
 			mControlled.move(mControlled.backward(), amount);
-		if (mInputs.isKeyHeld(Key::KEY_LEFT))
+		if (game.inputs().isKeyHeld(Key::KEY_LEFT))
 			mControlled.move(mControlled.left(), amount);
-		if (mInputs.isKeyHeld(Key::KEY_RIGHT))
+		if (game.inputs().isKeyHeld(Key::KEY_RIGHT))
 			mControlled.move(mControlled.right(), amount);
-		if (mInputs.isKeyHeld(Key::KEY_PAGEUP))
+		if (game.inputs().isKeyHeld(Key::KEY_PAGEUP))
 			mControlled.move(mControlled.up(), amount);
-		if (mInputs.isKeyHeld(Key::KEY_PAGEDOWN))
+		if (game.inputs().isKeyHeld(Key::KEY_PAGEDOWN))
 			mControlled.move(mControlled.down(), amount);	
 	}
 
-	void render() {}
-
 private:
-	Inputs &mInputs;
 	Transformable &mControlled;
 };
 
-class MouseControl
+class MouseControl : public Game::Component
 {
 public:
-	MouseControl(Inputs &inputs, Window &window, Transformable &controlled) : mInputs(inputs), mWindow(window), mControlled(controlled) {}
+	MouseControl(Transformable &controlled) : mControlled(controlled) {}
 	virtual ~MouseControl() = default;
 
-	void update(sec t, sec dt)
+	void update(Game &game, sec t, sec dt)
 	{
 		const float sensitivity = 0.005f;
 
-		if (mInputs.isMouseReleased(MouseButton::MIDDLE))
+		if (game.inputs().isMouseReleased(MouseButton::MIDDLE))
 		{
-			mInputs.showMouseCursor(true);		
+			game.inputs().showMouseCursor(true);		
 		}
-		else if (mInputs.isMousePressed(MouseButton::MIDDLE))
+		else if (game.inputs().isMousePressed(MouseButton::MIDDLE))
 		{
-			mInputs.showMouseCursor(false);
-			mInputs.setMousePosition(mWindow.center());
+			game.inputs().showMouseCursor(false);
+			game.inputs().setMousePosition(game.window().center());
 		}
-		else if (mInputs.isMouseHeld(MouseButton::MIDDLE))
+		else if (game.inputs().isMouseHeld(MouseButton::MIDDLE))
 		{
-	 		auto dpos = mWindow.center() - mInputs.getMousePosition();
+	 		auto dpos = game.window().center() - game.inputs().getMousePosition();
 
 			if (dpos.x != 0)
 				mControlled.rotate(mControlled.up(), rad{dpos.x * sensitivity});
@@ -80,38 +75,30 @@ public:
 				mControlled.rotate(mControlled.right(), rad{dpos.y * sensitivity});
 
 			if (dpos.x != 0 || dpos.y != 0)
-				mInputs.setMousePosition(mWindow.center());
+				game.inputs().setMousePosition(game.window().center());
 		}
 	}
 
 	void render() {}
 
 private:
-	Inputs &mInputs;
-	Window &mWindow;
 	Transformable &mControlled;
 };
 
-class WindowControl
+class WindowControl : public Game::Component
 {
 public:	
-	WindowControl(Inputs &inputs, Game &game) : mInputs(inputs), mGame(game) {}
+	WindowControl()  {}
 	virtual ~WindowControl() = default;
 
-	void init() {}
-	void update(sec t, sec dt)
+	void update(Game &game, sec t, sec dt)
 	{
-		if (mInputs.isWindowCloseRequested())
-			mGame.stop();
+		if (game.inputs().isWindowCloseRequested())
+			game.stop();
 
-		if (mInputs.isKeyHeld(Key::KEY_LEFT_CMD) && mInputs.isKeyPressed(Key::KEY_Z))
-			mGame.stop();
+		if (game.inputs().isKeyHeld(Key::KEY_LEFT_CMD) && game.inputs().isKeyPressed(Key::KEY_Z))
+			game.stop();
 	}
-	void render();
-
-private:
-	Inputs &mInputs;
-	Game &mGame;
 };
 
 
@@ -124,9 +111,7 @@ public:
 	MyGame(Window &&window) 
 		: Game(std::move(window)),
 		  mContext(this->window()), 
-		  mRenderer(mContext),
-		  mWindowControl(this->inputs(), *this)
-		   {}
+		  mRenderer(mContext)    {}
 
 	void init()
 	{
@@ -149,8 +134,8 @@ public:
 
 		mRenderer.init();
 
-		mCameraKeyboardControl.reset(new KeyboardControl(inputs(), mScene.camera()));
-		mCameraMouseControl.reset(new MouseControl(inputs(), window(), mScene.camera()));
+		mCameraKeyboardControl.reset(new KeyboardControl(mScene.camera()));
+		mCameraMouseControl.reset(new MouseControl(mScene.camera()));
 
  	 	mContext.vsync(false);			
 	}
@@ -158,10 +143,10 @@ public:
 
 	void update(sec t, sec dt)
 	{
-		mWindowControl.update(t, dt);
-		mFPSCounter.update(t, dt);
-		mCameraKeyboardControl->update(t, dt);
-		mCameraMouseControl->update(t, dt);
+		mFPSCounter.update(*this, t, dt);
+		mWindowControl.update(*this, t, dt);
+		mCameraKeyboardControl->update(*this, t, dt);
+		mCameraMouseControl->update(*this, t, dt);
 	}
 
 	void render()
@@ -174,10 +159,13 @@ public:
 private:	
 	Context mContext;
 	Renderer mRenderer;
+	Scene mScene;
+
+	// std::vector<std::unique_ptr<Game::Component>> mComponents;
+
 	FPSCounter mFPSCounter;
 	std::unique_ptr<KeyboardControl> mCameraKeyboardControl;
 	std::unique_ptr<MouseControl> mCameraMouseControl;
-	Scene mScene;
 	WindowControl mWindowControl;
 };
 

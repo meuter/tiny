@@ -26,7 +26,7 @@ public:
 		if (shouldStop())
 			stop();
 
-		mFPSCounter.update(t, dt);
+		mFPSCounter.update(*this, t, dt);
 	}
 
 	void render()

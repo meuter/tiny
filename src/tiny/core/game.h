@@ -8,7 +8,25 @@ namespace tiny { namespace core {
 
 	class Game 
 	{
-	public:
+	public:	
+		class Component 
+		{
+		public:
+			Component() = default;
+			Component(Component &&component) = default;
+			Component(const Component &component) = default;
+
+			virtual ~Component() = default;
+
+			Component &operator=(Component &&component) = default;
+			Component &operator=(const Component &component) = default;
+
+			virtual void init() {}
+			virtual void update(Game &game, sec t, sec dt) {}
+			virtual void render() {}
+		};
+
+	public:	
 		Game(Window &&window) : mWindow(std::move(window)){}
 		Game(Game &&other) = default;
 		virtual ~Game() {}
