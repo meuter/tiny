@@ -17,22 +17,6 @@ Camera Camera::withPerspective(rad fieldOfView, float aspectRatio, float zNear, 
 	});
 }
 
-
-void Camera::lookAt(float x, float y, float z)
-{
-	lookAt(vec3(x,y,z));
-}
-
-void Camera::lookAt(const vec3 target) 
-{
-	// FIXME: probably not working as intended
-	vec3 newForward = normalize(target - position());
-	vec3 newLeft    = normalize(cross(up(), newForward));
-	vec3 newUp      = normalize(cross(newForward, newLeft));
-
-	rotateTo(quat(newForward, newUp));
-}
-
 const mat4 &Camera::projectionMatrix() const
 {
 	return mProjection; 

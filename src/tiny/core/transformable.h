@@ -34,6 +34,23 @@ namespace tiny { namespace core {
 		inline void scaleTo(const vec3 &scale)                   { mScaling = scale; } 
 		inline void scaleTo(float sx, float sy, float sz)        { mScaling = vec3(sx, sy, sz); } 
 
+
+		void aimAt(float x, float y, float z)
+		{
+			aimAt(vec3(x,y,z));
+		}
+
+		void aimAt(const vec3 target) 
+		{
+			// FIXME: probably not working as intended
+			vec3 newForward = normalize(target - position());
+			vec3 newLeft    = normalize(cross(up(), newForward));
+			vec3 newUp      = normalize(cross(newForward, newLeft));
+
+			rotateTo(quat(newForward, newUp));
+		}
+
+
 		inline vec3 left()            const                      { return mRotation.rotate( X_AXIS); }
 		inline vec3 right()           const                      { return mRotation.rotate(-X_AXIS); }
 		inline vec3 up()              const                      { return mRotation.rotate( Y_AXIS); }

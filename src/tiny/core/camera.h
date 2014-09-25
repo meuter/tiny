@@ -20,9 +20,6 @@ namespace tiny { namespace core {
 
 		virtual ~Camera() = default;
 
-		void lookAt(float x, float y, float z);
-		void lookAt(const vec3 target);
-
 		void update(Window &window, Inputs &inputs, sec dt);
 
 		const mat4 &projectionMatrix() const;
