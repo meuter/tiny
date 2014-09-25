@@ -11,12 +11,12 @@ namespace tiny { namespace core {
 	class Camera : public Transformable
 	{
 	public:	
-		static Camera withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar);
-
 		Camera() = default;
 		Camera(const mat4 &projection) : mProjection(projection) {}
 
 		virtual ~Camera() = default;
+
+		Camera &withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar);
 
 		const mat4 &projectionMatrix() const;
 		mat4 viewMatrix()              const;

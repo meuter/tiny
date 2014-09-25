@@ -29,14 +29,14 @@ public:
 	Scene &operator=(Scene &&other) = default;
 	Scene &operator=(const Scene &other) = delete;
 
-	LightSource &addLight(const std::string &name, const LightSource &light)
+	LightSource &addLight(const std::string &name)
 	{
-		return (mLightSources[name] = light);
+		return mLightSources[name];
 	}
 
-	Mesh &addMesh(const std::string &name, Mesh &&mesh)
+	Mesh &addMesh(const std::string &name)
 	{
-		return (mMeshes[name] = std::move(mesh));
+		return mMeshes[name];
 	}
 
 	Mesh &getMesh(const std::string &name)
@@ -47,12 +47,6 @@ public:
 			throw std::runtime_error("mesh not found");
 
 		return hit->second;
-	}
-
-	Camera &setCamera(const Camera &camera)
-	{
-		mCamera = camera;
-		return mCamera;
 	}
 
 	vec3 &setAmbient(const vec3 &color)

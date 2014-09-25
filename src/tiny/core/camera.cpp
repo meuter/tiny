@@ -2,19 +2,21 @@
 
 namespace tiny { namespace core {
 
-Camera Camera::withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar)
+Camera &Camera::withPerspective(rad fieldOfView, float aspectRatio, float zNear, float zFar)
 {
 	float zRange = zNear - zFar;
 	float yScale = 1.0f / tan(fieldOfView/2.0);
 	float xScale = -1 * yScale / aspectRatio;
 	float zScale = -1 * (zNear+zFar)/zRange;
 
-	return Camera({
+	mProjection = {
 		xScale, 0.0f,   0.0f,    0.0f,
 		0.0f,   yScale, 0.0f,    0.0f,
 		0.0f,   0.0f,   zScale,  2.0f*zFar*zNear/zRange,
 		0.0f,   0.0f,   1.0f,    0.0f
-	});
+	};
+
+	return (*this);
 }
 
 const mat4 &Camera::projectionMatrix() const

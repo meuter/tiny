@@ -17,36 +17,6 @@ namespace tiny { namespace rendering { namespace gl {
 
 	class Material {
 	public:	
-
-		static Material fromFile(const std::string &filename)
-		{
-			Material result;
-			std::ifstream file;
-			std::map<std::string, int> materialMap;
-			std::vector<tinyobj::material_t> materials;
-			std::string error;
-
-			if (utils::toupper(utils::fileExtension(filename)) != "MTL")
-				throw std::runtime_error("unexpected file type '"+filename+"'");
-
-			file.open(filename);
-
-			if (!file)
-				throw std::runtime_error("could not open '" + filename + "'");
-
-			error = tinyobj::LoadMtl(materialMap, materials, file);
-			if (!error.empty())
-				throw std::runtime_error("could not load '"+filename+"':" + error);
-
-			if (materials.size() != 1)
-				throw std::runtime_error("more than one mesh found in '"+filename+"'");
-
-			result.load(materials[0]);
-
-			return result;
-		}
-
-
 		Material() = default;
 		Material(Material &&other) = default;
 
@@ -58,6 +28,33 @@ namespace tiny { namespace rendering { namespace gl {
 		inline const core::vec3 &diffuse()  const { return mDiffuse; }
 		inline const core::vec3 &specular() const { return mSpecular; }
 		inline const float shininess()      const { return mShininess; }
+
+		Material &fromFile(const std::string &mtlFilename)
+		{
+			std::ifstream file;
+			std::map<std::string, int> materialMap;
+			std::vector<tinyobj::material_t> materials;
+			std::string error;
+
+			if (utils::toupper(utils::fileExtension(mtlFilename)) != "MTL")
+				throw std::runtime_error("unexpected file type '"+mtlFilename+"'");
+
+			file.open(mtlFilename);
+
+			if (!file)
+				throw std::runtime_error("could not open '" + mtlFilename + "'");
+
+			error = tinyobj::LoadMtl(materialMap, materials, file);
+			if (!error.empty())
+				throw std::runtime_error("could not load '"+mtlFilename+"':" + error);
+
+			if (materials.size() != 1)
+				throw std::runtime_error("more than one mesh found in '"+mtlFilename+"'");
+
+			load(materials[0]);
+			return (*this);
+		}
+
 
 		void load(const tinyobj::material_t &material)
 		{
@@ -73,7 +70,6 @@ namespace tiny { namespace rendering { namespace gl {
 				memset(white, 0xFF, sizeof(white));
 				mTexture = Texture(white, 16,16);
 			}
-
 		}
 
 

@@ -7,7 +7,7 @@
 
 #include <tiny/core/types.h>
 #include <tiny/core/transformable.h>
-#include <tiny/contrib/tiny_obj_loader.h>
+
 
 #include "material.h"
 #include "bufferobject.h"
@@ -18,9 +18,6 @@ namespace tiny { namespace rendering { namespace gl {
 	{
 	public:
 
-		static Mesh fromFile(const std::string &objFilname, int shape = 0);
-		static Mesh fromFiles(const std::string &objFilname, const std::string &mtlFilename);
-
 		enum AttributeLocation : GLuint
 		{
 			POSITION,
@@ -29,8 +26,7 @@ namespace tiny { namespace rendering { namespace gl {
 			N_ATTRIBUTES,
 		};
 
-		Mesh() = default;
-		Mesh(const tinyobj::mesh_t &meshData);
+		Mesh();
 		Mesh(Mesh &&mesh) = default;
 		
 		virtual ~Mesh() = default;
@@ -40,7 +36,10 @@ namespace tiny { namespace rendering { namespace gl {
 		void draw() const;
 
 		const Material &material() const { return mMaterial; }
-		void setMaterial(Material &&material) { mMaterial = std::move(material); }
+		Material &material() { return mMaterial; }
+
+		Mesh &fromFile(const std::string &objFilename, int shape=0);
+		Mesh &fromFiles(const std::string &objFilname, const std::string &mtlFilename);
 
 	protected:
 		static void destroy(GLuint handle);

@@ -12,11 +12,7 @@ namespace tiny { namespace core {
 	public:	
 		static const vec3 NO_ATTENUATION;
 		static const vec3 STANDARD_ATTENUATION;
-
-		static LightSource directional(const vec3 &color, const vec3 &direction);
-		static LightSource point(const vec3 &color, const vec3 &position);
-		static LightSource spot(const vec3 &color, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent);
-
+		
 		LightSource() = default;
 		LightSource(const vec3 &color, const vec3 &position = vec3(0,0,0), const vec3 &direction = vec3(1,1,1));
 
@@ -25,8 +21,9 @@ namespace tiny { namespace core {
 		inline float cutoff()         const { return mCutoff; }
 		inline float cutoffExponent() const { return mCutoffExponent; }
 
-		LightSource &setAttenuation(const vec3 &attenuation);
-		LightSource &setCutoff(float factor, float exponent);
+		LightSource &directional(const vec3 &color, const vec3 &direction);
+		LightSource &point(const vec3 &color, const vec3 &position);
+		LightSource &spot(const vec3 &color, const vec3 &position, const vec3 &direction, float cutoff, float cutoffExponent);
 
 	private:	
 		core::vec3 mColor;
