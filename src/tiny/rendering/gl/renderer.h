@@ -11,14 +11,16 @@
 #include "../lightsource.h"
 #include "scene.h"
 
+#include <tiny/core/game.h>
+
 namespace tiny { namespace rendering { namespace gl {
 
-	class Renderer
+	class Renderer : public core::Game::Component
 	{
 		using vec3 = core::vec3;
 	public:	
 
-		Renderer(Context &context) : mContext(context) {}
+		Renderer(Context &context, Scene &scene) : mContext(context), mScene(scene) {}
 		
 		void init()
 		{
@@ -26,27 +28,27 @@ namespace tiny { namespace rendering { namespace gl {
 			mContext.enableDepthTest();
 		}
 
-		void render(const Scene &scene)
+		void render()
 		{
-			size_t nLights = scene.lightSourceCount(), currentLight = 0;
+			size_t nLights = mScene.lightSourceCount(), currentLight = 0;
 
 			ShaderProgram &shader = getShader(nLights);
 
 			shader.use();
-			shader.setUniform("ambientLight", scene.ambientLight());
+			shader.setUniform("ambientLight", mScene.ambientLight());
 
 			if (nLights > 0) 
-				shader.setUniform("eyePosition", scene.camera().position());
+				shader.setUniform("eyePosition", mScene.camera().position());
 
-			scene.forAll([&](const LightSource &light) 
+			mScene.forAll([&](const LightSource &light) 
 			{
 			 	shader.setUniform("lightSources["+std::to_string(currentLight++)+"]", light);
 			});
 
-			scene.forAll([&](const Mesh &mesh)
+			mScene.forAll([&](const Mesh &mesh)
 			{
 			 	shader.setUniform("M",   mesh.modelMatrix());
-			 	shader.setUniform("MVP", scene.camera().projectionMatrix() * scene.camera().viewMatrix() * mesh.modelMatrix());
+			 	shader.setUniform("MVP", mScene.camera().projectionMatrix() * mScene.camera().viewMatrix() * mesh.modelMatrix());
 			 	shader.setUniform("material", mesh.material());
 			 	mesh.draw();
 			});
@@ -71,6 +73,7 @@ namespace tiny { namespace rendering { namespace gl {
 	private:
 		std::map<int,ShaderProgram> mLightShaders;
 		Context &mContext;
+		const Scene &mScene;
 	};
 
 }}}

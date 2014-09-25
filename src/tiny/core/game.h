@@ -33,20 +33,24 @@ namespace tiny { namespace core {
 
 		Game &operator=(Game &&other) = default;
 
-		virtual void init()                {}
-		virtual void update(sec t, sec dt) {}
-		virtual void render()              {}
-
 		void start();
 		void stop();
 
+		void init();
+		void update(sec t, sec dt);
+		void render();
+
 		inline Window &window()   { return mWindow; }
 		inline Inputs &inputs()   { return mInputs; }
+
+		template<typename... Args >
+		void addComponent(Args&&... args)  { mComponents.emplace_back(args...); }
 
 	protected:
 		void run();
 
 	private:
+		std::vector<std::unique_ptr<Component>> mComponents;
 		Window mWindow;
 		Inputs mInputs;
 		bool mIsRunning;

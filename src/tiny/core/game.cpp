@@ -19,6 +19,24 @@ void Game::stop()
 	mIsRunning = false;
 }
 
+void Game::init() 
+{
+	for (auto &component : mComponents)
+		component->init();
+}
+
+void Game::update(sec t, sec dt) 
+{
+	for (auto &component : mComponents)
+		component->update(*this, t, dt);
+}
+
+void Game::render() 
+{
+	for (auto &component : mComponents)
+		component->render();
+}
+
 void Game::run()
 {
 	const auto dt = sec(1.0/5000.0);

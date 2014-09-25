@@ -16,6 +16,16 @@ class Scene
 	using vec3 = core::vec3;
 	using Camera = core::Camera;
 public:
+
+	Scene() = default;
+	Scene(Scene &&other) = default;
+	Scene(const Scene &other) = delete;
+
+	virtual ~Scene() = default;
+
+	Scene &operator=(Scene &&other) = default;
+	Scene &operator=(const Scene &other) = delete;
+
 	LightSource &addLight(const std::string &name, const LightSource &light)
 	{
 		return (mLightSources[name] = light);
