@@ -1,6 +1,10 @@
-My take on the thebennybox's 3D game engine tutorial:
+# Intro
+
+This project is my own "tiny" take on _thebennybox_'s 3D game engine tutorial series:
 
 https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
+
+# Example
 
 ```c++
 
