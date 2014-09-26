@@ -54,7 +54,7 @@ namespace tiny { namespace rendering { namespace gl {
 		else
 		{
 			std::array<uint32_t,16*16> defaultNormal;
-			defaultNormal.fill(0xFF4E3535);
+			defaultNormal.fill(0xFFFF7F80);
 			mNormalMap.load(reinterpret_cast<byte *>(&defaultNormal[0]), 16,16);
 		}
 

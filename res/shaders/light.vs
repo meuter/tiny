@@ -8,8 +8,7 @@ mat3 computeTBN(mat4 M, vec3 normal, vec3 tangent)
 	
 	t = normalize(t - dot(t,b) * n);
 
-	// apparently the tangent coming the app is the bitangent ?!!
-	return mat3(t,n,b);
+	return mat3(t,b,n);
 }
 
 attribute vec3 position;

@@ -34,7 +34,10 @@ vec4 computeAmbientLight(vec3 ambientLight, Material material, Fragment fragment
 
 vec4 computeLightSource(LightSource light, Material material, Fragment fragment, vec3 eyePosition)
 {
-	vec3 normal = normalize(fragment.TBN * vec3(0,1,0));
+	vec3 bump = (255.0f/128.0f * texture2D(material.normalMap, fragment.texcoord).xyz - 1.0f);
+	// vec3 bump = vec3(0,0,1); // blue is up
+	vec3 normal = normalize(fragment.TBN * bump);
+
 	vec3 lightDirection  = normalize(light.position - fragment.position);
 	vec3 directionToEye   = normalize(eyePosition - fragment.position);
 	vec3 reflectDirection = reflect(lightDirection, normal);	
@@ -52,4 +55,5 @@ vec4 computeLightSource(LightSource light, Material material, Fragment fragment,
 	vec3 specular = specularFactor * material.specular;	
 
 	return (fadeFactor / attenuation) * vec4((diffuse + specular) * light.color, 1) * texel;
+	// return vec4((normal+1.0f)/2.0f,1);
 }

@@ -74,10 +74,12 @@ namespace tiny { namespace rendering { namespace gl {
 	void ShaderProgram::setUniform(const std::string &uniform, const Material &material)
 	{
 		material.texture().bind(0);
-		material.normalMap().bind(1);
+		glUniform1i(getUniformLocation(uniform+".texture"), 0);
 
-		setUniform(uniform + ".texture",   0);
-		setUniform(uniform + ".normalMap", 1);
+		material.normalMap().bind(1);
+		glUniform1i(getUniformLocation(uniform+".normalMap"), 1);
+
+
 		setUniform(uniform + ".diffuse",   material.diffuse());
 		setUniform(uniform + ".specular",  material.specular());
 		setUniform(uniform + ".shininess", material.shininess());
