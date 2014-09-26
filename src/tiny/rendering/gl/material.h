@@ -14,7 +14,9 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-	class Material {
+	class Material 
+	{
+		using byte = core::byte;
 	public:	
 		Material() = default;
 		Material(Material &&other) = default;
@@ -23,10 +25,16 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Material &operator=(Material &&other) = default;
 
-		inline const gl::Texture &texture() const { return mTexture; }
-		inline const core::vec3 &diffuse()  const { return mDiffuse; }
-		inline const core::vec3 &specular() const { return mSpecular; }
-		inline const float shininess()      const { return mShininess; }
+		inline const gl::Texture &texture() const   { return mTexture; }
+		inline const gl::Texture &normalMap() const { return mNormalMap; }
+
+		inline gl::Texture &texture()   { return mTexture; }
+		inline gl::Texture &normalMap() { return mNormalMap; }
+
+
+		inline core::vec3 diffuse()  const { return mDiffuse; }
+		inline core::vec3 specular() const { return mSpecular; }
+		inline float shininess()      const { return mShininess; }
 
 		Material &fromFile(const std::string &mtlFilename);
 		void load(const tinyobj::material_t &material);
@@ -34,7 +42,7 @@ namespace tiny { namespace rendering { namespace gl {
 	private:
 		core::vec3 mDiffuse, mSpecular;
 		float mShininess;
-		gl::Texture mTexture;
+		Texture mTexture, mNormalMap;
 
 	};
 

@@ -1,5 +1,6 @@
 #include "material.h"
 #include <fstream>
+#include <array>
 
 namespace tiny { namespace rendering { namespace gl {
 
@@ -36,13 +37,27 @@ namespace tiny { namespace rendering { namespace gl {
 		mShininess = material.shininess;
 
 		if (!material.diffuse_texname.empty())
-			mTexture = gl::Texture::fromFile(material.diffuse_texname);
+		{
+			mTexture.fromFile(material.diffuse_texname);
+		}
 		else
 		{
-			unsigned char white[1024];
-			memset(white, 0xFF, sizeof(white));
-			mTexture = Texture(white, 16,16);
+			std::array<uint32_t,16*16> white;
+			white.fill(0xFFFFFFFF);
+			mTexture.load(reinterpret_cast<byte *>(&white[0]), 16, 16);
 		}
+
+		if (!material.normal_texname.empty())
+		{
+			mNormalMap.fromFile(material.diffuse_texname);
+		}
+		else
+		{
+			std::array<uint32_t,16*16> defaultNormal;
+			defaultNormal.fill(0xFF4E3535);
+			mNormalMap.load(reinterpret_cast<byte *>(&defaultNormal[0]), 16,16);
+		}
+
 	}
 
 }}}

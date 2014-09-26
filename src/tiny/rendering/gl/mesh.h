@@ -23,6 +23,7 @@ namespace tiny { namespace rendering { namespace gl {
 			POSITION,
 			TEXCOORD,
 			NORMAL,
+			TANGENT,
 			N_ATTRIBUTES,
 		};
 
