@@ -12,13 +12,12 @@ uniform vec3 ambientLight;
 
 varying vec3 fragPosition;
 varying vec2 fragTexcoord;
-varying vec3 fragNormal;
+
 varying mat3 fragTBN;
-varying vec3 fragTangent;
 
 void main()
 {
-	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragNormal, fragTangent, fragTBN);
+	Fragment fragment = Fragment(fragPosition, fragTexcoord, fragTBN);
 	vec4 color = computeAmbientLight(ambientLight, material, fragment);
 
 #if MAX_LIGHT_SOURCES > 0
