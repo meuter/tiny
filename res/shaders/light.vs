@@ -8,7 +8,8 @@ mat3 computeTBN(mat4 M, vec3 normal, vec3 tangent)
 	
 	t = normalize(t - dot(t,b) * n);
 
-	return mat3(t,b,n);
+	// apparently the tangent coming the app is the bitangent ?!!
+	return mat3(t,n,b);
 }
 
 attribute vec3 position;
@@ -23,12 +24,14 @@ varying vec3 fragPosition;
 varying vec2 fragTexcoord;
 varying vec3 fragNormal;
 varying mat3 fragTBN;
+varying vec3 fragTangent;
 
 void main()
 {
 	fragPosition = (M * vec4(position, 1.0f)).xyz;
 	fragTexcoord = texcoord;
 	fragNormal   = (M * vec4(normal, 0.0f)).xyz;
+	fragTangent  = (M * vec4(tangent, 0.0f)).xyz;
 	fragTBN      = computeTBN(M, normal, tangent);
 	gl_Position  = (MVP * vec4(position, 1.0f));
 }

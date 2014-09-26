@@ -26,69 +26,102 @@ namespace tiny { namespace rendering { namespace gl {
 		glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
 	}
 
-	std::vector<float> computeTangent(const tinyobj::mesh_t &meshData)
-	{
+
+	std::vector<float> computeNormals(tinyobj::mesh_t &mesh)
+	{		
 		using vec2 = core::vec2;
 		using vec3 = core::vec3;
-		using vec4 = core::vec4;
 
-		std::vector<float> tangents;
-		std::vector<vec3> tan1;
-		size_t nVertices = meshData.positions.size() / 3;
-		size_t nTriangles = meshData.indices.size() / 3;
+		std::vector<float> normals;
+		std::vector<vec3> normv;
 
-		tan1.resize(nVertices, vec3(0,0,0));
+		normv.resize(mesh.positions.size()/3, vec3(0,0,0));
 
-		for (size_t i = 0; i < nTriangles; i+= 3)
+		for(unsigned i = 0; i < mesh.indices.size() / 3; i++) 
 		{
-			int i1 = meshData.indices[i];
-            int i2 = meshData.indices[i+1];
-            int i3 = meshData.indices[i+2];
+			int i1 = mesh.indices[3*i + 0];
+			int i2 = mesh.indices[3*i + 1];
+			int i3 = mesh.indices[3*i + 2];
 
-            vec3 v1(meshData.positions[3*i1+0], meshData.positions[3*i1+1], meshData.positions[3*i1+2]);
-            vec3 v2(meshData.positions[3*i2+0], meshData.positions[3*i2+1], meshData.positions[3*i2+2]);
-            vec3 v3(meshData.positions[3*i3+0], meshData.positions[3*i3+1], meshData.positions[3*i3+2]);
+			vec3 v1(mesh.positions[i1 * 3], mesh.positions[i1 * 3 + 1], mesh.positions[i1 * 3 + 2]);
+			vec3 v2(mesh.positions[i2 * 3],	mesh.positions[i2 * 3 + 1],	mesh.positions[i2 * 3 + 2]);
+			vec3 v3(mesh.positions[i3 * 3],	mesh.positions[i3 * 3 + 1],	mesh.positions[i3 * 3 + 2]);
 
-            vec2 w1(meshData.texcoords[2*i1+0], meshData.texcoords[2*i1+1]);
-            vec2 w2(meshData.texcoords[2*i2+0], meshData.texcoords[2*i2+1]);
-            vec2 w3(meshData.texcoords[2*i3+0], meshData.texcoords[2*i3+1]);
+	        vec3 normal = normalize(cross(v2-v1, v3-v1));
+  
+	        normv[i1] += normal;
+        	normv[i2] += normal;
+        	normv[i3] += normal;
+ 		}
 
-            float x1 = v2.x - v1.x;
-            float x2 = v3.x - v1.x;
-            float y1 = v2.y - v1.y;
-            float y2 = v3.y - v1.y;
-            float z1 = v2.z - v1.z;
-            float z2 = v3.z - v1.z;
+		for(auto n: normv)
+		{
+            n = normalize(n);
 
-            float s1 = w2.x - w1.x;
-            float s2 = w3.x - w1.x;
-            float t1 = w2.y - w1.y;
-            float t2 = w3.y - w1.y;
-
-            float d = (s1 * t2 - s2 * t1);
-            float r = (d == 0.0f) ? 0.0f : 1.0f/ d;
- 
-            vec3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-            vec3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
- 
-            tan1[i1] += sdir;
-            tan1[i2] += sdir;
-            tan1[i3] += sdir;
+			normals.push_back(n.x);
+            normals.push_back(n.y);
+            normals.push_back(n.z);
 		}
 
-		for (size_t i = 0; i < meshData.positions.size(); i+= 3)
-        {
-			vec3 n = vec3(meshData.normals[3*i+0], meshData.normals[3*i+1], meshData.normals[3*i+2]);
-            vec3 t = tan1[i/3];
-            vec3 tmp = normalize(t - n * dot(n,t));
+		return normals;
+	}
 
-            tangents.push_back(tmp.x);
-            tangents.push_back(tmp.y);
-            tangents.push_back(tmp.z);
-        }
+
+	std::vector<float> computeTangent(const tinyobj::mesh_t &mesh)
+	{		
+		using vec2 = core::vec2;
+		using vec3 = core::vec3;
+
+		std::vector<float> tangents;
+		std::vector<vec3> tanv;
+
+		tanv.resize(mesh.positions.size()/3, vec3(0,0,0));
+
+		for(unsigned i = 0; i < mesh.indices.size() / 3; i++) 
+		{
+			int i1 = mesh.indices[3*i + 0];
+			int i2 = mesh.indices[3*i + 1];
+			int i3 = mesh.indices[3*i + 2];
+
+			vec3 v1(mesh.positions[i1 * 3], mesh.positions[i1 * 3 + 1], mesh.positions[i1 * 3 + 2]);
+			vec3 v2(mesh.positions[i2 * 3],	mesh.positions[i2 * 3 + 1],	mesh.positions[i2 * 3 + 2]);
+			vec3 v3(mesh.positions[i3 * 3],	mesh.positions[i3 * 3 + 1],	mesh.positions[i3 * 3 + 2]);
+
+			vec2 uv1(mesh.texcoords[i1 * 2], mesh.texcoords[i1 * 2 + 1]);
+			vec2 uv2(mesh.texcoords[i2 * 2], mesh.texcoords[i2 * 2 + 1]);
+			vec2 uv3(mesh.texcoords[i3 * 2], mesh.texcoords[i3 * 2 + 1]);
+
+	        vec3 edge1 = v2 - v1;
+	        vec3 edge2 = v3 - v1;
+ 
+		 	vec2 duv1 = uv2 - uv1;
+        	vec2 duv2 = uv3 - uv1;
+ 
+ 			float dividend = (duv1.x * duv2.y - duv2.x * duv1.y);
+        	float factor = (dividend == 0.0f) ? 0.0f : 1.0f/dividend;
+ 
+        	vec3 tangent = vec3(factor * (duv2.y * edge1.x - duv1.y * edge2.x),
+        						factor * (duv2.y * edge1.y - duv1.y * edge2.y), 
+        						factor * (duv2.y * edge1.z - duv1.y * edge2.z));
+
+	        tanv[i1] += tangent;
+        	tanv[i2] += tangent;
+        	tanv[i3] += tangent;
+		}
+
+		for(auto t: tanv) 
+		{
+			t = normalize(t);
+
+            tangents.push_back(t.x);
+            tangents.push_back(t.y);
+            tangents.push_back(t.z);
+		}
 
 		return tangents;
 	}
+
+
 
 
 	Mesh &Mesh::fromFile(const std::string &objFilename, int shape)
@@ -110,8 +143,9 @@ namespace tiny { namespace rendering { namespace gl {
 		auto &meshData = shapes[shape].mesh;
 		unsigned int nVertices = meshData.positions.size()/3;
 
-		// FIXME compute normals if missing
-		meshData.normals.resize(nVertices * 3, 0);
+		if (meshData.normals.size() != meshData.positions.size())
+			meshData.normals = computeNormals(meshData);
+
 		meshData.texcoords.resize(nVertices * 2, 0);
 
 		mAttributes[POSITION].loadAttribute(POSITION, meshData.positions, 3);
