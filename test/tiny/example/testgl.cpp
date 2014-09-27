@@ -26,8 +26,6 @@ int main(int argc, char **argv)
 		.fromFiles("res/models/ground.obj", "res/models/ground.mtl")
 		.moveTo(0,-2,0);
 
-	// scene.getMesh("ground").material().normalMap().fromFile("res/textures/bricks_normal.jpg");
-
 	scene.addMesh("box")
 		.fromFiles("res/models/box.obj", "res/models/box.mtl")
 		.attachTo(scene.getMesh("ground"))
