@@ -37,27 +37,14 @@ namespace tiny { namespace rendering { namespace gl {
 		mShininess = material.shininess;
 
 		if (!material.diffuse_texname.empty())
-		{
 			mTexture.fromFile(material.diffuse_texname);
-		}
 		else
-		{
-			std::array<uint32_t,16*16> white;
-			white.fill(0xFFFFFFFF);
-			mTexture.load(reinterpret_cast<byte *>(&white[0]), 16, 16);
-		}
+			mTexture.fromColor(core::vec3(1,1,1));
 
 		if (!material.normal_texname.empty())
-		{
 			mNormalMap.fromFile(material.diffuse_texname);
-		}
 		else
-		{
-			std::array<uint32_t,16*16> defaultNormal;
-			defaultNormal.fill(0xFFFF7F80);
-			mNormalMap.load(reinterpret_cast<byte *>(&defaultNormal[0]), 16,16);
-		}
-
+			mNormalMap.fromColor(core::vec3(0.5,0.5,1.0));
 	}
 
 }}}

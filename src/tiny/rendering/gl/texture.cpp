@@ -9,22 +9,32 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
+	Texture::Texture()
+	{
+		create(mHandle);
+	}
+
 	Texture::Texture(const std::string &filename)
 	{
+		create(mHandle);
 		fromFile(filename);
 	}
 
 	Texture::Texture(byte *pixels, size_t width, size_t height) 
 	{
-		load(pixels, width, height);
+		create(mHandle);
+		fromPixels(pixels, width, height);
 	}
 
-	void Texture::load(byte *pixels, size_t width, size_t height)
+	Texture::Texture(const vec3 &color)
 	{
-		glGenTextures(1, &mHandle);
+		create(mHandle);
+		fromColor(color);
+	}
 
-		if (mHandle == 0) 
-			throw std::runtime_error("could not generate new texture");
+	Texture &Texture::fromPixels(byte *pixels, size_t width, size_t height)
+	{
+		create(mHandle);
 
 		glBindTexture(GL_TEXTURE_2D, mHandle);
 
@@ -38,6 +48,8 @@ namespace tiny { namespace rendering { namespace gl {
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8.0f);
+
+		return (*this);
 	}
 
 	Texture &Texture::fromFile(const std::string &filename)
@@ -48,11 +60,31 @@ namespace tiny { namespace rendering { namespace gl {
 		if (pixels == NULL)
 			throw std::runtime_error("could not load texture file '"+filename+"'");
 
-		load(pixels, width, height);
+		fromPixels(pixels, width, height);
 
 		stbi_image_free(pixels);
 
 		return (*this);
+	}
+
+	Texture &Texture::fromColor(const vec3 &color)
+	{
+		byte r = (byte)(color.x * 255.0);
+		byte g = (byte)(color.y * 255.0);
+		byte b = (byte)(color.z * 255.0);
+		byte a = 0xFF;
+		std::array<uint32_t,16*16> pixels;
+		pixels.fill(a << 24 | b << 16 | g << 8 | r);
+		
+		return fromPixels(reinterpret_cast<byte *>(&pixels[0]), 16, 16);
+	}
+
+	void Texture::create(GLuint &handle)
+	{
+		glGenTextures(1, &handle);
+
+		if (handle == 0) 
+			throw std::runtime_error("could not generate new texture");
 	}
 
 	void Texture::destroy(GLuint handle)

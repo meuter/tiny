@@ -13,10 +13,12 @@ namespace tiny { namespace rendering { namespace gl {
 	class Texture
 	{
 		using byte = core::byte;
+		using vec3 = core::vec3;
 	public:	
 
-		Texture() = default;
+		Texture();
 		Texture(Texture &&other) = default;
+		Texture(const vec3 &color);
 		Texture(const std::string &filename);
 		Texture(unsigned char *pixels, size_t width, size_t height);
 
@@ -25,11 +27,15 @@ namespace tiny { namespace rendering { namespace gl {
 		Texture &operator=(Texture &&other) = default;
 
 		Texture &fromFile(const std::string &filename);
+		Texture &fromPixels(byte *pixels, size_t width, size_t height);
+		Texture &fromColor(const vec3 &color);
 
-		void load(byte *pixels, size_t width, size_t height);
 		void bind(GLuint slot) const;
 
+		inline GLuint handle() const { return mHandle; }
+
 	private:
+		static void create(GLuint &handle);
 		static void destroy(GLuint handle);
 
 		Handle<GLuint,destroy> mHandle;
