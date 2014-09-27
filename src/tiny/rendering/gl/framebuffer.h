@@ -48,15 +48,15 @@ namespace tiny { namespace rendering { namespace gl {
 	{
 	public:	
 
-		FrameBuffer(size_t height, size_t width, std::vector<GLenum> attachments) : mWidth(width), mHeight(height), mDepthBuffer(width, height)
+		FrameBuffer(size_t width, size_t height, std::vector<GLenum> attachments) : mWidth(width), mHeight(height), mDepthBuffer(width, height)
 		{
 			create(mHandle);
 			bind();
 
 			for(auto attachment: attachments)
 			{
-				mAttachments.emplace(attachment, Texture(NULL, height, width, GL_NEAREST));
-				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, mAttachments[attachment].handle(), 0);
+				mTextures.emplace(attachment, Texture(NULL, width, height, GL_NEAREST));
+				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, mTextures[attachment].handle(), 0);
 			}
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthBuffer.handle());
 			glDrawBuffers(attachments.size(), &attachments[0]);
@@ -74,6 +74,17 @@ namespace tiny { namespace rendering { namespace gl {
 			glBindFramebuffer(GL_FRAMEBUFFER, mHandle);
 			glViewport(0, 0, mWidth, mHeight);
 		}
+
+		const Texture& texture(GLenum attachment)
+		{
+			auto hit = mTextures.find(attachment);
+			if (hit == mTextures.end())
+				throw std::runtime_error("could not find texture for provided attachment in frame buffer");
+
+			return hit->second;
+		}
+
+		inline GLuint handle() { return mHandle; }
 
 	protected:
 
@@ -93,7 +104,7 @@ namespace tiny { namespace rendering { namespace gl {
 		Handle<destroy> mHandle;	
 		size_t mWidth, mHeight;
 		DepthBuffer mDepthBuffer;
-		std::map<GLenum, Texture> mAttachments;
+		std::map<GLenum, Texture> mTextures;
 	};
 
 }}}

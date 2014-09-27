@@ -12,6 +12,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 	class Context : public boost::noncopyable
 	{
+		using ivec4 = core::ivec4;
 	public:
 
 		Context() : mHandle(NULL) {}
@@ -106,6 +107,13 @@ namespace tiny { namespace rendering { namespace gl {
 		{
 			glDisable(GL_DEPTH_TEST);
 		}	
+
+		ivec4 getViewPort()
+		{
+			ivec4 viewPort;
+			glGetIntegerv (GL_VIEWPORT, &viewPort(0));
+			return viewPort;
+		}
 
 	private:	
 

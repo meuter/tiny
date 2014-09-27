@@ -41,6 +41,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 		Mesh &fromFile(const std::string &objFilename, int shape=0);
 		Mesh &fromFiles(const std::string &objFilname, const std::string &mtlFilename);
+		Mesh &fromData(const std::vector<float> positions, std::vector<float> texcoord, std::vector<unsigned int> indices);
 
 	protected:
 		static void destroy(GLuint handle);

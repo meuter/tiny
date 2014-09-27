@@ -18,6 +18,7 @@ namespace tiny { namespace rendering { namespace gl {
 	class Renderer 
 	{
 		using vec3 = core::vec3;
+		using vec2 = core::vec2;
 		using sec = core::sec;
 		using Game = core::Game;
 		using LightSource = core::LightSource;
@@ -35,6 +36,7 @@ namespace tiny { namespace rendering { namespace gl {
 		void init();
 		void update(Game &game, sec t, sec dt);
 		void render();
+		void renderToActiveFrameBuffer();
 
 	protected:	
 		ShaderProgram &getShader(int lightSourceCount);

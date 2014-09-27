@@ -157,6 +157,23 @@ namespace tiny { namespace rendering { namespace gl {
 		return (*this);
 	}
 
+	Mesh &Mesh::fromData(const std::vector<float> positions, std::vector<float> texcoord, std::vector<unsigned int> indices)
+	{
+		tinyobj::mesh_t meshData;
+
+		meshData.positions = positions;
+		meshData.texcoords = texcoord;
+		meshData.indices = indices;
+
+		mAttributes[POSITION].loadAttribute(POSITION, meshData.positions, 3);
+		mAttributes[TEXCOORD].loadAttribute(TEXCOORD, meshData.texcoords, 2);
+		mAttributes[NORMAL].loadAttribute(NORMAL, computeNormals(meshData), 3);
+		mAttributes[TANGENT].loadAttribute(TANGENT, computeTangent(meshData), 3);
+ 		mIndices.loadIndices(meshData.indices);
+
+		return (*this);
+	}
+
 	Mesh &Mesh::fromFiles(const std::string &objFilname, const std::string &mtlFilename)
 	{
 		fromFile(objFilname);

@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 		.attachTo(scene.getMesh("ground"))
 		.moveTo(0,2,0);
 
-	scene.setAmbient(vec3(1,1,1) * 0.2f);	
+	scene.setAmbient(vec3(1,1,1) * 0.3f);
 	scene.camera()
 		.withPerspective(toRadian(70), game.window().aspect(), 0.01f, 1000.0f)
 		.moveTo(0,0,7)
@@ -51,9 +51,7 @@ int main(int argc, char **argv)
 
 	scene.addLight("s1").spot(vec3(1,1,0) * 1.0f, vec3(-2,-1.9,2), vec3(1,0,-1), 0.6f, 10);
 	scene.addLight("s2").spot(vec3(0,1,1) * 1.0f, vec3(-3,-1.9,3), vec3(1,0,-1), 0.6f, 10);
-
- 	context.vsync(false);			
- 
+		
  	game.add(FPSCounter());
  	game.add(WindowControl());
  	game.add(KeyboardControl(scene.camera()));

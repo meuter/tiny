@@ -31,10 +31,15 @@ namespace tiny { namespace rendering { namespace gl {
 		inline gl::Texture &texture()   { return mTexture; }
 		inline gl::Texture &normalMap() { return mNormalMap; }
 
+		inline core::vec3 &diffuse()  { return mDiffuse; }
+		inline core::vec3 &specular() { return mSpecular; }
+		inline float &shininess()     { return mShininess; }
 
-		inline core::vec3 diffuse()  const { return mDiffuse; }
-		inline core::vec3 specular() const { return mSpecular; }
-		inline float shininess()      const { return mShininess; }
+
+
+		inline const core::vec3 &diffuse()  const { return mDiffuse; }
+		inline const core::vec3 &specular() const { return mSpecular; }
+		inline const float &shininess()     const { return mShininess; }
 
 		Material &fromFile(const std::string &mtlFilename);
 		void load(const tinyobj::material_t &material);
