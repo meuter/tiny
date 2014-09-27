@@ -6,7 +6,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 	// FIXME temp code to check render to texture
 	core::Camera fakeCamera;
-	std::unique_ptr<Mesh> screen1, screen2;
+	std::unique_ptr<Mesh> colorScreen, texCoordScreen, normalScreen, positionScreen;
 	std::unique_ptr<FrameBuffer> frameBuffer;
 	core::ivec4 viewPort;
 
@@ -22,26 +22,42 @@ namespace tiny { namespace rendering { namespace gl {
 		{
 			viewPort = mContext.getViewPort();
 
-			frameBuffer.reset(new FrameBuffer(viewPort.z, viewPort.w, { GL_COLOR_ATTACHMENT0 } ) );
+			frameBuffer.reset(new FrameBuffer(viewPort.z, viewPort.w, { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 } ) );
 
 			fakeCamera.withPerspective(math::toRadian(70), viewPort.z/viewPort.w, 0.01f, 1000.0f)
 				.moveTo(0,0,3)
 				.aimAt(0,0,0);
 
-			screen1.reset(new Mesh());
-			screen1->fromFile("res/models/screen.obj")
-				.moveTo(-1.05, 0, 0)
+			colorScreen.reset(new Mesh());
+			colorScreen->fromFile("res/models/screen.obj")
+				.moveTo(-1.05, -1.05, 0)
 			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
 			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
 
-			screen2.reset(new Mesh());
-			screen2->fromFile("res/models/screen.obj")
-				.moveTo(1.05, 0, 0)
+			texCoordScreen.reset(new Mesh());
+			texCoordScreen->fromFile("res/models/screen.obj")
+				.moveTo(1.05, 1.05, 0)
 			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
 			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
 
-			screen1->material().diffuse() = vec3(1,0.5,0.5);
-			screen2->material().diffuse() = vec3(0.5,1,0.5);
+			normalScreen.reset(new Mesh());
+			normalScreen->fromFile("res/models/screen.obj")
+				.moveTo(-1.05, 1.05, 0)
+			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
+			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
+
+			positionScreen.reset(new Mesh());
+			positionScreen->fromFile("res/models/screen.obj")
+				.moveTo(1.05, -1.05, 0)
+			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
+			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
+
+
+
+			colorScreen->material().diffuse() = vec3(1,1,1);
+			texCoordScreen->material().diffuse() = vec3(1,1,1);
+			normalScreen->material().diffuse() = vec3(1,1,1);
+			positionScreen->material().diffuse() = vec3(1,1,1);
 		 }
 	}
 
@@ -49,13 +65,18 @@ namespace tiny { namespace rendering { namespace gl {
 
 	void Renderer::render()
 	{
+		renderToActiveFrameBuffer();
+		// renderOnFourScreens();
+	}
+
+	void Renderer::renderOnFourScreens()
+	{
 		// FIXME temp code to check render to texture
 		{
 			frameBuffer->bind();
 			glClearColor(0,0,0,1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
 		}
-
 
 		renderToActiveFrameBuffer();
 
@@ -71,19 +92,33 @@ namespace tiny { namespace rendering { namespace gl {
 			screenShader.use();
 			screenShader.setUniform("ambientLight", vec3(1,1,1));
 
-		 	screenShader.setUniform("material", screen1->material());
+		 	screenShader.setUniform("material", colorScreen->material());
 			frameBuffer->texture(GL_COLOR_ATTACHMENT0).bind(0);
 		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   screen1->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * screen1->modelMatrix());
-		 	screen1->draw();
+		 	screenShader.setUniform("M",   colorScreen->modelMatrix());
+		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * colorScreen->modelMatrix());
+		 	colorScreen->draw();
 
-		 	screenShader.setUniform("material", screen2->material());
-			frameBuffer->texture(GL_COLOR_ATTACHMENT0).bind(0);
+		 	screenShader.setUniform("material", texCoordScreen->material());
+			frameBuffer->texture(GL_COLOR_ATTACHMENT1).bind(0);
 		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   screen2->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * screen2->modelMatrix());
-		 	screen2->draw();
+		 	screenShader.setUniform("M",   texCoordScreen->modelMatrix());
+		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * texCoordScreen->modelMatrix());
+		 	texCoordScreen->draw();
+
+		 	screenShader.setUniform("material", normalScreen->material());
+			frameBuffer->texture(GL_COLOR_ATTACHMENT2).bind(0);
+		 	screenShader.setUniform("material.texture", 0);
+		 	screenShader.setUniform("M",   normalScreen->modelMatrix());
+		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * normalScreen->modelMatrix());
+		 	normalScreen->draw();
+
+		 	screenShader.setUniform("material", positionScreen->material());
+			frameBuffer->texture(GL_COLOR_ATTACHMENT3).bind(0);
+		 	screenShader.setUniform("material.texture", 0);
+		 	screenShader.setUniform("M",   positionScreen->modelMatrix());
+		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * positionScreen->modelMatrix());
+		 	positionScreen->draw();
 		}
 	 		
 

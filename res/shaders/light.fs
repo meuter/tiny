@@ -12,7 +12,6 @@ uniform vec3 ambientLight;
 
 varying vec3 fragPosition;
 varying vec2 fragTexcoord;
-
 varying mat3 fragTBN;
 
 void main()
@@ -25,5 +24,13 @@ void main()
 		color += computeLightSource(lightSources[i], material, fragment, eyePosition);
 #endif
 
-	gl_FragColor = color;
+
+	vec3 bump = (255.0f/128.0f * texture2D(material.normalMap, fragTexcoord).xyz - 1.0f);
+	vec3 normal = normalize(fragTBN * bump);
+
+
+	gl_FragData[0] = color;
+	gl_FragData[1] = vec4(fragTexcoord, 0, 0);
+	gl_FragData[2] = vec4(normal, 0);
+	gl_FragData[3] = vec4(fragPosition, 0);
 }

@@ -36,6 +36,7 @@ namespace tiny { namespace rendering { namespace gl {
 		void init();
 		void update(Game &game, sec t, sec dt);
 		void render();
+		void renderOnFourScreens();
 		void renderToActiveFrameBuffer();
 
 	protected:	
