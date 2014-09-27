@@ -21,7 +21,7 @@ namespace tiny { namespace rendering { namespace gl {
 			other.release();
 		}
 
-		Context(core::Window &window) : mHandle(NULL)
+		Context(const core::Window &window) : mHandle(NULL)
 		{
 			mHandle = SDL_GL_CreateContext(window.handle());
 			if (mHandle == NULL)
