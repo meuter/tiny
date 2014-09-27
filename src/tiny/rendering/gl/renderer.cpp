@@ -65,8 +65,8 @@ namespace tiny { namespace rendering { namespace gl {
 
 	void Renderer::render()
 	{
-		renderToActiveFrameBuffer();
-		// renderOnFourScreens();
+		// renderToActiveFrameBuffer();
+		renderOnFourScreens();
 	}
 
 	void Renderer::renderOnFourScreens()

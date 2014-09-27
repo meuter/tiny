@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		.moveTo(0,6,0);
 
 	scene.addMesh("sphere")
-		.fromFiles("res/models/sphere_smooth.obj", "res/models/sphere_flat.mtl")
+		.fromFiles("res/models/sphere_hd_smooth.obj", "res/models/sphere_flat.mtl")
 		.attachTo(scene.getMesh("ground"))
 		.moveTo(0,2,0);
 
