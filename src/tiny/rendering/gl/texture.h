@@ -38,7 +38,7 @@ namespace tiny { namespace rendering { namespace gl {
 		static void create(GLuint &handle);
 		static void destroy(GLuint handle);
 
-		Handle<GLuint,destroy> mHandle;
+		Handle<destroy> mHandle;
 	};
 
 }}}

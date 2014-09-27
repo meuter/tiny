@@ -54,7 +54,7 @@ namespace tiny { namespace rendering { namespace gl {
 		static void destroy(GLuint handle);
 
 	private:
-		Handle<GLuint, destroy> mHandle;
+		Handle<destroy> mHandle;
 	};
 
 }}}

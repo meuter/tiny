@@ -49,7 +49,7 @@ namespace tiny { namespace rendering { namespace gl {
 		Material mMaterial;
 		BufferObject mAttributes[N_ATTRIBUTES];
 		BufferObject mIndices;
-		Handle<GLuint, destroy> mHandle;
+		Handle<destroy> mHandle;
 
 	};
 
