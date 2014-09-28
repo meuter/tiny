@@ -4,9 +4,6 @@
 
 namespace tiny { namespace rendering { namespace gl {
 
-	// FIXME temp code to check render to texture
-	core::Camera fakeCamera;
-	std::unique_ptr<Mesh> colorScreen, texCoordScreen, normalScreen, positionScreen;
 	std::unique_ptr<FrameBuffer> frameBuffer;
 	core::ivec4 viewPort;
 
@@ -18,113 +15,73 @@ namespace tiny { namespace rendering { namespace gl {
 		mContext.enableBackfaceCulling();
 		mContext.enableDepthTest();
 
-		// FIXME temp code to check render to texture
-		{
-			viewPort = mContext.getViewPort();
+		mGeometryShader = ShaderProgram::fromFiles("res/shaders/geometry.vs", "res/shaders/geometry.fs");
 
-			frameBuffer.reset(new FrameBuffer(viewPort.z, viewPort.w, { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 } ) );
-
-			fakeCamera.withPerspective(math::toRadian(70), viewPort.z/viewPort.w, 0.01f, 1000.0f)
-				.moveTo(0,0,3)
-				.aimAt(0,0,0);
-
-			colorScreen.reset(new Mesh());
-			colorScreen->fromFile("res/models/screen.obj")
-				.moveTo(-1.05, -1.05, 0)
-			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
-			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
-
-			texCoordScreen.reset(new Mesh());
-			texCoordScreen->fromFile("res/models/screen.obj")
-				.moveTo(1.05, 1.05, 0)
-			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
-			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
-
-			normalScreen.reset(new Mesh());
-			normalScreen->fromFile("res/models/screen.obj")
-				.moveTo(-1.05, 1.05, 0)
-			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
-			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
-
-			positionScreen.reset(new Mesh());
-			positionScreen->fromFile("res/models/screen.obj")
-				.moveTo(1.05, -1.05, 0)
-			 	.rotate(core::Transformable::X_AXIS, math::toRadian(90))
-			 	.scale(vec3(viewPort.z/viewPort.w, 1, 1));
-
-
-
-			colorScreen->material().diffuse() = vec3(1,1,1);
-			texCoordScreen->material().diffuse() = vec3(1,1,1);
-			normalScreen->material().diffuse() = vec3(1,1,1);
-			positionScreen->material().diffuse() = vec3(1,1,1);
-		 }
+		// FIXME TEMP CODE
+		viewPort = mContext.getViewPort();
+		frameBuffer.reset(new FrameBuffer(viewPort.z, viewPort.w, { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 } ) );
 	}
 
-	void Renderer::update(Game &game, sec t, sec dt)	{}
+	void Renderer::update(Game &game, sec t, sec dt) {}
 
 	void Renderer::render()
 	{
-		// renderToActiveFrameBuffer();
-		renderOnFourScreens();
+		forwardRender();
+		// deferredRender();
 	}
 
-	void Renderer::renderOnFourScreens()
+
+	void Renderer::geometryPass()
 	{
-		// FIXME temp code to check render to texture
+		frameBuffer->bind(GL_DRAW_FRAMEBUFFER);
+		glClearColor(0,0,0,1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
+
+		mGeometryShader.use();
+
+		mScene.forAll([&](const Mesh &mesh)
 		{
-			frameBuffer->bind();
-			glClearColor(0,0,0,1);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
-		}
-
-		renderToActiveFrameBuffer();
-
-		// FIXME temp code to check render to texture
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(viewPort.x, viewPort.y ,viewPort.z ,viewPort.w);
-			glClearColor(0.8,0.8,0.8,1);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			ShaderProgram &screenShader = getShader(0);
-
-			screenShader.use();
-			screenShader.setUniform("ambientLight", vec3(1,1,1));
-
-		 	screenShader.setUniform("material", colorScreen->material());
-			frameBuffer->texture(GL_COLOR_ATTACHMENT0).bind(0);
-		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   colorScreen->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * colorScreen->modelMatrix());
-		 	colorScreen->draw();
-
-		 	screenShader.setUniform("material", texCoordScreen->material());
-			frameBuffer->texture(GL_COLOR_ATTACHMENT1).bind(0);
-		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   texCoordScreen->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * texCoordScreen->modelMatrix());
-		 	texCoordScreen->draw();
-
-		 	screenShader.setUniform("material", normalScreen->material());
-			frameBuffer->texture(GL_COLOR_ATTACHMENT2).bind(0);
-		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   normalScreen->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * normalScreen->modelMatrix());
-		 	normalScreen->draw();
-
-		 	screenShader.setUniform("material", positionScreen->material());
-			frameBuffer->texture(GL_COLOR_ATTACHMENT3).bind(0);
-		 	screenShader.setUniform("material.texture", 0);
-		 	screenShader.setUniform("M",   positionScreen->modelMatrix());
-		 	screenShader.setUniform("MVP", fakeCamera.projectionMatrix() * fakeCamera.viewMatrix() * positionScreen->modelMatrix());
-		 	positionScreen->draw();
-		}
-	 		
-
+		 	mGeometryShader.setUniform("M",   mesh.modelMatrix());
+		 	mGeometryShader.setUniform("MVP", mScene.camera().projectionMatrix() * mScene.camera().viewMatrix() * mesh.modelMatrix());
+		 	mGeometryShader.setUniform("material", mesh.material());
+		 	mesh.draw();
+		});
 	}
 
-	void Renderer::renderToActiveFrameBuffer()
+	void Renderer::dumpGBuffer()
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glViewport(viewPort.x, viewPort.y ,viewPort.z ,viewPort.w);
+		glClearColor(0.8,0.8,0.8,1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		frameBuffer->bind(GL_READ_FRAMEBUFFER);
+
+		GLsizei WINDOW_WIDTH = viewPort.z;
+		GLsizei WINDOW_HEIGHT = viewPort.w;
+		GLsizei HalfWidth = viewPort.z / 2.0f;
+		GLsizei HalfHeight = viewPort.w / 2.0f;
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, HalfWidth, HalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+		glReadBuffer(GL_COLOR_ATTACHMENT1);
+	    glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, HalfHeight, HalfWidth, WINDOW_HEIGHT, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+		glReadBuffer(GL_COLOR_ATTACHMENT2);
+	    glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, HalfWidth, HalfHeight, WINDOW_WIDTH, WINDOW_HEIGHT, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+		glReadBuffer(GL_COLOR_ATTACHMENT3);
+	    glBlitFramebuffer(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, HalfWidth, 0, WINDOW_WIDTH, HalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);	
+	}
+
+	void Renderer::deferredRender()
+	{
+		geometryPass();
+		dumpGBuffer();
+	}
+
+	void Renderer::forwardRender()
 	{
 		size_t nLights = mScene.lightSourceCount(), currentLight = 0;
 

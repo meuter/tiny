@@ -44,6 +44,7 @@ namespace tiny { namespace rendering { namespace gl {
 
 	Shader Shader::fromFile(GLenum shaderType, const std::string filename, Constants constants)
 	{
+		std::cout << filename << std::endl;
 		return Shader(shaderType, loadSource(filename, constants));
 	}
 

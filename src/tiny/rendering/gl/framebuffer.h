@@ -64,14 +64,14 @@ namespace tiny { namespace rendering { namespace gl {
 			if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 				throw std::runtime_error("error during the setup of framebuffer attachments");
 
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		}
 
 		virtual ~FrameBuffer() = default;
 
-		void bind()
+		void bind(GLenum forWhat = GL_DRAW_FRAMEBUFFER)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, mHandle);
+			glBindFramebuffer(forWhat, mHandle);
 			glViewport(0, 0, mWidth, mHeight);
 		}
 
