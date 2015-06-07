@@ -6,6 +6,20 @@ https://www.youtube.com/playlist?list=PLEETnX-uPtBXP_B2yupUKlflXBznWIlL5
 
 It is written entirely in C++11 with SDL/Glew/OpenGL, and has so far only been compiled with clang v3.5 and tested on an iMac with an ATI Radeon HD6970M.
 
+# Compiling
+
+Using homebrew, you can very easily bootstrap the compilation:
+
+```
+brew install scons glew sdl2 boost
+```
+
+Then:
+
+```
+scons
+```
+
 # Example
 
 ```c++
